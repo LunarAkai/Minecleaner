@@ -4,7 +4,7 @@ public class Board {
 
     public Tilemap tilemap;
 
-    public void draw(Cell[][] state) {
+    public void draw(Cell[][] state, Tilemap tilemap) {
         tilemap.clearAllTiles();
 
         int width = state[0].length;

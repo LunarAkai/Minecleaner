@@ -121,7 +121,11 @@ public class ArenaList {
     public MinecleanerArena getArenaAtBlock(Block block) {
         return arenaBlocks.get(block.getLocation());
     }
-    
+
+    public MinecleanerArena getArenaForBlockDisplay(UUID id) {
+        return arenaBlockDisplays.get(id);
+    }
+
     public void removeArena(MinecleanerArena arena) {
         if(arena.hasPlayer()) {
             plugin.getManager().leaveArena(arena.getCurrentPlayer(), true);

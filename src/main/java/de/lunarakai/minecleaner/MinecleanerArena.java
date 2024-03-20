@@ -28,7 +28,7 @@ public class MinecleanerArena {
     private int widthIndex = 0;
     private final BlockFace orientation;
     private ArenaStatus arenaStatus = ArenaStatus.INACTIVE;
-    private UUID[] blockDisplays = new UUID[widthIndex * widthIndex];
+    private UUID[] blockDisplays = new UUID[81]; // todo needs to be of size boardSizes[widthIndex]
     
     private Player currentPlayer;
     private long currentGameStartTime;
@@ -87,10 +87,9 @@ public class MinecleanerArena {
 
         BlockData block0 = Material.NETHER_BRICKS.createBlockData();
         BlockData block1 = Material.BRICKS.createBlockData();
-        
-        for(int fx = -1; fx < 2; fx++) {
-            for(int fy = -1; fy < 2; fy++) {
-                loc.set(location.getX() + d1x * fx, location.getY() + fy, location.getZ() + d1z + fx);
+        for (int fx = -1; fx < 2; fx++) {
+            for (int fy = -1; fy < 2; fy++) {
+                loc.set(location.getX() + d1x * fx, location.getY() + fy, location.getZ() + d1z * fx);
                 boolean f = (fx + fy) % 2 == 0;
                 world.setBlockData(loc, f ? block0 : block1);
             }
@@ -133,13 +132,14 @@ public class MinecleanerArena {
             final int fxf = fx;
             for(int fz = 0; fz < 9; fz++) {
                 final int fzf = fz;
+                // Todo not correctly alligned at different orientations (other than NORTH)
 
-                loc.set(location.getX() + 0.5 - (d1x * fz) / 3.0 + d0x * 0.501 + d1x * 1.847, location.getY() + fxf / 3.0, location.getZ() + 0.5 - (d1z * fz) / 3.0 + d0z * 0.501 + d1z * 1.847);
+                loc.set(location.getX() + 0.11 - (d1x * fz) / 3.0 + d0x * 0.501 + d1x * 1.847, location.getY() - 0.9725 + fxf / 3.0, location.getZ() + 0.45 - (d1z * fz) / 3.0 + d0z * 0.501 + d1z * 1.847);
 
                 Display blockDisplay = world.spawn(loc, BlockDisplay.class, blockdisplay -> {
                     Transformation transformation = blockdisplay.getTransformation();
                     Transformation newTransform;
-                    Vector3f newTranslationScale = new Vector3f(0.25f, 0.25f, 0.25f);
+                    Vector3f newTranslationScale = new Vector3f(0.30f, 0.25f, 0.25f);
                     newTransform = new Transformation(
                         transformation.getTranslation(),
                         transformation.getLeftRotation(), 
@@ -167,6 +167,7 @@ public class MinecleanerArena {
     }
 
     public void startNewGame() {
+        currentMinecleanerGame = new Game();
         currentMinecleanerGame.start();
         arenaStatus = ArenaStatus.PLAYING;
     }
@@ -176,10 +177,7 @@ public class MinecleanerArena {
         Preconditions.checkState(arenaStatus == ArenaStatus.INACTIVE);
         this.arenaStatus = ArenaStatus.CONFIRM_PLAYING;
         this.currentPlayer = player;
-
     } 
-
-
 
     public void removePlayer() {
         this.arenaStatus = ArenaStatus.INACTIVE;
@@ -188,9 +186,9 @@ public class MinecleanerArena {
 
     public void removeBlockDisplays() {
         World world = location.getWorld();
-        for(int fx = 0; fx < matchWidthIndexToActualWidth(widthIndex); fx++) {
-            for(int fy = 0; fy < matchWidthIndexToActualWidth(widthIndex); fy++) {
-                UUID blockDisplayUuid = blockDisplays[fx + fy * matchWidthIndexToActualWidth(widthIndex)];
+        for(int fx = 0; fx < 9; fx++) {
+            for(int fy = 0; fy < 9; fy++) {
+                UUID blockDisplayUuid = blockDisplays[fx + fy * 9];
                 Entity blockDisplayEntity = blockDisplayUuid != null ? world.getEntity(blockDisplayUuid) : null;
                 if(blockDisplayEntity instanceof Display blockdisplay) {
                     blockDisplayEntity.remove();
@@ -201,7 +199,7 @@ public class MinecleanerArena {
 
     public void flagCell(int x, int y) {
         if(currentMinecleanerGame != null) {
-            int id = x + y * matchWidthIndexToActualWidth(widthIndex);
+            int id = x + y * 9;
             boolean unflaggedCell = currentMinecleanerGame.flag(x, y);
             if(!unflaggedCell) {
                 // todo set flag head on block display
@@ -213,7 +211,7 @@ public class MinecleanerArena {
 
     public void revealCell(int x, int y) {
         if(currentMinecleanerGame != null) {
-            int id = x + y * matchWidthIndexToActualWidth(widthIndex);
+            int id = x + y * 9;
             // todo check if cell is flagged already
             currentMinecleanerGame.reveal(x, y);
             // todo update block of blockdisplay

@@ -10,14 +10,6 @@ import de.lunarakai.minecleaner.commands.ListCommand;
 import de.lunarakai.minecleaner.commands.StatsCommand;
 
 public final class MinecleanerPlugin extends JavaPlugin {
-
-
-    // ------------------------------
-    // TODO: start a new game (via ui)
-    // TODO: For testing purposes -> write coords of cell into chat
-    //  Format: Cell(X,Y) - CellType: Type
-    // ------------------------------
-
     public static final String PERMISSION_PLAY = "minecleaner.play";
     public static final String PERMISSION_ADMIN = "minecleaner.admin";
 
@@ -29,8 +21,11 @@ public final class MinecleanerPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         getServer().getScheduler().runTask(this, this::onLateEnable);
-
     }
+
+    // TODO:
+    //  doesnt save / load arenas correctly?
+    //  -> can't delete arena after server restart 
 
     public void onLateEnable() {
         playerUUIDCache = (PlayerUUIDCache) getServer().getPluginManager().getPlugin("PlayerUUIDCache");
@@ -51,7 +46,9 @@ public final class MinecleanerPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        if(minecleanerManager != null) {
+            minecleanerManager.clearAllArenas();
+        }
     }
 
     public ArenaList getArenaList() {

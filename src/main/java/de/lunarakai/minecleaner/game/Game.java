@@ -12,12 +12,15 @@ public class Game {
     private boolean gameover;
     private Board board;
     private BoardSize boardSize;
+    private Tilemap tilemap;
 
     private void onValidate() {
         mineCount = MathUtils.clamp(mineCount, 0, width*height);
     }
 
     public void start() {
+        board = new Board();
+
         int[] _boardSizes = boardSize.boardSizes;
         int[] _mineCounter = boardSize.mineCounter;
 
@@ -31,6 +34,9 @@ public class Game {
 
     private void newGame() {
         state = new Cell[width][height];
+        Tile[][] tile = new Tile[width][height];
+
+        tilemap = new Tilemap(tile);
 
         gameover = false;
 
@@ -38,7 +44,7 @@ public class Game {
         generateMines();
         generateNumbers();
 
-        board.draw(state);
+        board.draw(state, tilemap);
     }
 
     private void generateCells() {
@@ -129,7 +135,7 @@ public class Game {
 
         cell.flagged = !cell.flagged;
         state[x][y] = cell;
-        board.draw(state);
+        board.draw(state, tilemap);
         return isFlaggedAlready;
     }
 
@@ -159,7 +165,7 @@ public class Game {
                 checkWinCondition();
                 break;
         }
-        board.draw(state);
+        board.draw(state, tilemap);
         return hitMine;
     }
 
