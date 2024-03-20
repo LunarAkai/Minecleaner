@@ -5,8 +5,8 @@ import de.lunarakai.minecleaner.utils.MathUtils;
 
 public class Game {
 
-    public static int width;
-    public static int height;
+    public int width;
+    public int height;
     private int mineCount = 10;
     private Cell[][] state;
     private boolean gameover;

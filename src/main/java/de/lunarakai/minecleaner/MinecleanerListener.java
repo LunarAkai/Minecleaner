@@ -25,6 +25,7 @@ public class MinecleanerListener implements Listener {
             if(arena != null) {
 
                 // TODO
+                e.getPlayer().sendMessage(ChatColor.GREEN + "Minecleaner Arena!!");
 
             } else {
                 arena = plugin.getArenaList().getArenaAtBlock(block);

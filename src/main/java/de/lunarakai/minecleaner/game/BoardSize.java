@@ -1,17 +1,15 @@
 package de.lunarakai.minecleaner.game;
 
 public class BoardSize {
-    public int[] boardSizes = {
-            8,
-            16,
-            32, // nicht größer als 24
-            64
+    public static int[] boardSizes = {
+            9,
+            15,
+            24, // nicht größer als 24
     };
 
-    public int[] mineCounter = {
-            10,
+    public static int[] mineCounter = {
+            12,
             40,
-            128,
-            512
+            100,
     };
 }
