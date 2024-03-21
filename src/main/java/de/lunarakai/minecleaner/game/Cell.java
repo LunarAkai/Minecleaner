@@ -1,6 +1,6 @@
 package de.lunarakai.minecleaner.game;
 
-import org.joml.Vector3i;
+import org.joml.Vector2i;
 
 public class Cell {
     public enum CellType {
@@ -11,9 +11,10 @@ public class Cell {
     }
 
 
-    public Vector3i position;
+    public Vector2i position;
     public CellType type;
     public int number;
+    
     public boolean revealed;
     public boolean flagged;
     public boolean exploded;
@@ -25,5 +26,27 @@ public class Cell {
     public CellType getType() {
         return type;
     }
+
+    public void setRevealed() {
+        this.revealed = true;
+    }
+    public boolean isRevealed() {
+        return revealed;
+    }
+
+    public void setFlaggedState(boolean flag) {
+        this.flagged = flag;
+    }
+    public boolean isFlagged() {
+        return flagged;
+    }
+
+    public void setExploded() {
+        this.exploded = true;
+    }
+    public boolean isExploded() {
+        return revealed;
+    }
+
 
 }

@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.google.common.base.Preconditions;
 import de.iani.cubesidestats.api.PlayerStatistics;
 import de.iani.cubesidestats.api.PlayerStatisticsQueryKey;
@@ -84,6 +85,20 @@ public class MinecleanerManager {
 
     public Inventory getConfirmPlayingInventory() {
         return confirmPlayingInventory;
+    }
+
+    public void handleFieldClick(@NotNull Player player, int x, int y, boolean hasRightClicked) {
+        MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
+        Preconditions.checkArgument(arena != null, "player is in no arena");
+        Preconditions.checkState(arena.getArenaStatus() == ArenaStatus.PLAYING, "not running");
+
+        if(hasRightClicked) {
+            // flag
+            arena.flagCell(x, y);
+        } else {
+            // reveal
+            arena.revealCell(x, y);
+        }
     }
 
     public void getStatisticsForPlayer(OfflinePlayer player, Consumer<PlayerStatisticsData> callback) {

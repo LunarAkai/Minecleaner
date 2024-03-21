@@ -15,7 +15,6 @@ public class Tile {
         TileMine,
         TileExploded,
         TileFlag,
-
     }
 
     public Tile.TileType tileType;

@@ -1,18 +1,32 @@
 package de.lunarakai.minecleaner.game;
 
-import org.joml.Vector3i;
+import java.util.ArrayList;
+import org.joml.Vector2i;
+import de.lunarakai.minecleaner.MinecleanerPlugin;
 import de.lunarakai.minecleaner.utils.MathUtils;
 
 public class Game {
+    public boolean gameover;
 
-    public int width;
-    public int height;
-    private int mineCount = 10;
+    private MinecleanerPlugin plugin; 
+    private int width;
+    private int height;
+    private int mineCount;
+
     private Cell[][] state;
-    private boolean gameover;
     private Board board;
     private BoardSize boardSize;
     private Tilemap tilemap;
+    private ArrayList<Cell> floodedCells;
+
+    public Game(MinecleanerPlugin plugin, int width, int mineCount) {
+        this.plugin = plugin;
+        this.width = width;
+        this.height = width;
+        this.mineCount = mineCount;
+
+        this.floodedCells = new ArrayList<>();
+    }
 
     private void onValidate() {
         mineCount = MathUtils.clamp(mineCount, 0, width*height);
@@ -20,15 +34,6 @@ public class Game {
 
     public void start() {
         board = new Board();
-
-        int[] _boardSizes = boardSize.boardSizes;
-        int[] _mineCounter = boardSize.mineCounter;
-
-        int _boardSizeIndex = 0;
-        width = _boardSizes[_boardSizeIndex];
-        height = _boardSizes[_boardSizeIndex];
-        mineCount = _mineCounter[_boardSizeIndex];
-
         newGame();
     }
 
@@ -51,7 +56,7 @@ public class Game {
         for (int x = 0; x < width; x ++) {
             for (int y = 0; y < height; y++) {
                 Cell cell = new Cell();
-                cell.position = new Vector3i(x, 0, y);
+                cell.position = new Vector2i(x, y);
                 cell.setType(Cell.CellType.Empty);
                 state[x][y] = cell;
             }
@@ -99,6 +104,10 @@ public class Game {
         }
     }
 
+    public Tilemap getMinecleanerTilemap() {
+        return tilemap;
+    }
+
     private int countMines(int cellX, int cellY) {
         int count = 0;
 
@@ -119,78 +128,76 @@ public class Game {
         return count;
     }
 
-    public boolean flag(int x, int y) {
-        // TODO: Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition); <- Unity
-        //Vector3i cellPosition = null; // TODO board.tilemap.WorldToCell(worldPosition); <- Unity
+    public void flag(int x, int y) {
         Cell cell = getCell(x, y);
 
-        if (cell.getType() == Cell.CellType.Invalid || cell.revealed) {
-            return false;
-        }
-
-        boolean isFlaggedAlready = false;
-        if(cell.flagged) {
-            isFlaggedAlready = true;
+        if (cell.getType() == Cell.CellType.Invalid || cell.isRevealed()) {
+            return;
         }
 
         cell.flagged = !cell.flagged;
         state[x][y] = cell;
         board.draw(state, tilemap);
-        return isFlaggedAlready;
+        return;
     }
 
-    public boolean reveal(int x, int y) {
-        // TODO: Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition); <- Unity
-        //Vector3i cellPosition = null; // TODO board.tilemap.WorldToCell(worldPosition); <- Unity
+    public void reveal(int x, int y) {
         Cell cell = getCell(x, y);
 
-        if(cell.getType() == Cell.CellType.Invalid || cell.revealed || cell.flagged) {
-            return false;
+        if(cell.getType() == Cell.CellType.Invalid || cell.isRevealed() || cell.flagged) {
+            return;
         }
 
-        boolean hitMine = false;
+        //boolean hitMine = false;
 
         switch (cell.getType()) {
-            case Mine:
+            case Mine: {
                 explode(cell);
-                hitMine = true;
                 break;
-            case Empty:
+            }
+            case Empty: {
+                if(!floodedCells.isEmpty()) {
+                    floodedCells.clear();
+                }
                 flood(cell);
                 checkWinCondition();
                 break;
-            default:
-                cell.revealed = true;
+            }
+            default: {
+                cell.setRevealed();
                 state[x][y] = cell;
                 checkWinCondition();
                 break;
+            }
+                
         }
         board.draw(state, tilemap);
-        return hitMine;
     }
 
     public void flood(Cell cell) {
-        if(cell.revealed) return;
-        if(cell.getType() == Cell.CellType.Mine || cell.getType() == Cell.CellType.Invalid) return;
+        if(cell.isRevealed()) return;
+        if(cell.getType() == Cell.CellType.Mine || cell.getType() == Cell.CellType.Invalid || cell.position != null) return;
 
-        cell.revealed = true;
-        state[cell.position.x][cell.position.z] = cell;
+        cell.setRevealed();
+        floodedCells.add(cell);
+        state[cell.position.x][cell.position.y] = cell;
 
+        
         if(cell.getType() == Cell.CellType.Empty) {
-            flood(getCell(cell.position.x -1, cell.position.z));
-            flood(getCell(cell.position.x +1, cell.position.z));
-            flood(getCell(cell.position.x, cell.position.z -1));
-            flood(getCell(cell.position.x, cell.position.z +1));
+            flood(getCell(cell.position.x -1, cell.position.y));
+            flood(getCell(cell.position.x +1, cell.position.y));
+            flood(getCell(cell.position.x, cell.position.y -1));
+            flood(getCell(cell.position.x, cell.position.y +1));
         }
 
-        // TODO return cellpos of flooded cell to update the block displays
+        // TODO: return cellpos of flooded cell to update the block displays
     }
 
     private void explode(Cell cell) {
         gameover = true;
         cell.revealed = true;
         cell.exploded = true;
-        state[cell.position.x][cell.position.z] = cell;
+        state[cell.position.x][cell.position.y] = cell;
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -227,7 +234,7 @@ public class Game {
         }
     }
 
-    private Cell getCell(int x, int y) {
+    public Cell getCell(int x, int y) {
         if(isValid(x,y)) {
             return state[x][y];
         } else {
@@ -237,5 +244,9 @@ public class Game {
 
     private boolean isValid(int x, int y) {
         return x >= 0 && x < width && y >= 0 && y < height;
+    }
+
+    public ArrayList<Cell> getfloodedCells() {
+        return floodedCells;
     }
 }

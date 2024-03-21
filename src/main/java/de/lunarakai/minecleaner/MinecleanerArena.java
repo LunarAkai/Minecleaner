@@ -15,11 +15,16 @@ import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Transformation;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 import com.google.common.base.Preconditions;
 import de.lunarakai.minecleaner.game.BoardSize;
+import de.lunarakai.minecleaner.game.Cell;
+import de.lunarakai.minecleaner.game.Cell.CellType;
 import de.lunarakai.minecleaner.game.Game;
+import de.lunarakai.minecleaner.game.Tile.TileType;
 import de.lunarakai.minecleaner.utils.MinecleanerHeads;
+import net.md_5.bungee.api.ChatColor;
 
 public class MinecleanerArena {
     private final MinecleanerPlugin plugin;
@@ -30,6 +35,7 @@ public class MinecleanerArena {
     private final BlockFace orientation;
     private ArenaStatus arenaStatus = ArenaStatus.INACTIVE;
     private UUID[] blockDisplays = new UUID[81]; // todo needs to be of size boardSizes[widthIndex]
+    private TileType[] currentMinecleaerTileTypesState;
     
     private Player currentPlayer;
     private long currentGameStartTime;
@@ -163,6 +169,7 @@ public class MinecleanerArena {
 
                 loc.set(location.getX() + 0.11 - (d1x * fz) / 3.0 + d0x * 0.501 + d1x * 1.847, location.getY() - 0.9725 + fxf / 3.0, location.getZ() + 0.45 - (d1z * fz) / 3.0 + d0z * 0.501 + d1z * 1.847);
 
+                // Todo: ItemDisplay für Köpfe
                 Display blockDisplay = world.spawn(loc, BlockDisplay.class, blockdisplay -> {
                     Transformation transformation = blockdisplay.getTransformation();
                     Transformation newTransform;
@@ -203,9 +210,20 @@ public class MinecleanerArena {
         arenaSection.set("blockdisplays", blockDisplays);
     }
 
+    private void setDiplayBlock(int x, int y, Material block) {
+        UUID blockDisplayId = blockDisplays[x + y *9];
+        Entity blockDisplay = blockDisplayId != null ? location.getWorld().getEntity(blockDisplayId) : null;
+        if(blockDisplay instanceof BlockDisplay) {
+            BlockDisplay display = (BlockDisplay) blockDisplay;
+            display.setBlock(block.createBlockData());
+        }
+
+    }
+
     public void startNewGame() {
-        currentMinecleanerGame = new Game();
+        currentMinecleanerGame = new Game(plugin, 9, 12);
         currentMinecleanerGame.start();
+        //currentMinecleaerTileTypes = currentMinecleanerGame.getMinecleanerPuzzle(widthIndex, widthIndex);
         arenaStatus = ArenaStatus.PLAYING;
     }
 
@@ -219,6 +237,13 @@ public class MinecleanerArena {
     public void removePlayer() {
         this.arenaStatus = ArenaStatus.INACTIVE;
         this.currentPlayer = null;
+        this.currentMinecleanerGame = null;
+        
+        for(int x = 0; x < 9; x++) {
+            for(int y = 0; y < 9; y++) {
+                setDiplayBlock(x, y, Material.BEDROCK);
+            }
+        }
     }
 
     // block displays dont get removed
@@ -228,7 +253,7 @@ public class MinecleanerArena {
             for(int fy = 0; fy < 9; fy++) {
                 UUID blockDisplayUuid = blockDisplays[fx + fy * 9];
                 Entity blockDisplayEntity = blockDisplayUuid != null ? world.getEntity(blockDisplayUuid) : null;
-                if(blockDisplayEntity instanceof Display blockDisplay) {
+                if(blockDisplayEntity instanceof Display blockdisplay) {
                     blockDisplayEntity.remove(); 
                 }
             }
@@ -238,22 +263,135 @@ public class MinecleanerArena {
     public void flagCell(int x, int y) {
         if(currentMinecleanerGame != null) {
             int id = x + y * 9;
-            boolean unflaggedCell = currentMinecleanerGame.flag(x, y);
-            if(!unflaggedCell) {
+
+            Cell cell = currentMinecleanerGame.getCell(x, y);
+            Player player = this.currentPlayer;
+            player.sendMessage(ChatColor.GOLD + "Cell: Pos(" + cell.position.x + "," + cell.position.y + "):" + " Is Flagged: " + cell.flagged + " ,Exploded: "
+                + cell.exploded + " Is Revealed: " + cell.revealed + ", CellType: " + cell.getType());
+            if(cell.getType() == CellType.Number) {
+                player.sendMessage(ChatColor.GREEN + "  Number: " + cell.number);
+            }
+
+            if(!cell.isRevealed() && !cell.isFlagged()) {
                 // todo set flag head on block display
-            } else {
+                currentMinecleanerGame.flag(x, y);
+                setDiplayBlock(x, y, Material.ORANGE_CONCRETE);
+            } else if(!cell.isRevealed() && cell.isFlagged() ){
                 // todo set normal head on block display
+                setDiplayBlock(x, y, Material.BEDROCK);
+            } else {
+                return;
             }
         }
     }
 
+    private boolean isRevealedCell(int x, int y) {
+        Cell cell = currentMinecleanerGame.getCell(x, y);
+        if(cell.revealed) {
+            return true;
+        } 
+        return false;
+    }
+
+
     public void revealCell(int x, int y) {
         if(currentMinecleanerGame != null) {
-            int id = x + y * 9;
-            // todo check if cell is flagged already
+            //int id = x + y * 9;
+            Cell cell = currentMinecleanerGame.getCell(x, y);
+            Player player = this.currentPlayer;
+            
+            player.sendMessage(ChatColor.GOLD + "Cell: Pos(" + cell.position.x + "," + cell.position.y + "):" + " Is Flagged: " + cell.flagged + " ,Exploded: "
+                + cell.exploded + " Is Revealed: " + cell.revealed + ", CellType: " + cell.getType());
+            
+            if(cell.getType() == CellType.Number) {
+                player.sendMessage(ChatColor.GREEN + "  Number: " + cell.number);
+            }
+            
             currentMinecleanerGame.reveal(x, y);
+            setBlockForCellType(x, y, cell);
+            
+
+            ArrayList<Cell> floodedCells = currentMinecleanerGame.getfloodedCells();
+            if(floodedCells != null) {
+                player.sendMessage(ChatColor.GREEN + "  Flooded Cells: [" + floodedCells.size() + "]");
+            
+                for(int i = 0; i < floodedCells.size(); i++) {
+                    Vector2i pos = floodedCells.get(i).position;
+                    player.sendMessage(ChatColor.GREEN + "  Cell(" + pos.x + pos.y + ")");
+                    setBlockForCellType(pos.x, pos.y, floodedCells.get(i));
+                }
+            }
+            
+            
+
+            // Todo: Logic for flood
             // todo update block of blockdisplay
         }
+    }
+
+    private void setBlockForCellType(int x, int y, Cell cell) {
+        switch (cell.getType()) {
+            case Empty: {
+                if(!cell.isRevealed() || !cell.isFlagged() || !cell.isExploded()) {  
+                    setDiplayBlock(x, y, Material.GRAY_CONCRETE);
+                }
+                break;
+            }
+            case Number: {
+                if(!cell.isRevealed() || !cell.isFlagged() || !cell.isExploded()) {
+                    switch(cell.number) {
+                        case 1: {
+                            setDiplayBlock(x, y, Material.LIME_CONCRETE_POWDER); 
+                            break;
+                        }
+                        case 2: {
+                            setDiplayBlock(x, y, Material.GREEN_CONCRETE_POWDER);
+                            break;
+                        }
+                        case 3: {
+                            setDiplayBlock(x, y, Material.YELLOW_CONCRETE_POWDER);
+                            break;
+                        }
+                        case 4: {
+                            setDiplayBlock(x, y, Material.ORANGE_CONCRETE_POWDER);
+                            break;
+                        }
+                        case 5: {
+                            setDiplayBlock(x, y, Material.RED_CONCRETE_POWDER);
+                            break;
+                        }
+                        case 6: {
+                            setDiplayBlock(x, y, Material.LIGHT_BLUE_CONCRETE_POWDER);
+                            break;
+                        }
+                        case 7: {
+                            setDiplayBlock(x, y, Material.BLUE_CONCRETE_POWDER);
+                            break;
+                        }
+                        case 8: {
+                            setDiplayBlock(x, y, Material.BLACK_CONCRETE_POWDER);
+                            break;
+                        }
+                        default: {
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+            case Mine: {
+                if(cell.exploded) {
+                    setDiplayBlock(x, y, Material.YELLOW_CONCRETE);
+                }
+                setDiplayBlock(x, y, Material.TNT);
+                break;
+            }
+            default: {
+                // Invalid
+                break;
+            }
+        }
+
     }
 
     private int matchWidthIndexToActualWidth(int widthIndex) {

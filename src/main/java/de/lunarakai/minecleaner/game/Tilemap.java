@@ -1,6 +1,6 @@
 package de.lunarakai.minecleaner.game;
 
-import org.joml.Vector3i;
+import org.joml.Vector2i;
 
 public class Tilemap {
 
@@ -26,9 +26,9 @@ public class Tilemap {
         }
     }
     // Set method
-    public void setTile(Vector3i pos, Tile.TileType tileType) {
+    public void setTile(Vector2i pos, Tile.TileType tileType) {
         int x = pos.x();
-        int y = pos.z();
+        int y = pos.y();
 
         if (x >= 0 && x < tiles.length && y >= 0 && y < tiles[0].length) {
             tiles[x][y].setTileType(tileType);

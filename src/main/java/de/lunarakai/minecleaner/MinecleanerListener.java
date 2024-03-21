@@ -49,7 +49,7 @@ public class MinecleanerListener implements Listener {
 
                         Player player = e.getPlayer();
                         //RayTraceResult rayTraceResult = player.getWorld().rayTraceBlocks(player.getEyeLocation(), player.getEyeLocation().getDirection(), 64.0);
-                        RayTraceResult r2 = player.rayTraceBlocks(64.0);
+                        RayTraceResult r2 = player.rayTraceBlocks(20.0);
 
                         //Location loc = e.getInteractionPoint().clone().subtract(arena.getLocation()).subtract(0.5, 0.5, 0.5); // null on left-click
 
@@ -62,15 +62,17 @@ public class MinecleanerListener implements Listener {
                         if(r2 != null) {
                             Vector hitPos = r2.getHitPosition();
                             //Vector hitPos = rayTraceResult.getHitPosition();
-                            Location loc = player.getLocation().add(hitPos.subtract(arena.getLocation().toVector())).clone().subtract(arena.getLocation()).subtract(0.5, 0.5, 0.5); // substract 0.5, 0.5, 0.5
+                            Vector substract = new Vector(0.5, 0.5, 0.5);
+
+                            Location loc = hitPos.subtract(arena.getLocation().toVector()).subtract(substract).toLocation(player.getWorld()); //(0.5, 0.5, 0.5); // substract 0.5, 0.5, 0.5
                             double lx = loc.getX();
                             double ly = loc.getY();
                             double lz = loc.getZ();
-                            player.sendMessage(ChatColor.GRAY + "lx: " + lx + " ,ly: " + ly + " ,lz: " + lz);
-                            double dy = ly + 2.5; // 1.5
-                            player.sendMessage(ChatColor.GRAY + "dy: " + dy);
-                            double dz = -d1x * lx - d1z * lz + 2.0; // 1.5
-                            player.sendMessage(ChatColor.GRAY + "dz: " + dz);
+                            //player.sendMessage(ChatColor.GRAY + "lx: " + lx + " ,ly: " + ly + " ,lz: " + lz);
+                            double dy = ly + 1.5; // 1.5
+                            //player.sendMessage(ChatColor.GRAY + "dy: " + dy);
+                            double dz = -d1x * lx - d1z * lz + 1.5; // 1.5
+                            //player.sendMessage(ChatColor.GRAY + "dz: " + dz);
 
                             double blockx = (dy / 3.0) * 9.0;
                             double blockz = (dz / 3.0) * 9.0;
@@ -96,8 +98,8 @@ public class MinecleanerListener implements Listener {
                             }
                             */
 
-                            player.sendMessage(ChatColor.GRAY + "blockx: " + blockx + " ,blockz: " + blockz);
-                            player.sendMessage(ChatColor.GRAY + "blockxInt: " + blockxInt + " ,blockzInt: " + blockzInt);
+                            //player.sendMessage(ChatColor.GRAY + "blockx: " + blockx + " ,blockz: " + blockz);
+                           // player.sendMessage(ChatColor.GRAY + "blockxInt: " + blockxInt + " ,blockzInt: " + blockzInt);
 
                             if (blockx >= 0.1 && blockx <= 0.9 && blockz >= 0.1 && blockz <= 0.9) {
                                 boolean hasRightClicked = false;
@@ -107,7 +109,7 @@ public class MinecleanerListener implements Listener {
                                 // TODO Doesnt show messages for Cells: [ROW] [>5] (6, 7, 8 are missing)
 
                                 player.sendMessage("Arena click! " + blockxInt + " " + blockzInt + " Right Clicked: " + hasRightClicked);
-                                //plugin.getManager().handleFieldClick(e.getPlayer(), blockxInt, blockzInt, hasRightClicked);
+                                plugin.getManager().handleFieldClick(e.getPlayer(), blockxInt, blockzInt, hasRightClicked);
                             }
                         }
                         
