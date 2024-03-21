@@ -59,7 +59,6 @@ public class MinecleanerArena {
                 blockDisplays[i] = UUID.fromString(blockDisplay);
             }
         }
-        blockDisplays = new UUID[widthIndex * widthIndex];
     } 
 
     public MinecleanerArena(MinecleanerPlugin plugin, String name, Location location, int widthIndex, BlockFace orientation) {
@@ -164,6 +163,11 @@ public class MinecleanerArena {
         arenaSection.set("location", this.location);
         arenaSection.set("fieldwidth", this.widthIndex);
         arenaSection.set("orientation", this.orientation.name());
+        List<String> blockDisplays = new ArrayList<>();
+        for(UUID uuid : this.blockDisplays) {
+            blockDisplays.add(uuid == null ? null : uuid.toString());
+        }
+        arenaSection.set("blockdisplays", blockDisplays);
     }
 
     public void startNewGame() {
@@ -184,15 +188,16 @@ public class MinecleanerArena {
         this.currentPlayer = null;
     }
 
+    // block displays dont get removed
     public void removeBlockDisplays() {
         World world = location.getWorld();
         for(int fx = 0; fx < 9; fx++) {
             for(int fy = 0; fy < 9; fy++) {
                 UUID blockDisplayUuid = blockDisplays[fx + fy * 9];
                 Entity blockDisplayEntity = blockDisplayUuid != null ? world.getEntity(blockDisplayUuid) : null;
-                if(blockDisplayEntity instanceof Display blockdisplay) {
-                    blockDisplayEntity.remove();
-                }
+                //if(blockDisplayEntity instanceof BlockDisplay blockDisplay) {
+                    blockDisplayEntity.remove(); // Null Pointer after restart
+                //}
             }
         }
     }
@@ -239,7 +244,7 @@ public class MinecleanerArena {
         int d1z = d0x;
 
         Location loc = location.clone();
-        for(int fx = -1; fx < 2; fx++) {
+        for(int fx = -2; fx < 1; fx++) {
             for(int fy = -1; fy < 2; fy++) {
                 loc.set(location.getX() + d1x + fx, location.getY() + fy, location.getZ() + d1z * fx);
                 blocks.add(loc.clone());

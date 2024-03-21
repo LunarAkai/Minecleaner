@@ -18,6 +18,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 import net.md_5.bungee.api.ChatColor;
 
 public class MinecleanerListener implements Listener {
@@ -42,30 +44,53 @@ public class MinecleanerListener implements Listener {
                     int d1z = d0x;
 
                     if (e.getBlockFace() == arena.getOrientation()) {
-                        Location loc = e.getInteractionPoint().clone().subtract(arena.getLocation()).subtract(0.5, 0.5, 0.5); // null on left-click
-                        double lx = loc.getX();
-                        double ly = loc.getY();
-                        double lz = loc.getZ();
-                        double dy = ly + 1.5;
-                        double dz = -d1x * lx - d1z * lz + 1.5;
+                        // Raytrace 
+                        // kann null sein
 
-                        double blockx = (dy / 3.0) * 9.0;
-                        double blockz = (dz / 3.0) * 9.0;
+                        Player player = e.getPlayer();
+                        RayTraceResult rayTraceResult = player.getWorld().rayTraceBlocks(player.getEyeLocation(), player.getEyeLocation().getDirection(), 64.0);
 
-                        int blockxInt = (int) blockx;
-                        int blockzInt = (int) blockz;
-                        blockx -= blockxInt;
-                        blockz -= blockzInt;
-                        if (blockx >= 0.1 && blockx <= 0.9 && blockz >= 0.1 && blockz <= 0.9) {
-                            boolean hasRightClicked = false;
-                            if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                                hasRightClicked = true;
+                        //Location loc = e.getInteractionPoint().clone().subtract(arena.getLocation()).subtract(0.5, 0.5, 0.5); // null on left-click
+
+
+                        if(rayTraceResult != null) {
+                            Vector hitPos = rayTraceResult.getHitPosition();
+                            Location loc = player.getLocation().add(hitPos).clone().subtract(arena.getLocation()).subtract(0.5, 0.5, 0.5);
+                            double lx = loc.getX();
+                            double ly = loc.getY();
+                            double lz = loc.getZ();
+                            player.sendMessage(ChatColor.GRAY + "lx: " + lx + " ,ly: " + ly + " ,lz: " + lz);
+                            double dy = ly + 1.5;
+                            player.sendMessage(ChatColor.GRAY + "dy: " + dy);
+                            double dz = -d1x * lx - d1z * lz + 1.5;
+                            player.sendMessage(ChatColor.GRAY + "dz: " + dz);
+
+                            double blockx = (dy / 3.0) * 9.0;
+                            double blockz = (dz / 3.0) * 9.0;
+
+                            
+
+                            int blockxInt = (int) blockx;
+                            int blockzInt = (int) blockz;
+                            blockx -= blockxInt;
+                            blockz -= blockzInt;
+
+                            player.sendMessage(ChatColor.GRAY + "blockx: " + blockx + " ,blockz: " + blockz);
+                            player.sendMessage(ChatColor.GRAY + "blockxInt: " + blockxInt + " ,blockzInt: " + blockzInt);
+
+                            if (blockx >= 0.1 && blockx <= 0.9 && blockz >= 0.1 && blockz <= 0.9) {
+                                boolean hasRightClicked = false;
+                                if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                                    hasRightClicked = true;
+                                }
+                                // TODO Doesnt show messages for Cells: [ROW] [>5] (6, 7, 8 are missing)
+
+                                player.sendMessage("Arena click! " + blockxInt + " " + blockzInt + " Right Clicked: " + hasRightClicked);
+                                //plugin.getManager().handleFieldClick(e.getPlayer(), blockxInt, blockzInt, hasRightClicked);
                             }
-                            // TODO Doesnt show messages for Cells: [ROW] [>5] (6, 7, 8 are missing)
-
-                            e.getPlayer().sendMessage("Arena click! " + blockxInt + " " + blockzInt + " Right Clicked: " + hasRightClicked);
-                            //plugin.getManager().handleFieldClick(e.getPlayer(), blockxInt, blockzInt, hasRightClicked);
                         }
+                        
+                        
                     }
                 }
             } else {

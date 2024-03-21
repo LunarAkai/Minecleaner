@@ -32,7 +32,7 @@ public class MinecleanerManager {
         this.plugin = plugin;
 
         // Deprecated
-        this.confirmPlayingInventory = plugin.getServer().createInventory(null, InventoryType.HOPPER, "Möchtest du Minecleaner spielen?");
+        this.confirmPlayingInventory = plugin.getServer().createInventory(null, InventoryType.HOPPER, "Minecleaner starten?");
         this.confirmPlayingInventory.setItem(1, 
             ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.GREEN_CONCRETE), ChatColor.GREEN + "Bestätigen")));
         this.confirmPlayingInventory.setItem(3,

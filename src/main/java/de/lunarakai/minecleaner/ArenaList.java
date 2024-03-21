@@ -139,7 +139,7 @@ public class ArenaList {
         for(Location block : arena.getBlocks()) { // TODO
             arenaBlocks.remove(block);
         }
-        arena.removeBlockDisplays(); // TODO
+        arena.removeBlockDisplays();
 
         arenas.remove(arena.getName());
         save();
