@@ -19,6 +19,7 @@ import org.joml.Vector3f;
 import com.google.common.base.Preconditions;
 import de.lunarakai.minecleaner.game.BoardSize;
 import de.lunarakai.minecleaner.game.Game;
+import de.lunarakai.minecleaner.utils.MinecleanerHeads;
 
 public class MinecleanerArena {
     private final MinecleanerPlugin plugin;
@@ -35,6 +36,33 @@ public class MinecleanerArena {
     private Game currentMinecleanerGame;
 
     private final Location tempLoc = new Location(null, 0, 0, 0);
+
+    // CUSTOM HEADS
+    // https://minecraft-heads.com/custom-heads/head/6048-minesweeper-0-tile
+    // https://minecraft-heads.com/custom-heads/head/6047-minesweeper-1-tile
+    // https://minecraft-heads.com/custom-heads/head/6046-minesweeper-2-tile
+    // https://minecraft-heads.com/custom-heads/head/6045-minesweeper-3-tile
+    // https://minecraft-heads.com/custom-heads/head/6044-minesweeper-4-tile
+    // https://minecraft-heads.com/custom-heads/head/6043-minesweeper-5-tile
+    // https://minecraft-heads.com/custom-heads/head/6042-minesweeper-6-tile
+    // https://minecraft-heads.com/custom-heads/head/6041-minesweeper-7-tile
+    // https://minecraft-heads.com/custom-heads/head/6040-minesweeper-8-tile
+    // https://minecraft-heads.com/custom-heads/head/6039-minesweeper-flag-tile
+    // https://minecraft-heads.com/custom-heads/head/6038-minesweeper-unknown-tile
+
+    public static final MinecleanerHeads[] MINECLEANER_HEADS = {
+        MinecleanerHeads.MINESWEEPER_TILE_0,
+        MinecleanerHeads.MINESWEEPER_TILE_1,
+        MinecleanerHeads.MINESWEEPER_TILE_2,
+        MinecleanerHeads.MINESWEEPER_TILE_3,
+        MinecleanerHeads.MINESWEEPER_TILE_4,
+        MinecleanerHeads.MINESWEEPER_TILE_5,
+        MinecleanerHeads.MINESWEEPER_TILE_6,
+        MinecleanerHeads.MINESWEEPER_TILE_7,
+        MinecleanerHeads.MINESWEEPER_TILE_8,
+        MinecleanerHeads.MINESWEEPER_TILE_FLAG,
+        MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN,
+    };
 
     public MinecleanerArena(MinecleanerPlugin plugin, ConfigurationSection arenaSection) {
         this.plugin = plugin;
@@ -147,6 +175,11 @@ public class MinecleanerArena {
 
                     blockdisplay.setTransformation(newTransform);
                     blockdisplay.setRotation(rotation + 90, 0);
+                    
+                    //MinecleanerHeads head = MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN;
+
+                    //blockdisplay.setBlock(MINECLEANER_HEADS[10].getHead().getType().createBlockData());
+                    //blockdisplay.setBlock(head.getHead().clone().getType().createBlockData());
                     blockdisplay.setBlock(Material.BEDROCK.createBlockData());
                 });
                 if(blockDisplay != null) {
@@ -195,9 +228,9 @@ public class MinecleanerArena {
             for(int fy = 0; fy < 9; fy++) {
                 UUID blockDisplayUuid = blockDisplays[fx + fy * 9];
                 Entity blockDisplayEntity = blockDisplayUuid != null ? world.getEntity(blockDisplayUuid) : null;
-                //if(blockDisplayEntity instanceof BlockDisplay blockDisplay) {
-                    blockDisplayEntity.remove(); // Null Pointer after restart
-                //}
+                if(blockDisplayEntity instanceof Display blockDisplay) {
+                    blockDisplayEntity.remove(); 
+                }
             }
         }
     }
