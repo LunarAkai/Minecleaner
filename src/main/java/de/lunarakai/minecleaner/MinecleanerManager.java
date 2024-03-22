@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -92,11 +93,14 @@ public class MinecleanerManager {
         Preconditions.checkArgument(arena != null, "player is in no arena");
         Preconditions.checkState(arena.getArenaStatus() == ArenaStatus.PLAYING, "not running");
 
+        // Fires Twice for Right Click on Same Tick, but only once for left click... stupid :< 
         if(hasRightClicked) {
             // flag
+            plugin.getLogger().log(Level.SEVERE, "  Right Clicked @ Tick: " + plugin.getServer().getCurrentTick());
             arena.flagCell(x, y);
         } else {
             // reveal
+            plugin.getLogger().log(Level.SEVERE, "  Left Clicked @ Tick: " + plugin.getServer().getCurrentTick());
             arena.revealCell(x, y);
         }
     }

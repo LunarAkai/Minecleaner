@@ -45,7 +45,7 @@ public class Cell {
         this.exploded = true;
     }
     public boolean isExploded() {
-        return revealed;
+        return exploded;
     }
 
 

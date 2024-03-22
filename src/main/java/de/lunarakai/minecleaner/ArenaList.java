@@ -131,12 +131,12 @@ public class ArenaList {
             plugin.getManager().leaveArena(arena.getCurrentPlayer(), true);
         }
         
-        for(UUID id : arena.getBlockDisplays()) { // TODO
+        for(UUID id : arena.getBlockDisplays()) {
             if(id != null) {
                 arenaBlockDisplays.remove(id);
             }
         }
-        for(Location block : arena.getBlocks()) { // TODO
+        for(Location block : arena.getBlocks()) { 
             arenaBlocks.remove(block);
         }
         arena.removeBlockDisplays();

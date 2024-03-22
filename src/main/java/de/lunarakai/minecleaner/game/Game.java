@@ -135,10 +135,9 @@ public class Game {
             return;
         }
 
-        cell.flagged = !cell.flagged;
+        cell.flagged = !cell.isFlagged();
         state[x][y] = cell;
         board.draw(state, tilemap);
-        return;
     }
 
     public void reveal(int x, int y) {
@@ -156,7 +155,7 @@ public class Game {
                 break;
             }
             case Empty: {
-                if(!floodedCells.isEmpty()) {
+                if(!floodedCells.isEmpty()) {;
                     floodedCells.clear();
                 }
                 flood(cell);
@@ -176,21 +175,27 @@ public class Game {
 
     public void flood(Cell cell) {
         if(cell.isRevealed()) return;
-        if(cell.getType() == Cell.CellType.Mine || cell.getType() == Cell.CellType.Invalid || cell.position != null) return;
-
+        if(cell.getType() == Cell.CellType.Mine || cell.getType() == Cell.CellType.Invalid || cell.position == null) return;
+        
         cell.setRevealed();
         floodedCells.add(cell);
-        state[cell.position.x][cell.position.y] = cell;
+        state[cell.position.x][cell.position.y] = cell;    
 
-        
         if(cell.getType() == Cell.CellType.Empty) {
-            flood(getCell(cell.position.x -1, cell.position.y));
-            flood(getCell(cell.position.x +1, cell.position.y));
-            flood(getCell(cell.position.x, cell.position.y -1));
-            flood(getCell(cell.position.x, cell.position.y +1));
-        }
+            if(isValid(cell.position.x -1, cell.position.y)) {
+                flood(getCell(cell.position.x -1, cell.position.y));
+            }
+            if(isValid(cell.position.x +1, cell.position.y)) {
+                flood(getCell(cell.position.x +1, cell.position.y));
 
-        // TODO: return cellpos of flooded cell to update the block displays
+            }
+            if(isValid(cell.position.x, cell.position.y -1)) {
+                flood(getCell(cell.position.x, cell.position.y -1));
+            }
+            if(isValid(cell.position.x, cell.position.y +1)) {
+                flood(getCell(cell.position.x, cell.position.y +1));
+            }
+        }
     }
 
     private void explode(Cell cell) {

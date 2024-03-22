@@ -108,7 +108,7 @@ public class MinecleanerListener implements Listener {
                                 }
                                 // TODO Doesnt show messages for Cells: [ROW] [>5] (6, 7, 8 are missing)
 
-                                player.sendMessage("Arena click! " + blockxInt + " " + blockzInt + " Right Clicked: " + hasRightClicked);
+                                //player.sendMessage("Arena click! " + blockxInt + " " + blockzInt + " Right Clicked: " + hasRightClicked);
                                 plugin.getManager().handleFieldClick(e.getPlayer(), blockxInt, blockzInt, hasRightClicked);
                             }
                         }
