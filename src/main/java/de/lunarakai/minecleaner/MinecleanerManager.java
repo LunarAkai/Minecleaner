@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.logging.Level;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -26,10 +27,10 @@ import net.md_5.bungee.api.ChatColor;
 public class MinecleanerManager {
     private final MinecleanerPlugin plugin;
     private final Inventory confirmPlayingInventory;
-
     private final StatisticKey statisticsGamesTotal;
 
-    @SuppressWarnings("deprecation")
+    private int prevTick = 0;
+
     public MinecleanerManager(MinecleanerPlugin plugin) {
         this.plugin = plugin;
 
@@ -76,6 +77,28 @@ public class MinecleanerManager {
         player.sendMessage(ChatColor.YELLOW + "Du hast eine neue Runde Minecleaner gestartet.");
     }
 
+    public void handleGameover(Player player, MinecleanerArena arena, boolean isSuccessfullyCleared) {
+        if(!isSuccessfullyCleared) {
+            player.sendMessage(ChatColor.YELLOW + "Game Over! Du konntest das Feld nicht erfolgreich lösen!");
+            arena.showMines();
+            
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                leaveArena(player, false);
+            }, 100L);
+            return;
+        }
+        player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das Feld erfolgreich lösen!");
+        PlayerStatistics ps = plugin.getCubesideStatistics().getStatistics(player.getUniqueId());
+        ps.increaseScore(statisticsGamesTotal, 1);
+
+
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            leaveArena(player, false);
+        }, 100L);
+
+    }
+
     public void clearAllArenas() {
         for(MinecleanerArena arena : plugin.getArenaList().getArenas()) {
             if(arena.hasPlayer()) {
@@ -93,16 +116,21 @@ public class MinecleanerManager {
         Preconditions.checkArgument(arena != null, "player is in no arena");
         Preconditions.checkState(arena.getArenaStatus() == ArenaStatus.PLAYING, "not running");
 
-        // Fires Twice for Right Click on Same Tick, but only once for left click... stupid :< 
-        if(hasRightClicked) {
-            // flag
-            plugin.getLogger().log(Level.SEVERE, "  Right Clicked @ Tick: " + plugin.getServer().getCurrentTick());
-            arena.flagCell(x, y);
-        } else {
-            // reveal
-            plugin.getLogger().log(Level.SEVERE, "  Left Clicked @ Tick: " + plugin.getServer().getCurrentTick());
-            arena.revealCell(x, y);
+        // Feels like a stupid solution for issue described in the next comment
+        int currentTick = plugin.getServer().getCurrentTick();
+        if(prevTick != currentTick) {
+            // Fires Twice for Right Click on Same Tick, but only once for left click... stupid :< 
+            if(hasRightClicked) {
+                // flag
+                plugin.getLogger().log(Level.SEVERE, "  Right Clicked @ Tick: " + plugin.getServer().getCurrentTick());
+                arena.flagCell(x, y);
+            } else {
+                // reveal
+                plugin.getLogger().log(Level.SEVERE, "  Left Clicked @ Tick: " + plugin.getServer().getCurrentTick());
+                arena.revealCell(x, y);
+            }
         }
+        prevTick = currentTick;       
     }
 
     public void getStatisticsForPlayer(OfflinePlayer player, Consumer<PlayerStatisticsData> callback) {

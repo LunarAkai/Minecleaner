@@ -23,10 +23,6 @@ public final class MinecleanerPlugin extends JavaPlugin {
         getServer().getScheduler().runTask(this, this::onLateEnable);
     }
 
-    // TODO:
-    //  doesnt save / load arenas correctly?
-    //  -> can't delete arena after server restart 
-
     public void onLateEnable() {
         playerUUIDCache = (PlayerUUIDCache) getServer().getPluginManager().getPlugin("PlayerUUIDCache");
         cubesideStatistics = getServer().getServicesManager().load(CubesideStatisticsAPI.class);

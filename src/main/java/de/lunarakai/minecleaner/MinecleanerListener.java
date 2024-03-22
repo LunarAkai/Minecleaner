@@ -44,20 +44,9 @@ public class MinecleanerListener implements Listener {
                     int d1z = d0x;
 
                     if (e.getBlockFace() == arena.getOrientation()) {
-                        // Raytrace 
-                        // kann null sein
 
                         Player player = e.getPlayer();
-                        //RayTraceResult rayTraceResult = player.getWorld().rayTraceBlocks(player.getEyeLocation(), player.getEyeLocation().getDirection(), 64.0);
-                        RayTraceResult r2 = player.rayTraceBlocks(20.0);
-
-                        //Location loc = e.getInteractionPoint().clone().subtract(arena.getLocation()).subtract(0.5, 0.5, 0.5); // null on left-click
-
-                        /*
-                         * TODO:
-                         * [row] [coloumn] results depend on player position (on some player pos it works as it should, on most not)
-                         * 
-                         */
+                        RayTraceResult r2 = player.rayTraceBlocks(36.0);
 
                         if(r2 != null) {
                             Vector hitPos = r2.getHitPosition();
@@ -76,8 +65,6 @@ public class MinecleanerListener implements Listener {
 
                             double blockx = (dy / 3.0) * 9.0;
                             double blockz = (dz / 3.0) * 9.0;
-                            
-                            
 
                             int blockxInt = (int) blockx;
                             int blockzInt = (int) blockz;
@@ -106,8 +93,6 @@ public class MinecleanerListener implements Listener {
                                 if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                                     hasRightClicked = true;
                                 }
-                                // TODO Doesnt show messages for Cells: [ROW] [>5] (6, 7, 8 are missing)
-
                                 //player.sendMessage("Arena click! " + blockxInt + " " + blockzInt + " Right Clicked: " + hasRightClicked);
                                 plugin.getManager().handleFieldClick(e.getPlayer(), blockxInt, blockzInt, hasRightClicked);
                             }

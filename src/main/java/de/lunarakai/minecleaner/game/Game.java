@@ -17,7 +17,9 @@ public class Game {
     private Board board;
     private BoardSize boardSize;
     private Tilemap tilemap;
+
     private ArrayList<Cell> floodedCells;
+    private ArrayList<Cell> explodedCells;
 
     public Game(MinecleanerPlugin plugin, int width, int mineCount) {
         this.plugin = plugin;
@@ -26,6 +28,7 @@ public class Game {
         this.mineCount = mineCount;
 
         this.floodedCells = new ArrayList<>();
+        this.explodedCells = new ArrayList<>();
     }
 
     private void onValidate() {
@@ -176,6 +179,10 @@ public class Game {
     public void flood(Cell cell) {
         if(cell.isRevealed()) return;
         if(cell.getType() == Cell.CellType.Mine || cell.getType() == Cell.CellType.Invalid || cell.position == null) return;
+
+        if(cell.isFlagged()) {
+            cell.setFlaggedState(false);
+        }
         
         cell.setRevealed();
         floodedCells.add(cell);
@@ -210,12 +217,13 @@ public class Game {
                 if(cell.getType() == Cell.CellType.Mine) {
                     cell.revealed = true;
                     state[x][y] = cell;
+                    explodedCells.add(cell);
                 }
             }
         }
     }
 
-    private void checkWinCondition() {
+    public void checkWinCondition() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 Cell cell = state[x][y];
@@ -253,5 +261,9 @@ public class Game {
 
     public ArrayList<Cell> getfloodedCells() {
         return floodedCells;
+    }
+
+    public ArrayList<Cell> getExplodedCells() {
+        return explodedCells;
     }
 }

@@ -22,9 +22,7 @@ import com.google.common.base.Preconditions;
 import de.lunarakai.minecleaner.game.BoardSize;
 import de.lunarakai.minecleaner.game.Cell;
 import de.lunarakai.minecleaner.game.Game;
-import de.lunarakai.minecleaner.game.Tile.TileType;
 import de.lunarakai.minecleaner.utils.MinecleanerHeads;
-import net.md_5.bungee.api.ChatColor;
 
 public class MinecleanerArena {
     private final MinecleanerPlugin plugin;
@@ -34,8 +32,7 @@ public class MinecleanerArena {
     private int widthIndex = 0;
     private final BlockFace orientation;
     private ArenaStatus arenaStatus = ArenaStatus.INACTIVE;
-    private UUID[] blockDisplays = new UUID[81]; // todo needs to be of size boardSizes[widthIndex]
-    private TileType[] currentMinecleaerTileTypesState;
+    private UUID[] blockDisplays;
     
     private Player currentPlayer;
     private long currentGameStartTime;
@@ -62,7 +59,7 @@ public class MinecleanerArena {
         this.name = Preconditions.checkNotNull(arenaSection.getString("name"));
         this.location = Preconditions.checkNotNull(arenaSection.getLocation("location"));
         this.widthIndex = Preconditions.checkNotNull(arenaSection.getInt("fieldwidth"));
-        
+        this.blockDisplays = new UUID[BoardSize.boardSizes[widthIndex] * BoardSize.boardSizes[widthIndex]];
 
         BlockFace orientation = BlockFace.NORTH;
         try {
@@ -88,6 +85,7 @@ public class MinecleanerArena {
         this.name = Preconditions.checkNotNull(name, "name");
         this.location = Preconditions.checkNotNull(location, "location");
         this.widthIndex = Preconditions.checkNotNull(widthIndex, ("fieldwidth"));
+        this.blockDisplays = new UUID[BoardSize.boardSizes[widthIndex] * BoardSize.boardSizes[widthIndex]];
 
         Preconditions.checkArgument(Math.abs(orientation.getModX()) + Math.abs(orientation.getModZ()) == 1, "no cardinal direction");
         this.orientation = orientation;
@@ -109,8 +107,10 @@ public class MinecleanerArena {
         BlockData block0 = Material.NETHER_BRICKS.createBlockData();
         BlockData block1 = Material.BRICKS.createBlockData();
         // todo: larger grids
-        for (int fx = -1; fx < 2; fx++) {
-            for (int fy = -1; fy < 2; fy++) {
+
+
+        for (int fx = -1; fx < 2 + widthIndex; fx++) {
+            for (int fy = -1; fy < 2 + widthIndex; fy++) {
                 loc.set(location.getX() + d1x * fx, location.getY() + fy, location.getZ() + d1z * fx);
                 boolean f = (fx + fy) % 2 == 0;
                 world.setBlockData(loc, f ? block0 : block1);
@@ -118,6 +118,10 @@ public class MinecleanerArena {
         }
     }
 
+
+    /*
+     *  Bei Größen WidthIndex 1 + 2 -> Mitte = ein Block nach Links unten versetzt 
+     */
     public void generateBlockDisplays() {
         int size = BoardSize.boardSizes[widthIndex];
 
@@ -148,9 +152,6 @@ public class MinecleanerArena {
         int d1x = -d0z;
         int d1z = d0x;
 
-        // QWing sudoku = plugin.getGeneratorThread().getSudoku(Difficulty.EASY, true);
-        // int[] puzzle = sudoku == null ? new int[81] : sudoku.getPuzzle();
-
         Location loc = location.clone();
         for(int fx = 0; fx < size; fx++) {
             final int fxf = fx;
@@ -159,9 +160,11 @@ public class MinecleanerArena {
                 // Todo not correctly alligned at different orientations (other than NORTH)
 
                 //loc.set(location.getX() + 0.11 - (d1x * fz) / 3.0 + d0x * 0.501 + d1x * 1.847, location.getY() - 0.9725 + fxf / 3.0, location.getZ() + 0.45 - (d1z * fz) / 3.0 + d0z * 0.501 + d1z * 1.847);
-                loc.set(location.getX() - (d1x * fz) / 3.0 + d0x * 0.55 + d1x * 1.847, location.getY() - 0.8 + fxf / 3.0, location.getZ() + 0.45 - (d1z * fz) / 3.0 + d0z * 0.55 + d1z * 1.847);
+                loc.set(location.getX() - (d1x * fz) / 3.0 + d0x * 0.55 + d1x * 1.847, 
+                    location.getY() - 0.8 + fxf / 3.0, 
+                    location.getZ() + 0.45 - (d1z * fz) / 3.0 + d0z * 0.55 + d1z * 1.847);
 
-                // Todo: Z-Fighting on Unknown Tile Heads (Front)
+                // Todo: Z-Fighting on Unknown Tile Heads && Flags(Front) 
                 // Todo: Z-Fighting on the Sides for all Tiles
                 Display blockDisplay = world.spawn(loc, ItemDisplay.class, blockdisplay -> {
                     Transformation transformation = blockdisplay.getTransformation();
@@ -176,10 +179,6 @@ public class MinecleanerArena {
                     blockdisplay.setTransformation(newTransform);
                     blockdisplay.setRotation(rotation, -90);
                     
-                    //MinecleanerHeads head = MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN;
-
-                    //blockdisplay.setBlock(MINECLEANER_HEADS[10].getHead().getType().createBlockData());
-                    //blockdisplay.setBlock(head.getHead().clone().getType().createBlockData());
                     blockdisplay.setItemStack(MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN.getHead());
                 });
 
@@ -219,7 +218,6 @@ public class MinecleanerArena {
     public void startNewGame() {
         currentMinecleanerGame = new Game(plugin, BoardSize.boardSizes[widthIndex], BoardSize.mineCounter[widthIndex]);
         currentMinecleanerGame.start();
-        //currentMinecleaerTileTypes = currentMinecleanerGame.getMinecleanerPuzzle(widthIndex, widthIndex);
         arenaStatus = ArenaStatus.PLAYING;
     }
 
@@ -244,14 +242,13 @@ public class MinecleanerArena {
         }
     }
 
-    // block displays dont get removed
     public void removeBlockDisplays() {
         int size = BoardSize.boardSizes[widthIndex];
 
         World world = location.getWorld();
         for(int fx = 0; fx < size; fx++) {
             for(int fy = 0; fy < size; fy++) {
-                UUID blockDisplayUuid = blockDisplays[fx + fy * 9];
+                UUID blockDisplayUuid = blockDisplays[fx + fy * size];
                 Entity blockDisplayEntity = blockDisplayUuid != null ? world.getEntity(blockDisplayUuid) : null;
                 if(blockDisplayEntity instanceof Display blockdisplay) {
                     blockDisplayEntity.remove(); 
@@ -261,64 +258,72 @@ public class MinecleanerArena {
     }
 
     public void flagCell(int x, int y) {
-        if(currentMinecleanerGame != null) {
-            // flag block isnt shown / block does not change
-            //int id = x + y * 9;
+        if(currentMinecleanerGame != null && !currentMinecleanerGame.gameover) {
             Cell cell = currentMinecleanerGame.getCell(x, y);
-            Player player = this.currentPlayer;
-            player.sendMessage(ChatColor.GOLD + "Cell: Pos(" + cell.position.x + "," + cell.position.y + "):" + " Is Flagged: " + cell.flagged + " ,Exploded: "
-                + cell.exploded + " Is Revealed: " + cell.revealed);
-
-            currentMinecleanerGame.flag(x, y);
-
+            if(!cell.isRevealed()) {
+                
+                Player player = this.currentPlayer;
             
-            plugin.getLogger().log(Level.SEVERE, "  Is Flagged (before first if): " + cell.isFlagged());
-      
-            if(cell.isFlagged() == true) {
-                plugin.getLogger().log(Level.SEVERE, "Flagged Cell: [" + cell.position.x + "," + cell.position.y + "]");
-                setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_FLAG);
 
-            } 
-            
-            plugin.getLogger().log(Level.SEVERE, "  Is Flagged (before second if): " + cell.isFlagged()); 
+                currentMinecleanerGame.flag(x, y);
+                if(currentMinecleanerGame.gameover) {
+                    plugin.getManager().handleGameover(player, this, true);
+                }
+                
+                //plugin.getLogger().log(Level.SEVERE, "  Is Flagged (before first if): " + cell.isFlagged());
+        
+                if(cell.isFlagged() == true) {
+                    plugin.getLogger().log(Level.SEVERE, "Flagged Cell: [" + cell.position.x + "," + cell.position.y + "]");
+                    setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_FLAG);
 
-            if(cell.isFlagged() == false) {
-                plugin.getLogger().log(Level.SEVERE, "Unflagged Cell: [" + cell.position.x + "," + cell.position.y + "]");
-                setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN);
+                } 
+                
+                //plugin.getLogger().log(Level.SEVERE, "  Is Flagged (before second if): " + cell.isFlagged()); 
+
+                if(cell.isFlagged() == false) {
+                    plugin.getLogger().log(Level.SEVERE, "Unflagged Cell: [" + cell.position.x + "," + cell.position.y + "]");
+                    setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN);
+                }
             }
+            
         }
     }
 
     public void revealCell(int x, int y) {
-        if(currentMinecleanerGame != null) {
-            //int id = x + y * 9;
-
+        if(currentMinecleanerGame != null && !currentMinecleanerGame.gameover) {
             Cell cell = currentMinecleanerGame.getCell(x, y);
-            Player player = this.currentPlayer;
-            
-            player.sendMessage(ChatColor.GOLD + "Cell: Pos(" + cell.position.x + "," + cell.position.y + "):" + " Is Flagged: " + cell.flagged + " ,Is Revealed: " + cell.revealed + ", CellType: " + cell.getType());
-            
             if(!cell.isFlagged()) {
+                 //int id = x + y * 9;            
+                Player player = this.currentPlayer;
+                
                 currentMinecleanerGame.reveal(x, y);
-            }   
-            
-            if(cell.isRevealed() && cell.isExploded()) {
-                player.sendMessage(ChatColor.RED + "Game over :(");
-            } 
-            
-            setBlockForCellType(x, y, cell);
-            
 
-            ArrayList<Cell> floodedCells = currentMinecleanerGame.getfloodedCells();
-            if(floodedCells != null) {
-                player.sendMessage(ChatColor.GREEN + "  Flooded Cells: [" + floodedCells.size() + "]");
-            
-                for(int i = 0; i < floodedCells.size(); i++) {
-                    Vector2i pos = floodedCells.get(i).position;
-                    setBlockForCellType(pos.x, pos.y, floodedCells.get(i));
+                setBlockForCellType(x, y, cell);
+                
+                if(currentMinecleanerGame.gameover) {
+                    plugin.getManager().handleGameover(player, this, !(cell.isRevealed() && cell.isExploded()));
+                } 
+                
+                ArrayList<Cell> floodedCells = currentMinecleanerGame.getfloodedCells();
+                if(floodedCells != null) {                
+                    for(int i = 0; i < floodedCells.size(); i++) {
+                        Vector2i pos = floodedCells.get(i).position;
+                        setBlockForCellType(pos.x, pos.y, floodedCells.get(i));
+                    }
                 }
             }
         }
+    }
+
+    public void showMines() {
+        ArrayList<Cell> explodedCells = currentMinecleanerGame.getExplodedCells();
+        if(explodedCells != null) {
+            for(int i = 0; i < explodedCells.size(); i++) {
+                Vector2i pos = explodedCells.get(i).position;
+                setBlockForCellType(pos.x, pos.y, explodedCells.get(i));
+            }
+        }
+
     }
 
     private void setBlockForCellType(int x, int y, Cell cell) {
@@ -374,8 +379,10 @@ public class MinecleanerArena {
             case Mine: {
                 if(cell.isExploded()) {
                     setDiplayBlock(x, y, MinecleanerHeads.EXPLODED);
+                } else {
+                    setDiplayBlock(x, y, MinecleanerHeads.TNT);
                 }
-                setDiplayBlock(x, y, MinecleanerHeads.TNT);
+
                 break;
             }
             default: {
@@ -394,9 +401,9 @@ public class MinecleanerArena {
         int d1z = d0x;
 
         Location loc = location.clone();
-        // todo: larger grids
-        for(int fx = -2; fx < 1; fx++) {
-            for(int fy = -1; fy < 2; fy++) {
+
+        for(int fx = -2 - widthIndex; fx < 1 ; fx++) {
+            for(int fy = -1; fy < 2 + widthIndex; fy++) {
                 loc.set(location.getX() + d1x + fx, location.getY() + fy, location.getZ() + d1z * fx);
                 blocks.add(loc.clone());
             }
@@ -440,6 +447,10 @@ public class MinecleanerArena {
 
     public UUID[] getBlockDisplays() {
         return blockDisplays;
+    }
+
+    public int getSize() {
+        return BoardSize.boardSizes[widthIndex];
     }
     
 }
