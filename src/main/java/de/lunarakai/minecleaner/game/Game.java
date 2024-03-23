@@ -3,11 +3,11 @@ package de.lunarakai.minecleaner.game;
 import java.util.ArrayList;
 import org.joml.Vector2i;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
-import de.lunarakai.minecleaner.utils.MathUtils;
 
 public class Game {
     public boolean gameover;
 
+    @SuppressWarnings("unused")
     private MinecleanerPlugin plugin; 
     private int width;
     private int height;
@@ -15,7 +15,6 @@ public class Game {
 
     private Cell[][] state;
     private Board board;
-    private BoardSize boardSize;
     private Tilemap tilemap;
 
     private ArrayList<Cell> floodedCells;
@@ -29,10 +28,6 @@ public class Game {
 
         this.floodedCells = new ArrayList<>();
         this.explodedCells = new ArrayList<>();
-    }
-
-    private void onValidate() {
-        mineCount = MathUtils.clamp(mineCount, 0, width*height);
     }
 
     public void start() {
@@ -150,8 +145,6 @@ public class Game {
             return;
         }
 
-        //boolean hitMine = false;
-
         switch (cell.getType()) {
             case Mine: {
                 explode(cell);
@@ -188,7 +181,6 @@ public class Game {
         floodedCells.add(cell);
         state[cell.position.x][cell.position.y] = cell;    
 
-        // this looks bad, i should probably go to the doctor with it D: 
         if(cell.getType() == Cell.CellType.Empty) {
             if(isValid(cell.position.x -1, cell.position.y)) {
                 flood(getCell(cell.position.x -1, cell.position.y));
@@ -205,7 +197,6 @@ public class Game {
             }
 
             // Corners
-            // Todo: oben links geht nicht
             if(isValid(cell.position.x + 1, cell.position.y +1)) {
                 flood(getCell(cell.position.x +1, cell.position.y +1));
             }
