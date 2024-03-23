@@ -31,6 +31,7 @@ public class MinecleanerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST) 
     public void onPlayerInteract(PlayerInteractEvent e) {
+        // wenn (e.getHand != MainHand) return;
         if((e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             Block block = e.getClickedBlock();
             MinecleanerArena arena = plugin.getArenaList().getPlayerArena(e.getPlayer());

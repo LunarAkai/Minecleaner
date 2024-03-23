@@ -1,7 +1,9 @@
 package de.lunarakai.minecleaner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
@@ -23,20 +25,31 @@ import de.iani.cubesidestats.api.StatisticsQueryKey;
 import de.iani.cubesidestats.api.TimeFrame;
 import de.iani.cubesideutils.bukkit.items.ItemStacks;
 import de.iani.playerUUIDCache.CachedPlayer;
+import de.lunarakai.minecleaner.game.BoardSize;
 import net.md_5.bungee.api.ChatColor;
 
 public class MinecleanerManager {
     private final MinecleanerPlugin plugin;
     private final Inventory confirmPlayingInventory;
+    private final HashMap<Integer, String> sizes;
 
     // Statistics
     private final StatisticKey statisticsGamesTotal;
     private final StatisticKey statisticsPointsAcquired;
 
+    // <BoardSize, StatisticKey>
+    private final HashMap<Integer, StatisticKey> statisticsGames;
+
     private int prevTick = 0;
+
 
     public MinecleanerManager(MinecleanerPlugin plugin) {
         this.plugin = plugin;
+        
+        this.sizes = new HashMap<>();
+        this.sizes.put(0, "klein");
+        this.sizes.put(1, "mittel");
+        this.sizes.put(2, "groß");
 
         // Deprecated
         this.confirmPlayingInventory = plugin.getServer().createInventory(null, InventoryType.HOPPER, "Minecleaner starten?");
@@ -54,6 +67,18 @@ public class MinecleanerManager {
         statisticsPointsAcquired.setIsMonthlyStats(true);
         statisticsPointsAcquired.setDisplayName("Punkte erspielt");
 
+        statisticsGames = new HashMap<>();
+        for(Entry<Integer, String> e : this.sizes.entrySet()) {
+            String sizeDisplay = e.getValue();
+            StatisticKey s = plugin.getCubesideStatistics().getStatisticKey("minecleaner.games.boardsize." + e.getKey());
+            s.setIsMonthlyStats(true);
+            s.setDisplayName("Runden gespielt auf Spielfeldgröße " + sizeDisplay +  " gespielt");
+            statisticsGames.put(e.getKey(), s);
+        }
+    }
+
+    public HashMap<Integer, String> getSizes() {
+        return sizes;
     }
     
     public void joinArena(Player player, MinecleanerArena arena) {
@@ -88,6 +113,7 @@ public class MinecleanerManager {
     public void handleGameover(Player player, MinecleanerArena arena, boolean isSuccessfullyCleared) {
         World world = player.getWorld();
         if(!isSuccessfullyCleared) {
+            // angefangene Spiele zählen
             world.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
             player.sendMessage(ChatColor.YELLOW + "Game Over! Du konntest das Feld nicht erfolgreich lösen!");
             arena.showMines();
@@ -136,7 +162,6 @@ public class MinecleanerManager {
             } else {
                 leaveArena(player, false);
             }
-            leaveArena(player, false);
         }, 100L);
 
     }
@@ -184,6 +209,24 @@ public class MinecleanerManager {
         PlayerStatisticsQueryKey kMatchesPlayedMonth;
         keys.add(kMatchesPlayedMonth = new PlayerStatisticsQueryKey(pStatistics, statisticsGamesTotal, QueryType.SCORE, TimeFrame.MONTH));
 
+        HashMap<Integer, PlayerStatisticsQueryKey> kgamesPlayedSize = new HashMap<>();
+        HashMap<Integer, PlayerStatisticsQueryKey> kgamesPlayedSizeMonth = new HashMap<>();
+
+
+
+        for (int i = 0; i < BoardSize.boardSizes.length; i++) {
+            PlayerStatisticsQueryKey qk;
+            StatisticKey statisticKeyGames = statisticsGames.get(i);
+            keys.add(qk = new PlayerStatisticsQueryKey(pStatistics, statisticKeyGames, QueryType.SCORE));
+            kgamesPlayedSize.put(i, qk);
+            keys.add(qk = new PlayerStatisticsQueryKey(pStatistics, statisticKeyGames, QueryType.SCORE, TimeFrame.MONTH));
+            kgamesPlayedSizeMonth.put(i, qk);
+
+            // todo:
+            //  PlayerTime
+        }
+
+
         PlayerStatisticsQueryKey kPointsAcquired;
         keys.add(kPointsAcquired = new PlayerStatisticsQueryKey(pStatistics, statisticsPointsAcquired, QueryType.SCORE));
         PlayerStatisticsQueryKey kPointsAcquiredMonth;
@@ -195,7 +238,16 @@ public class MinecleanerManager {
             int pointsAcquiredTotal = c.getOrDefault(kPointsAcquired, 0);
             int pointsAcquiredMonth = c.getOrDefault(kPointsAcquiredMonth, 0);
 
+            HashMap<Integer, Integer> sizeGames = new HashMap<>();
+            HashMap<Integer, Integer> sizeGamesMonth = new HashMap<>();
+
+            for(int i = 0; i < BoardSize.boardSizes.length; i++) {
+                sizeGames.put(i, c.getOrDefault(kgamesPlayedSize.get(i), 0));
+                sizeGames.put(i, c.getOrDefault(kgamesPlayedSizeMonth.get(i), 0));
+            }
+
             callback.accept(new PlayerStatisticsData(player.getUniqueId(), player.getName(), matchesPlayed, matchesPlayedMonth,
+                sizeGames, sizeGamesMonth,
                 pointsAcquiredTotal, pointsAcquiredMonth));
         });
     }

@@ -1,9 +1,12 @@
 package de.lunarakai.minecleaner.commands;
 
+import java.util.Map.Entry;
 import java.util.function.Consumer;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.bukkit.commands.SubCommand;
 import de.iani.cubesideutils.bukkit.commands.exceptions.DisallowsCommandBlockException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.IllegalSyntaxException;
@@ -13,7 +16,6 @@ import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
 import de.lunarakai.minecleaner.PlayerStatisticsData;
-import net.md_5.bungee.api.ChatColor;
 
 public class StatsCommand extends SubCommand {
     private final MinecleanerPlugin plugin;
@@ -53,8 +55,16 @@ public class StatsCommand extends SubCommand {
                 } else {
                     sender.sendMessage(ChatColor.GREEN + "Minecleaner-Statitik von " + data.getPlayerName() + ":");
                 }
-                sender.sendMessage(ChatColor.BLUE + "  Runden gespielt: " + ChatColor.GREEN + data.getGamesPlayed() + " (Dieser Monat: " + data.getGamesPlayedThisMonth() + ")");
                 sender.sendMessage(ChatColor.BLUE + "  Punkte erspielt: " + ChatColor.GREEN + data.getPointsAcquiredTotal() + " (Dieser Monat: " + data.getPointsAquiredMonth() + ")");
+                sender.sendMessage(ChatColor.BLUE + "  Runden gespielt: " + ChatColor.GREEN + data.getGamesPlayed() + " (Dieser Monat: " + data.getGamesPlayedThisMonth() + ")");
+                for(Entry<Integer, String> e : plugin.getManager().getSizes().entrySet()) {
+                    int totalSize = data.getGamesPlayedSize(e.getKey());
+                    if(totalSize > 0) {
+                        String sizeName = StringUtil.capitalizeFirstLetter(e.getValue(), false);
+                        sender.sendMessage(ChatColor.GREEN + "  " + sizeName + ":");
+                        sender.sendMessage(ChatColor.BLUE + "    Runden gespielt: " + ChatColor.GREEN + totalSize + " (Dieser Monat: " + data.getGamesPlayedSizeThisMonth(e.getKey()) + ")");
+                    }
+                }
 
             }
         };

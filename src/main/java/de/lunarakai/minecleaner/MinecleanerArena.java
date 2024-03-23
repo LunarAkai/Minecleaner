@@ -121,8 +121,6 @@ public class MinecleanerArena {
 
         BlockData block0 = Material.NETHER_BRICKS.createBlockData();
         BlockData block1 = Material.BRICKS.createBlockData();
-        // todo: larger grids
-
 
         for (int fx = -1 - widthIndex; fx < 2 ; fx++) {
             for (int fy = -1; fy < 2 + widthIndex; fy++) {
@@ -132,7 +130,6 @@ public class MinecleanerArena {
             }
         }
     }
-
 
     /*
      *  Bei Größen WidthIndex 1 + 2 -> Mitte = ein Block nach Links unten versetzt 
@@ -171,8 +168,6 @@ public class MinecleanerArena {
             eastWestGapFixZ = 0.5725;
         }
 
-        
-
         float rotation = rotation0;
         
         int d0x = orientation.getModX();
@@ -181,19 +176,17 @@ public class MinecleanerArena {
         int d1z = d0x;
 
         Location loc = location.clone();
+
+        // todo: felder bisschen dichter an die wand
         for(int fx = 0; fx < size; fx++) {
             final int fxf = fx;
             for(int fz = 0; fz < size; fz++) {
                 final int fzf = fz;
-                // Todo not correctly alligned at different orientations (other than NORTH)
 
-                //loc.set(location.getX() + 0.11 - (d1x * fz) / 3.0 + d0x * 0.501 + d1x * 1.847, location.getY() - 0.9725 + fxf / 3.0, location.getZ() + 0.45 - (d1z * fz) / 3.0 + d0z * 0.501 + d1z * 1.847);
                 loc.set(location.getX() - 0.016 + eastWestGapFixX + southGapFixX - (d1x * fz) / 3.0 + d0x * 0.55 + d1x * 1.847, 
                     location.getY() - 0.8225 + fxf / 3.0, 
                     location.getZ() + 0.45 + eastWestGapFixZ  + southGapFixZ - (d1z * fz) / 3.0 + d0z * 0.55 + d1z * 1.847);
 
-                // Todo: Z-Fighting on Unknown Tile Heads && Flags(Front) 
-                // Todo: Z-Fighting on the Sides for all Tiles
                 Display blockDisplay = world.spawn(loc, ItemDisplay.class, blockdisplay -> {
                     Transformation transformation = blockdisplay.getTransformation();
                     Transformation newTransform;
@@ -230,6 +223,7 @@ public class MinecleanerArena {
         //     textdisplay.setTransformation(newTransformation);
         //     textdisplay.setRotation(rotation, 0);
 
+        //      billboardmode = fixed
         //     textdisplay.setVisibleByDefault(true);
         //     textdisplay.setDisplayHeight(3);
         //     textdisplay.setDisplayWidth(9);
@@ -318,29 +312,20 @@ public class MinecleanerArena {
         if(currentMinecleanerGame != null && !currentMinecleanerGame.gameover) {
             Cell cell = currentMinecleanerGame.getCell(x, y);
             if(!cell.isRevealed()) {
-                
                 Player player = this.currentPlayer;
             
-
                 currentMinecleanerGame.flag(x, y);
                 if(currentMinecleanerGame.gameover) {
                     plugin.getManager().handleGameover(player, this, true);
                 }
-                
-                //plugin.getLogger().log(Level.SEVERE, "  Is Flagged (before first if): " + cell.isFlagged());
         
                 if(cell.isFlagged() == true) {
-                    //plugin.getLogger().log(Level.SEVERE, "Flagged Cell: [" + cell.position.x + "," + cell.position.y + "]");
                     flagsPlaced = flagsPlaced + 1;
                     sendActionBarMessage(player);
                     setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_FLAG);
-
                 } 
-                
-                //plugin.getLogger().log(Level.SEVERE, "  Is Flagged (before second if): " + cell.isFlagged()); 
 
                 if(cell.isFlagged() == false) {
-                    //plugin.getLogger().log(Level.SEVERE, "Unflagged Cell: [" + cell.position.x + "," + cell.position.y + "]");
                     flagsPlaced = flagsPlaced - 1;
                     sendActionBarMessage(player);
                     setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN);
@@ -353,8 +338,7 @@ public class MinecleanerArena {
     public void revealCell(int x, int y) {
         if(currentMinecleanerGame != null && !currentMinecleanerGame.gameover) {
             Cell cell = currentMinecleanerGame.getCell(x, y);
-            if(!cell.isFlagged()) {
-                 //int id = x + y * 9;            
+            if(!cell.isFlagged()) {           
                 Player player = this.currentPlayer;
                 
                 currentMinecleanerGame.reveal(x, y);
@@ -450,7 +434,6 @@ public class MinecleanerArena {
                 } else {
                     setDiplayBlock(x, y, MinecleanerHeads.TNT);
                 }
-
                 break;
             }
             default: {
@@ -470,13 +453,12 @@ public class MinecleanerArena {
 
         Location loc = location.clone();
 
-        for(int fx = -2 - widthIndex; fx < 1 ; fx++) {
+        for(int fx = -1 - widthIndex; fx < 2; fx++) {
             for(int fy = -1; fy < 2 + widthIndex; fy++) {
-                loc.set(location.getX() + d1x + fx, location.getY() + fy, location.getZ() + d1z * fx);
+                loc.set(location.getX() + d1x * fx, location.getY() + fy, location.getZ() + d1z * fx);
                 blocks.add(loc.clone());
             }
         }
-
         return blocks;
     }
 
@@ -486,6 +468,15 @@ public class MinecleanerArena {
         }
         player.getLocation(tempLoc);
         double dist = tempLoc.distanceSquared(centerLocation);
+        // todo: larger for bigger boards
+        switch (widthIndex) {
+            case 0:
+                return dist > 64.0;
+            case 1:
+                return dist > 96.0;
+            case 2:
+                return dist > 128.0;
+        }
         return dist > 64.0;
     }
 

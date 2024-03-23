@@ -111,9 +111,9 @@ public class CreateCommand extends SubCommand {
             sender.sendMessage(ChatColor.DARK_RED + "An dieser Stelle befindet sich bereits eine Arena.");
             return true;
         }
-        newArena.generateBlockDisplays(); // Todo
+        newArena.generateBlockDisplays();
         if(!noblocks) {
-            newArena.generateBackgroundBlocks(); // Todo;
+            newArena.generateBackgroundBlocks();
         }
         plugin.getArenaList().addArena(newArena);
         sender.sendMessage(ChatColor.GREEN + "Die Arena wurde erfolgreich angelegt.");
