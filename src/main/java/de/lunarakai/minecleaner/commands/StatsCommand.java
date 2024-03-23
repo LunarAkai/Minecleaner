@@ -54,6 +54,8 @@ public class StatsCommand extends SubCommand {
                     sender.sendMessage(ChatColor.GREEN + "Minecleaner-Statitik von " + data.getPlayerName() + ":");
                 }
                 sender.sendMessage(ChatColor.BLUE + "  Runden gespielt: " + ChatColor.GREEN + data.getGamesPlayed() + " (Dieser Monat: " + data.getGamesPlayedThisMonth() + ")");
+                sender.sendMessage(ChatColor.BLUE + "  Punkte erspielt: " + ChatColor.GREEN + data.getPointsAcquiredTotal() + " (Dieser Monat: " + data.getPointsAquiredMonth() + ")");
+
             }
         };
         if(playerName == null) {

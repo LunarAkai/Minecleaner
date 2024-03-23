@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -23,6 +22,9 @@ import de.lunarakai.minecleaner.game.BoardSize;
 import de.lunarakai.minecleaner.game.Cell;
 import de.lunarakai.minecleaner.game.Game;
 import de.lunarakai.minecleaner.utils.MinecleanerHeads;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class MinecleanerArena {
     private final MinecleanerPlugin plugin;
@@ -33,7 +35,10 @@ public class MinecleanerArena {
     private final BlockFace orientation;
     private ArenaStatus arenaStatus = ArenaStatus.INACTIVE;
     private UUID[] blockDisplays;
+    // private UUID[] textDisplays;
     
+    private int flagsPlaced = 0;
+
     private Player currentPlayer;
     private long currentGameStartTime;
     private Game currentMinecleanerGame;
@@ -60,6 +65,7 @@ public class MinecleanerArena {
         this.location = Preconditions.checkNotNull(arenaSection.getLocation("location"));
         this.widthIndex = Preconditions.checkNotNull(arenaSection.getInt("fieldwidth"));
         this.blockDisplays = new UUID[BoardSize.boardSizes[widthIndex] * BoardSize.boardSizes[widthIndex]];
+        // this.textDisplays = new UUID[1];
 
         BlockFace orientation = BlockFace.NORTH;
         try {
@@ -78,6 +84,14 @@ public class MinecleanerArena {
                 blockDisplays[i] = UUID.fromString(blockDisplay);
             }
         }
+
+        // List<String> textList = arenaSection.getStringList("textdisplay");
+        // for(int i = 0; i < textList.size(); i++) {
+        //     String textString = list.get(i);
+        //     if(textString != null) {
+        //         textDisplays[0] = UUID.fromString(textString);
+        //     }
+        // } 
     } 
 
     public MinecleanerArena(MinecleanerPlugin plugin, String name, Location location, int widthIndex, BlockFace orientation) {
@@ -86,6 +100,7 @@ public class MinecleanerArena {
         this.location = Preconditions.checkNotNull(location, "location");
         this.widthIndex = Preconditions.checkNotNull(widthIndex, ("fieldwidth"));
         this.blockDisplays = new UUID[BoardSize.boardSizes[widthIndex] * BoardSize.boardSizes[widthIndex]];
+        //this.textDisplays = new UUID[1];
 
         Preconditions.checkArgument(Math.abs(orientation.getModX()) + Math.abs(orientation.getModZ()) == 1, "no cardinal direction");
         this.orientation = orientation;
@@ -109,7 +124,7 @@ public class MinecleanerArena {
         // todo: larger grids
 
 
-        for (int fx = -1; fx < 2 + widthIndex; fx++) {
+        for (int fx = -1 - widthIndex; fx < 2 ; fx++) {
             for (int fy = -1; fy < 2 + widthIndex; fy++) {
                 loc.set(location.getX() + d1x * fx, location.getY() + fy, location.getZ() + d1z * fx);
                 boolean f = (fx + fy) % 2 == 0;
@@ -137,13 +152,26 @@ public class MinecleanerArena {
         Arrays.fill(blockDisplays, null);
 
         float rotation0 = 0;
+        double eastWestGapFixX = 0.0;
+        double eastWestGapFixZ = 0.0;
+
+        double southGapFixX = 0.0;
+        double southGapFixZ = 0.0;
         if(orientation == BlockFace.EAST) {
             rotation0 = 90;
+            eastWestGapFixX = 0.55;
+            eastWestGapFixZ = -0.46;
         } else if(orientation == BlockFace.SOUTH) {
             rotation0 = 180;
+            southGapFixX = 1.02;
+            southGapFixZ = 0.1;
         } else if(orientation == BlockFace.WEST) {
             rotation0 = 270;
+            eastWestGapFixX = 0.5;
+            eastWestGapFixZ = 0.5725;
         }
+
+        
 
         float rotation = rotation0;
         
@@ -160,16 +188,16 @@ public class MinecleanerArena {
                 // Todo not correctly alligned at different orientations (other than NORTH)
 
                 //loc.set(location.getX() + 0.11 - (d1x * fz) / 3.0 + d0x * 0.501 + d1x * 1.847, location.getY() - 0.9725 + fxf / 3.0, location.getZ() + 0.45 - (d1z * fz) / 3.0 + d0z * 0.501 + d1z * 1.847);
-                loc.set(location.getX() - (d1x * fz) / 3.0 + d0x * 0.55 + d1x * 1.847, 
-                    location.getY() - 0.8 + fxf / 3.0, 
-                    location.getZ() + 0.45 - (d1z * fz) / 3.0 + d0z * 0.55 + d1z * 1.847);
+                loc.set(location.getX() - 0.016 + eastWestGapFixX + southGapFixX - (d1x * fz) / 3.0 + d0x * 0.55 + d1x * 1.847, 
+                    location.getY() - 0.8225 + fxf / 3.0, 
+                    location.getZ() + 0.45 + eastWestGapFixZ  + southGapFixZ - (d1z * fz) / 3.0 + d0z * 0.55 + d1z * 1.847);
 
                 // Todo: Z-Fighting on Unknown Tile Heads && Flags(Front) 
                 // Todo: Z-Fighting on the Sides for all Tiles
                 Display blockDisplay = world.spawn(loc, ItemDisplay.class, blockdisplay -> {
                     Transformation transformation = blockdisplay.getTransformation();
                     Transformation newTransform;
-                    Vector3f newTranslationScale = new Vector3f(0.65f, 0.65f, 0.65f);
+                    Vector3f newTranslationScale = new Vector3f(0.60f, 0.60f, 0.60f);
                     newTransform = new Transformation(
                         transformation.getTranslation(),
                         transformation.getLeftRotation(), 
@@ -188,6 +216,29 @@ public class MinecleanerArena {
                 }
             }
         }
+
+        // Location textLocation  = location.clone();
+        // TextDisplay textDisplay = world.spawn(textLocation.add(-1, 2 + widthIndex, -0.25), TextDisplay.class, textdisplay -> {
+        //     Transformation transformation = textdisplay.getTransformation();
+        //     Transformation newTransformation;
+        //     newTransformation = new Transformation(
+        //         transformation.getTranslation(), 
+        //         transformation.getLeftRotation(), 
+        //         transformation.getTranslation(), 
+        //         transformation.getRightRotation());
+            
+        //     textdisplay.setTransformation(newTransformation);
+        //     textdisplay.setRotation(rotation, 0);
+
+        //     textdisplay.setVisibleByDefault(true);
+        //     textdisplay.setDisplayHeight(3);
+        //     textdisplay.setDisplayWidth(9);
+        //     textdisplay.setText("Minecleaner");
+        // });
+
+        // if(textDisplay != null) {
+        //     textDisplays[0] = textDisplay.getUniqueId();
+        // }
         
         // show Displays
     }
@@ -202,6 +253,11 @@ public class MinecleanerArena {
             blockDisplays.add(uuid == null ? null : uuid.toString());
         }
         arenaSection.set("blockdisplays", blockDisplays);
+        // List<String> textd = new ArrayList<>();
+        // for(UUID uuid : this.textDisplays) {
+        //     textd.add(uuid == null ? null : uuid.toString());
+        // }
+        // arenaSection.set("textdisplay", textd);
     }
 
     private void setDiplayBlock(int x, int y, MinecleanerHeads head) {
@@ -218,6 +274,7 @@ public class MinecleanerArena {
     public void startNewGame() {
         currentMinecleanerGame = new Game(plugin, BoardSize.boardSizes[widthIndex], BoardSize.mineCounter[widthIndex]);
         currentMinecleanerGame.start();
+        flagsPlaced = 0;
         arenaStatus = ArenaStatus.PLAYING;
     }
 
@@ -273,7 +330,9 @@ public class MinecleanerArena {
                 //plugin.getLogger().log(Level.SEVERE, "  Is Flagged (before first if): " + cell.isFlagged());
         
                 if(cell.isFlagged() == true) {
-                    plugin.getLogger().log(Level.SEVERE, "Flagged Cell: [" + cell.position.x + "," + cell.position.y + "]");
+                    //plugin.getLogger().log(Level.SEVERE, "Flagged Cell: [" + cell.position.x + "," + cell.position.y + "]");
+                    flagsPlaced = flagsPlaced + 1;
+                    sendActionBarMessage(player);
                     setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_FLAG);
 
                 } 
@@ -281,7 +340,9 @@ public class MinecleanerArena {
                 //plugin.getLogger().log(Level.SEVERE, "  Is Flagged (before second if): " + cell.isFlagged()); 
 
                 if(cell.isFlagged() == false) {
-                    plugin.getLogger().log(Level.SEVERE, "Unflagged Cell: [" + cell.position.x + "," + cell.position.y + "]");
+                    //plugin.getLogger().log(Level.SEVERE, "Unflagged Cell: [" + cell.position.x + "," + cell.position.y + "]");
+                    flagsPlaced = flagsPlaced - 1;
+                    sendActionBarMessage(player);
                     setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN);
                 }
             }
@@ -297,12 +358,13 @@ public class MinecleanerArena {
                 Player player = this.currentPlayer;
                 
                 currentMinecleanerGame.reveal(x, y);
-
                 setBlockForCellType(x, y, cell);
                 
                 if(currentMinecleanerGame.gameover) {
                     plugin.getManager().handleGameover(player, this, !(cell.isRevealed() && cell.isExploded()));
-                } 
+                } else {
+                    sendActionBarMessage(player);
+                }
                 
                 ArrayList<Cell> floodedCells = currentMinecleanerGame.getfloodedCells();
                 if(floodedCells != null) {                
@@ -313,6 +375,12 @@ public class MinecleanerArena {
                 }
             }
         }
+    }
+
+    private void sendActionBarMessage(Player player) {
+        TextComponent textComponent = new TextComponent("Flaggen gesetzt: " + flagsPlaced + "  Minen insgesamt: " + BoardSize.mineCounter[widthIndex]);
+        textComponent.setColor(ChatColor.GOLD);
+        player.sendMessage(ChatMessageType.ACTION_BAR, textComponent);
     }
 
     public void showMines() {
@@ -451,6 +519,11 @@ public class MinecleanerArena {
 
     public int getSize() {
         return BoardSize.boardSizes[widthIndex];
+    }
+
+    // Difficulty
+    public int getWidthIndex() {
+        return widthIndex;
     }
     
 }

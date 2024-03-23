@@ -85,10 +85,11 @@ public class MinecleanerListener implements Listener {
                             }
                             */
 
-                            //player.sendMessage(ChatColor.GRAY + "blockx: " + blockx + " ,blockz: " + blockz);
-                           // player.sendMessage(ChatColor.GRAY + "blockxInt: " + blockxInt + " ,blockzInt: " + blockzInt);
+                            player.sendMessage(ChatColor.GRAY + "blockx: " + blockx + " ,blockz: " + blockz);
+                            //player.sendMessage(ChatColor.GRAY + "blockxInt: " + blockxInt + " ,blockzInt: " + blockzInt);
 
-                            if (blockx >= 0.1 && blockx <= 0.9 && blockz >= 0.1 && blockz <= 0.9) {
+                            if (blockx >= 0.1 && blockx <= 0.95 && blockz >= 0.0125 && blockz <= 0.98125) {
+                            //if ((blockx >= 0.13 && blockx <= 0.9825 && blockx <= 0.12) && blockz >= 0.0125 && blockz <= 0.98125) {
                                 boolean hasRightClicked = false;
                                 if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                                     hasRightClicked = true;

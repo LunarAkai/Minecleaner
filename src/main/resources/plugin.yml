@@ -6,3 +6,8 @@ commands:
   minecleaner:
     description: main command
     aliases: "mcl"
+
+
+permissions:
+  minecleaner.admin: {}
+  minecleaner.play: {}

@@ -75,12 +75,12 @@ public class CreateCommand extends SubCommand {
                     widthindex = Integer.parseInt(arg);
                 } catch(NumberFormatException e) {
                     sender.sendMessage(ChatColor.DARK_RED + "Kein Valider Arena WidthIndex!");
-                    sender.sendMessage(ChatColor.DARK_RED + "0 (oder weglassen) = 9*9, 1 = 15*15, 2 = 24*24");
+                    sender.sendMessage(ChatColor.DARK_RED + "0 (oder weglassen) = 9*9, 1 = 12*12, 2 = 15*15");
                     return true;
                 }
                 if(widthindex > 2) {
                     sender.sendMessage(ChatColor.DARK_RED + "Arena WidthIndex darf nicht größer als 2 sein");
-                    sender.sendMessage(ChatColor.DARK_RED + "0 (oder weglassen) = 9*9, 1 = 15*15, 2 = 24*24");
+                    sender.sendMessage(ChatColor.DARK_RED + "0 (oder weglassen) = 9*9, 1 = 12*12, 2 = 15*15");
                     return true;
                 }
             } else {

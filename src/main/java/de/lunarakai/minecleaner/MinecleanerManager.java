@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -27,7 +28,10 @@ import net.md_5.bungee.api.ChatColor;
 public class MinecleanerManager {
     private final MinecleanerPlugin plugin;
     private final Inventory confirmPlayingInventory;
+
+    // Statistics
     private final StatisticKey statisticsGamesTotal;
+    private final StatisticKey statisticsPointsAcquired;
 
     private int prevTick = 0;
 
@@ -45,6 +49,10 @@ public class MinecleanerManager {
         statisticsGamesTotal = plugin.getCubesideStatistics().getStatisticKey("minecleaner.gamesTotal");
         statisticsGamesTotal.setIsMonthlyStats(true);
         statisticsGamesTotal.setDisplayName("Runden gespielt");
+        
+        statisticsPointsAcquired = plugin.getCubesideStatistics().getStatisticKey("minecleaner.pointsTotal");
+        statisticsPointsAcquired.setIsMonthlyStats(true);
+        statisticsPointsAcquired.setDisplayName("Punkte erspielt");
 
     }
     
@@ -78,22 +86,56 @@ public class MinecleanerManager {
     }
 
     public void handleGameover(Player player, MinecleanerArena arena, boolean isSuccessfullyCleared) {
+        World world = player.getWorld();
         if(!isSuccessfullyCleared) {
+            world.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
             player.sendMessage(ChatColor.YELLOW + "Game Over! Du konntest das Feld nicht erfolgreich lösen!");
             arena.showMines();
-            
+
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                leaveArena(player, false);
+                if(arena.getCurrentPlayer() == null) {
+                    arena.removePlayer(); 
+                 } else {
+                    leaveArena(player, false);
+                 }
+                
             }, 100L);
             return;
         }
         player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das Feld erfolgreich lösen!");
+
+        
+        world.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.5f);
+
         PlayerStatistics ps = plugin.getCubesideStatistics().getStatistics(player.getUniqueId());
         ps.increaseScore(statisticsGamesTotal, 1);
 
-
+        int wIndex = arena.getWidthIndex();
+        switch (wIndex) {
+            case 0: {
+                ps.increaseScore(statisticsPointsAcquired, 1);
+                break;
+            }
+            case 1: {
+                ps.increaseScore(statisticsPointsAcquired, 3);
+                break;
+            }
+            case 2: {
+                ps.increaseScore(statisticsPointsAcquired, 5);
+                break;
+            }
+            default: {
+                ps.increaseScore(statisticsPointsAcquired, 0);
+                break;
+            }
+        }
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if(arena.getCurrentPlayer() == null) {
+               arena.removePlayer(); 
+            } else {
+                leaveArena(player, false);
+            }
             leaveArena(player, false);
         }, 100L);
 
@@ -122,11 +164,11 @@ public class MinecleanerManager {
             // Fires Twice for Right Click on Same Tick, but only once for left click... stupid :< 
             if(hasRightClicked) {
                 // flag
-                plugin.getLogger().log(Level.SEVERE, "  Right Clicked @ Tick: " + plugin.getServer().getCurrentTick());
+                //plugin.getLogger().log(Level.SEVERE, "  Right Clicked @ Tick: " + plugin.getServer().getCurrentTick());
                 arena.flagCell(x, y);
             } else {
                 // reveal
-                plugin.getLogger().log(Level.SEVERE, "  Left Clicked @ Tick: " + plugin.getServer().getCurrentTick());
+                //plugin.getLogger().log(Level.SEVERE, "  Left Clicked @ Tick: " + plugin.getServer().getCurrentTick());
                 arena.revealCell(x, y);
             }
         }
@@ -142,11 +184,19 @@ public class MinecleanerManager {
         PlayerStatisticsQueryKey kMatchesPlayedMonth;
         keys.add(kMatchesPlayedMonth = new PlayerStatisticsQueryKey(pStatistics, statisticsGamesTotal, QueryType.SCORE, TimeFrame.MONTH));
 
+        PlayerStatisticsQueryKey kPointsAcquired;
+        keys.add(kPointsAcquired = new PlayerStatisticsQueryKey(pStatistics, statisticsPointsAcquired, QueryType.SCORE));
+        PlayerStatisticsQueryKey kPointsAcquiredMonth;
+        keys.add(kPointsAcquiredMonth = new PlayerStatisticsQueryKey(pStatistics, statisticsPointsAcquired, QueryType.SCORE, TimeFrame.MONTH));
+
         plugin.getCubesideStatistics().queryStats(keys, (c) -> {
             int matchesPlayed = c.getOrDefault(kMatchesPlayed, 0);
             int matchesPlayedMonth = c.getOrDefault(kMatchesPlayedMonth, 0);
+            int pointsAcquiredTotal = c.getOrDefault(kPointsAcquired, 0);
+            int pointsAcquiredMonth = c.getOrDefault(kPointsAcquiredMonth, 0);
 
-            callback.accept(new PlayerStatisticsData(player.getUniqueId(), player.getName(), matchesPlayed, matchesPlayedMonth));
+            callback.accept(new PlayerStatisticsData(player.getUniqueId(), player.getName(), matchesPlayed, matchesPlayedMonth,
+                pointsAcquiredTotal, pointsAcquiredMonth));
         });
     }
 
@@ -162,5 +212,6 @@ public class MinecleanerManager {
     public void deleteScores(UUID playerId) {
         PlayerStatistics statsPlayer = plugin.getCubesideStatistics().getStatistics(playerId);
         statsPlayer.deleteScore(statisticsGamesTotal);
+        statsPlayer.deleteScore(statisticsPointsAcquired);
     }
 }

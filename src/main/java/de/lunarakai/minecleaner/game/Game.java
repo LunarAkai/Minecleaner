@@ -188,6 +188,7 @@ public class Game {
         floodedCells.add(cell);
         state[cell.position.x][cell.position.y] = cell;    
 
+        // this looks bad, i should probably go to the doctor with it D: 
         if(cell.getType() == Cell.CellType.Empty) {
             if(isValid(cell.position.x -1, cell.position.y)) {
                 flood(getCell(cell.position.x -1, cell.position.y));
@@ -201,6 +202,21 @@ public class Game {
             }
             if(isValid(cell.position.x, cell.position.y +1)) {
                 flood(getCell(cell.position.x, cell.position.y +1));
+            }
+
+            // Corners
+            // Todo: oben links geht nicht
+            if(isValid(cell.position.x + 1, cell.position.y +1)) {
+                flood(getCell(cell.position.x +1, cell.position.y +1));
+            }
+            if(isValid(cell.position.x + 1, cell.position.y -1)) {
+                flood(getCell(cell.position.x +1, cell.position.y -1));
+            }
+            if(isValid(cell.position.x - 1, cell.position.y +1)) {
+                flood(getCell(cell.position.x -1, cell.position.y +1));
+            }
+            if(isValid(cell.position.x - 1, cell.position.y - 1)) {
+                flood(getCell(cell.position.x -1, cell.position.y -1));
             }
         }
     }
