@@ -155,14 +155,13 @@ public class Game {
                 if(!floodedCells.isEmpty()) {
                     floodedCells.clear();
                 }
-                if(floodedFlaggedCellsCounter != 0) {
-                    floodedFlaggedCellsCounter = 0;
-                }
+                resetFloodedFlaggedCellCounter();
                 flood(cell);
                 checkWinCondition();
                 break;
             }
             default: {
+                resetFloodedFlaggedCellCounter();
                 cell.setRevealed();
                 state[x][y] = cell;
                 checkWinCondition();
@@ -171,6 +170,12 @@ public class Game {
                 
         }
         board.draw(state, tilemap);
+    }
+
+    private void resetFloodedFlaggedCellCounter() {
+        if(floodedFlaggedCellsCounter > 0) {
+            floodedFlaggedCellsCounter = 0;
+        }
     }
 
     public void flood(Cell cell) {
