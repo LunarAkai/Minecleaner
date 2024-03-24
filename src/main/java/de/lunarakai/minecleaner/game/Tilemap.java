@@ -25,7 +25,7 @@ public class Tilemap {
             throw new IllegalArgumentException("Invalid coordinates");
         }
     }
-    // Set method
+    
     public void setTile(Vector2i pos, Tile.TileType tileType) {
         int x = pos.x();
         int y = pos.y();

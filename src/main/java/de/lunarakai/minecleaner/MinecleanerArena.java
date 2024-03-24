@@ -156,16 +156,16 @@ public class MinecleanerArena {
         double southGapFixZ = 0.0;
         if(orientation == BlockFace.EAST) {
             rotation0 = 90;
-            eastWestGapFixX = 0.55;
-            eastWestGapFixZ = -0.46;
+            eastWestGapFixX = 0.5;
+            eastWestGapFixZ = -0.55;
         } else if(orientation == BlockFace.SOUTH) {
             rotation0 = 180;
             southGapFixX = 1.02;
-            southGapFixZ = 0.1;
+            southGapFixZ = -0.05;
         } else if(orientation == BlockFace.WEST) {
             rotation0 = 270;
-            eastWestGapFixX = 0.5;
-            eastWestGapFixZ = 0.5725;
+            eastWestGapFixX = 0.55;
+            eastWestGapFixZ = 0.5;
         }
 
         float rotation = rotation0;
@@ -176,8 +176,7 @@ public class MinecleanerArena {
         int d1z = d0x;
 
         Location loc = location.clone();
-
-        // todo: felder bisschen dichter an die wand
+        
         for(int fx = 0; fx < size; fx++) {
             final int fxf = fx;
             for(int fz = 0; fz < size; fz++) {
@@ -185,7 +184,7 @@ public class MinecleanerArena {
 
                 loc.set(location.getX() - 0.016 + eastWestGapFixX + southGapFixX - (d1x * fz) / 3.0 + d0x * 0.55 + d1x * 1.847, 
                     location.getY() - 0.8225 + fxf / 3.0, 
-                    location.getZ() + 0.45 + eastWestGapFixZ  + southGapFixZ - (d1z * fz) / 3.0 + d0z * 0.55 + d1z * 1.847);
+                    location.getZ() + 0.525 + eastWestGapFixZ  + southGapFixZ - (d1z * fz) / 3.0 + d0z * 0.55 + d1z * 1.847);
 
                 Display blockDisplay = world.spawn(loc, ItemDisplay.class, blockdisplay -> {
                     Transformation transformation = blockdisplay.getTransformation();
@@ -270,6 +269,7 @@ public class MinecleanerArena {
         currentMinecleanerGame.start();
         flagsPlaced = 0;
         arenaStatus = ArenaStatus.PLAYING;
+        currentGameStartTime = System.currentTimeMillis();
     }
 
     public void addJoiningPlayer(Player player) {
@@ -468,7 +468,6 @@ public class MinecleanerArena {
         }
         player.getLocation(tempLoc);
         double dist = tempLoc.distanceSquared(centerLocation);
-        // todo: larger for bigger boards
         switch (widthIndex) {
             case 0:
                 return dist > 64.0;
@@ -512,9 +511,11 @@ public class MinecleanerArena {
         return BoardSize.boardSizes[widthIndex];
     }
 
-    // Difficulty
+    public long getCurrentGameStartTime() {
+        return currentGameStartTime;
+    }
+
     public int getWidthIndex() {
         return widthIndex;
-    }
-    
+    } 
 }

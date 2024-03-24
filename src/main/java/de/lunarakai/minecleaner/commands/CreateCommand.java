@@ -31,7 +31,6 @@ public class CreateCommand extends SubCommand {
         this.plugin = plugin;
     }
 
-
     @Override
     public String getUsage() {
         return "<name> [noblocks] [widthindex]";

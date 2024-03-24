@@ -10,7 +10,6 @@ public class Cell {
         Number,
     }
 
-
     public Vector2i position;
     public CellType type;
     public int number;
@@ -47,6 +46,4 @@ public class Cell {
     public boolean isExploded() {
         return exploded;
     }
-
-
 }

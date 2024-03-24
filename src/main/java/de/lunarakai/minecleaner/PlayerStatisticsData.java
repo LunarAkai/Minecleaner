@@ -6,18 +6,31 @@ import java.util.UUID;
 public class PlayerStatisticsData {
     private UUID playerUUID;
     private String playerName;
+    private HashMap<Integer, Integer> totalGamesPlayedSize;
+    private HashMap<Integer, Integer> totalGamesPlayedSizeThisMonth;
     private int gamesPlayed;
     private int gamesPlayedThisMonth;
     private HashMap<Integer, Integer> gamesPlayedSize;
     private HashMap<Integer, Integer> gamesPlayedSizeThisMonth;
     private int pointsAcquiredTotal;
     private int pointsAcquiredMonth;
+    private HashMap<Integer, Integer> bestTime;
 
-    public PlayerStatisticsData(UUID playerUUID, String playerName, int gamesPlayed, int gamesPlayedThisMonth,
-        HashMap<Integer, Integer> gamesPlayedSize, HashMap<Integer, Integer> gamesPlayedSizeThisMonth, 
-        int pointsAcquiredTotal, int pointsAcquiredMonth) {
+    public PlayerStatisticsData(UUID playerUUID, String playerName, 
+        HashMap<Integer, Integer> totalGamesPlayedSize, 
+        HashMap<Integer, Integer> totalGamesPlayedSizeThisMonth, 
+        int gamesPlayed, 
+        int gamesPlayedThisMonth,
+        HashMap<Integer, Integer> gamesPlayedSize, 
+        HashMap<Integer, Integer> gamesPlayedSizeThisMonth, 
+        int pointsAcquiredTotal, 
+        int pointsAcquiredMonth,
+        HashMap<Integer, Integer> bestTime) {
         this.playerUUID = playerUUID;
         this.playerName = playerName;
+
+        this.totalGamesPlayedSize = totalGamesPlayedSize;
+        this.totalGamesPlayedSizeThisMonth = totalGamesPlayedSizeThisMonth;
 
         this.gamesPlayed = gamesPlayed;
         this.gamesPlayedThisMonth = gamesPlayedThisMonth;
@@ -27,6 +40,8 @@ public class PlayerStatisticsData {
         
         this.pointsAcquiredTotal = pointsAcquiredTotal;
         this.pointsAcquiredMonth = pointsAcquiredMonth;
+
+        this.bestTime = bestTime;
     }
 
     public UUID getPlayerID() {
@@ -37,11 +52,21 @@ public class PlayerStatisticsData {
         return playerName;
     }
 
-    public int getGamesPlayed() {
+    public int getTotalGamesPlayedSize(Integer widthIndex) {
+        Integer value = totalGamesPlayedSize.get(widthIndex);
+        return value == null ? 0 : value;
+    }
+
+    public int getTotalGamesPlayedSizeThisMonth(Integer widthIndex) {
+        Integer value = totalGamesPlayedSizeThisMonth.get(widthIndex);
+        return value == null ? 0 : value;
+    }
+
+    public int getWonGamesPlayed() {
         return gamesPlayed;
     }
 
-    public int getGamesPlayedThisMonth() {
+    public int getWonGamesPlayedThisMonth() {
         return gamesPlayedThisMonth;
     }
 
@@ -62,5 +87,8 @@ public class PlayerStatisticsData {
     public int getPointsAquiredMonth() {
         return pointsAcquiredMonth;
     }
-    
+
+    public Integer getBestTime(Integer widthIndex) {
+        return bestTime.get(widthIndex);
+    }
 }

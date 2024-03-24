@@ -2,7 +2,6 @@ package de.lunarakai.minecleaner.commands;
 
 import java.util.Map.Entry;
 import java.util.function.Consumer;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,6 +15,8 @@ import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
 import de.lunarakai.minecleaner.PlayerStatisticsData;
+import de.lunarakai.minecleaner.utils.MinecleanerStringUtil;
+import net.md_5.bungee.api.ChatColor;
 
 public class StatsCommand extends SubCommand {
     private final MinecleanerPlugin plugin;
@@ -56,16 +57,22 @@ public class StatsCommand extends SubCommand {
                     sender.sendMessage(ChatColor.GREEN + "Minecleaner-Statitik von " + data.getPlayerName() + ":");
                 }
                 sender.sendMessage(ChatColor.BLUE + "  Punkte erspielt: " + ChatColor.GREEN + data.getPointsAcquiredTotal() + " (Dieser Monat: " + data.getPointsAquiredMonth() + ")");
-                sender.sendMessage(ChatColor.BLUE + "  Runden gespielt: " + ChatColor.GREEN + data.getGamesPlayed() + " (Dieser Monat: " + data.getGamesPlayedThisMonth() + ")");
+                sender.sendMessage(ChatColor.BLUE + "  Runden gewonnen: " + ChatColor.GREEN + data.getWonGamesPlayed() + " (Dieser Monat: " + data.getWonGamesPlayedThisMonth() + ")");
                 for(Entry<Integer, String> e : plugin.getManager().getSizes().entrySet()) {
-                    int totalSize = data.getGamesPlayedSize(e.getKey());
+                    int totalWonSize = data.getGamesPlayedSize(e.getKey());
+                    int totalWonMonth = data.getGamesPlayedSizeThisMonth(e.getKey());
+                    int totalSize = data.getTotalGamesPlayedSize(e.getKey());
+                    int totalSizeMonth = data.getTotalGamesPlayedSizeThisMonth(e.getKey());
+
                     if(totalSize > 0) {
                         String sizeName = StringUtil.capitalizeFirstLetter(e.getValue(), false);
                         sender.sendMessage(ChatColor.GREEN + "  " + sizeName + ":");
-                        sender.sendMessage(ChatColor.BLUE + "    Runden gespielt: " + ChatColor.GREEN + totalSize + " (Dieser Monat: " + data.getGamesPlayedSizeThisMonth(e.getKey()) + ")");
+                        sender.sendMessage(ChatColor.BLUE + "    Runden gewonnen: " + ChatColor.GREEN + totalWonSize + " von " + totalSize  + " (Dieser Monat: " + totalWonMonth + " von " + totalSizeMonth + ")");
+                        Integer time = data.getBestTime(e.getKey());
+                        sender.sendMessage(ChatColor.BLUE + "    Bestzeit: " + ChatColor.GREEN + (time == null ? "-": MinecleanerStringUtil.timeToString(time)));
                     }
-                }
 
+                }
             }
         };
         if(playerName == null) {

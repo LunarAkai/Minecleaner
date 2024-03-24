@@ -4,7 +4,7 @@ public class BoardSize {
     public static int[] boardSizes = {
             9,
             12,
-            15, // nicht größer als 24
+            15,
     };
 
     public static int[] mineCounter = {

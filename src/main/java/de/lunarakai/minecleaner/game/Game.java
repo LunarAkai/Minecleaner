@@ -7,7 +7,6 @@ import de.lunarakai.minecleaner.MinecleanerPlugin;
 public class Game {
     public boolean gameover;
 
-    @SuppressWarnings("unused")
     private MinecleanerPlugin plugin; 
     private int width;
     private int height;

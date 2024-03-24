@@ -31,7 +31,7 @@ public class MinecleanerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST) 
     public void onPlayerInteract(PlayerInteractEvent e) {
-        // wenn (e.getHand != MainHand) return;
+        if(e.getHand() != EquipmentSlot.HAND) return;
         if((e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             Block block = e.getClickedBlock();
             MinecleanerArena arena = plugin.getArenaList().getPlayerArena(e.getPlayer());
@@ -51,18 +51,14 @@ public class MinecleanerListener implements Listener {
 
                         if(r2 != null) {
                             Vector hitPos = r2.getHitPosition();
-                            //Vector hitPos = rayTraceResult.getHitPosition();
                             Vector substract = new Vector(0.5, 0.5, 0.5);
 
                             Location loc = hitPos.subtract(arena.getLocation().toVector()).subtract(substract).toLocation(player.getWorld()); //(0.5, 0.5, 0.5); // substract 0.5, 0.5, 0.5
                             double lx = loc.getX();
                             double ly = loc.getY();
                             double lz = loc.getZ();
-                            //player.sendMessage(ChatColor.GRAY + "lx: " + lx + " ,ly: " + ly + " ,lz: " + lz);
-                            double dy = ly + 1.5; // 1.5
-                            //player.sendMessage(ChatColor.GRAY + "dy: " + dy);
-                            double dz = -d1x * lx - d1z * lz + 1.5; // 1.5
-                            //player.sendMessage(ChatColor.GRAY + "dz: " + dz);
+                            double dy = ly + 1.5; 
+                            double dz = -d1x * lx - d1z * lz + 1.5;
 
                             double blockx = (dy / 3.0) * 9.0;
                             double blockz = (dz / 3.0) * 9.0;
@@ -72,35 +68,13 @@ public class MinecleanerListener implements Listener {
                             blockx -= blockxInt;
                             blockz -= blockzInt;
 
-                            /*
-                            if(lx < 0) {
-                                blockxInt = blockxInt - (-blockxInt);
-                            } else {
-                                blockxInt = blockxInt - blockxInt;
+                            boolean hasRightClicked = false;
+                            if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                                hasRightClicked = true;
                             }
-
-                            if(lz < 0) {
-                                blockzInt = blockzInt - (-blockzInt);
-                            } else {
-                                blockzInt = blockzInt - blockzInt;
-                            }
-                            */
-
-                            player.sendMessage(ChatColor.GRAY + "blockx: " + blockx + " ,blockz: " + blockz);
-                            //player.sendMessage(ChatColor.GRAY + "blockxInt: " + blockxInt + " ,blockzInt: " + blockzInt);
-
-                            if (blockx >= 0.1 && blockx <= 0.95 && blockz >= 0.0125 && blockz <= 0.98125) {
-                            //if ((blockx >= 0.13 && blockx <= 0.9825 && blockx <= 0.12) && blockz >= 0.0125 && blockz <= 0.98125) {
-                                boolean hasRightClicked = false;
-                                if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                                    hasRightClicked = true;
-                                }
-                                //player.sendMessage("Arena click! " + blockxInt + " " + blockzInt + " Right Clicked: " + hasRightClicked);
-                                plugin.getManager().handleFieldClick(e.getPlayer(), blockxInt, blockzInt, hasRightClicked);
-                            }
+                            //player.sendMessage("Arena click! " + blockxInt + " " + blockzInt + " Right Clicked: " + hasRightClicked);
+                            plugin.getManager().handleFieldClick(e.getPlayer(), blockxInt, blockzInt, hasRightClicked);
                         }
-                        
-                        
                     }
                 }
             } else {
