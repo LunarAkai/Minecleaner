@@ -11,6 +11,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.Display.Brightness;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
@@ -199,6 +200,7 @@ public class MinecleanerArena {
 
                     blockdisplay.setTransformation(newTransform);
                     blockdisplay.setRotation(rotation, -90);
+                    blockdisplay.setBrightness(new Brightness(15, 15));
                     
                     blockdisplay.setItemStack(MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN.getHead());
                 });
