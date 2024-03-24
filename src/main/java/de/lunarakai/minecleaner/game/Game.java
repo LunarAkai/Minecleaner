@@ -113,7 +113,7 @@ public class Game {
                 continue;
             }
 
-            while (state[x][y].type == Cell.CellType.Mine) {
+            if (state[x][y].type == Cell.CellType.Mine) {
                 i--;
                 continue;
             }
