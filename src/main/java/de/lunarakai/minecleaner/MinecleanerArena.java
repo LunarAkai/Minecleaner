@@ -36,6 +36,7 @@ public class MinecleanerArena {
     private ArenaStatus arenaStatus = ArenaStatus.INACTIVE;
     private UUID[] blockDisplays;
     // private UUID[] textDisplays;
+    private boolean hasMadeFirstClick = false;
     
     private int flagsPlaced = 0;
 
@@ -268,6 +269,7 @@ public class MinecleanerArena {
         currentMinecleanerGame = new Game(plugin, BoardSize.boardSizes[widthIndex], BoardSize.mineCounter[widthIndex]);
         currentMinecleanerGame.start();
         flagsPlaced = 0;
+        hasMadeFirstClick = false;
         arenaStatus = ArenaStatus.PLAYING;
         currentGameStartTime = System.currentTimeMillis();
     }
@@ -340,6 +342,11 @@ public class MinecleanerArena {
             Cell cell = currentMinecleanerGame.getCell(x, y);
             if(!cell.isFlagged()) {           
                 Player player = this.currentPlayer;
+
+                if(!hasMadeFirstClick) {
+                    currentMinecleanerGame.firstClick(x, y);
+                    hasMadeFirstClick = true;
+                }
                 
                 currentMinecleanerGame.reveal(x, y);
                 setBlockForCellType(x, y, cell);

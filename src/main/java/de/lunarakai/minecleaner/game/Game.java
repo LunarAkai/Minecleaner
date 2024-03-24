@@ -45,10 +45,15 @@ public class Game {
         gameover = false;
 
         generateCells();
-        generateMines();
-        generateNumbers();
+        //generateMines();
+        //generateNumbers();
 
         board.draw(state, tilemap);
+    }
+
+    public void firstClick(int xFirst, int yFirst) {
+        generateMines(xFirst, yFirst);
+        generateNumbers();
     }
 
     private void generateCells() {
@@ -62,10 +67,51 @@ public class Game {
         }
     }
 
-    private void generateMines() {
+    private void generateMines(int xFirst, int yFirst) {
         for (int i = 0; i < mineCount; i++) {
             int x = (int) (Math.random() * width);
             int y = (int) (Math.random() * height);
+
+            if(x == xFirst && y == yFirst) {
+                i--;
+                continue;
+            }
+            if(x == xFirst +1 && y == yFirst) {
+                i--;
+                continue;
+            }
+            if(x == xFirst +1 && y == yFirst -1) {
+                i--;
+                continue;
+            }
+            if(x == xFirst -1 && y == yFirst) {
+                i--;
+                continue;
+            }
+            if(x == xFirst && y == yFirst +1) {
+                i--;
+                continue;
+            }
+            if(x == xFirst && y == yFirst -1) {
+                i--;
+                continue;
+            }
+            if(x == xFirst +1 && y == yFirst +1) {
+                i--;
+                continue;
+            }
+            if(x == xFirst +1 && y == yFirst -1) {
+                i--;
+                continue;
+            }
+            if(x == xFirst -1 && y == yFirst -1) {
+                i--;
+                continue;
+            }
+            if(x == xFirst -1 && y == yFirst +1) {
+                i--;
+                continue;
+            }
 
             while (state[x][y].type == Cell.CellType.Mine) {
                 x++;
