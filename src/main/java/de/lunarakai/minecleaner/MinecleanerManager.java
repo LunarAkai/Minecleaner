@@ -129,8 +129,6 @@ public class MinecleanerManager {
             player.sendMessage(ChatColor.YELLOW + "Game Over! Du konntest das Minecleaner-Feld nicht erfolgreich lösen!");
             arena.showMines();
             
-            
-
             if(sg != null) {
                 ps.increaseScore(sg, 1);
             }

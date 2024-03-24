@@ -17,6 +17,7 @@ public class Game {
     private Tilemap tilemap;
 
     private ArrayList<Cell> floodedCells;
+    private int floodedFlaggedCellsCounter;
     private ArrayList<Cell> explodedCells;
 
     public Game(MinecleanerPlugin plugin, int width, int mineCount) {
@@ -27,6 +28,7 @@ public class Game {
 
         this.floodedCells = new ArrayList<>();
         this.explodedCells = new ArrayList<>();
+        floodedFlaggedCellsCounter = 0;
     }
 
     public void start() {
@@ -150,8 +152,11 @@ public class Game {
                 break;
             }
             case Empty: {
-                if(!floodedCells.isEmpty()) {;
+                if(!floodedCells.isEmpty()) {
                     floodedCells.clear();
+                }
+                if(floodedFlaggedCellsCounter != 0) {
+                    floodedFlaggedCellsCounter = 0;
                 }
                 flood(cell);
                 checkWinCondition();
@@ -174,6 +179,7 @@ public class Game {
 
         if(cell.isFlagged()) {
             cell.setFlaggedState(false);
+            floodedFlaggedCellsCounter = floodedFlaggedCellsCounter + 1;
         }
         
         cell.setRevealed();
@@ -271,5 +277,9 @@ public class Game {
 
     public ArrayList<Cell> getExplodedCells() {
         return explodedCells;
+    }
+
+    public int getFloodedFlaggedCells() {
+        return floodedFlaggedCellsCounter;
     }
 }

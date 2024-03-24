@@ -343,7 +343,7 @@ public class MinecleanerArena {
                 
                 currentMinecleanerGame.reveal(x, y);
                 setBlockForCellType(x, y, cell);
-                
+
                 if(currentMinecleanerGame.gameover) {
                     plugin.getManager().handleGameover(player, this, !(cell.isRevealed() && cell.isExploded()));
                 } else {
@@ -356,6 +356,7 @@ public class MinecleanerArena {
                         Vector2i pos = floodedCells.get(i).position;
                         setBlockForCellType(pos.x, pos.y, floodedCells.get(i));
                     }
+                    flagsPlaced = flagsPlaced - currentMinecleanerGame.getFloodedFlaggedCells();
                 }
             }
         }
