@@ -122,13 +122,14 @@ public class MinecleanerManager {
         World world = player.getWorld();
         PlayerStatistics ps = plugin.getCubesideStatistics().getStatistics(player.getUniqueId());
         StatisticKey sg;
+        sg = statisticsTotalGamesPlayed.get(arena.getWidthIndex());
 
         if(!isSuccessfullyCleared) {
             world.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
             player.sendMessage(ChatColor.YELLOW + "Game Over! Du konntest das Minecleaner-Feld nicht erfolgreich lösen!");
             arena.showMines();
             
-            sg = statisticsTotalGamesPlayed.get(arena.getWidthIndex());
+            
 
             if(sg != null) {
                 ps.increaseScore(sg, 1);
@@ -147,6 +148,10 @@ public class MinecleanerManager {
         player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das Minecleaner-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis) + ChatColor.YELLOW + " erfolgreich lösen!");
         
         world.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.5f);
+
+        if(sg != null) {
+            ps.increaseScore(sg, 1);
+        }
 
         ps.increaseScore(statisticsWonGamesTotal, 1);
 
