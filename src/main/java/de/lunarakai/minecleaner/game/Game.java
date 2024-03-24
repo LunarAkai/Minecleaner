@@ -114,16 +114,8 @@ public class Game {
             }
 
             while (state[x][y].type == Cell.CellType.Mine) {
-                x++;
-
-                if(x >= width) {
-                    x = 0;
-                    y++;
-
-                    if(y >= height) {
-                        y=0;
-                    }
-                }
+                i--;
+                continue;
             }
             state[x][y].setType(Cell.CellType.Mine);
         }
