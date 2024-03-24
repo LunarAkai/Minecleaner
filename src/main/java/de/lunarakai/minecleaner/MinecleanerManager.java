@@ -143,7 +143,6 @@ public class MinecleanerManager {
             return;
         }
         int millis = (int) (System.currentTimeMillis() - arena.getCurrentGameStartTime());
-        player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das Minecleaner-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis) + ChatColor.YELLOW + " erfolgreich lösen!");
         
         world.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.5f);
 
@@ -159,7 +158,13 @@ public class MinecleanerManager {
         }
         sg = statisticsTimeRecord.get(arena.getWidthIndex());
         if(sg != null) {
-            ps.minScore(sg, millis);
+            ps.minScore(sg, millis, isUpdated -> {
+                if(isUpdated != null && isUpdated) {
+                    player.sendMessage(ChatColor.GOLD + "Herzlichen Glückwunsch! Du hast eine neue Bestzeit erreicht!" );
+                } else {
+                    player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das Minecleaner-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis) + ChatColor.YELLOW + " erfolgreich lösen!");
+                }
+            });
         }
 
         int wIndex = arena.getWidthIndex();
@@ -300,5 +305,18 @@ public class MinecleanerManager {
         PlayerStatistics statsPlayer = plugin.getCubesideStatistics().getStatistics(playerId);
         statsPlayer.deleteScore(statisticsWonGamesTotal);
         statsPlayer.deleteScore(statisticsPointsAcquired);
+        for(StatisticKey statsKey : statisticsGames.values()) {
+            statsPlayer.deleteScore(statsKey);
+        }
+        for(StatisticKey statsKey : statisticsTimeRecord.values()) {
+            statsPlayer.deleteScore(statsKey);
+        }
+        for(StatisticKey statsKey : statisticsTimeRecord.values()) {
+            statsPlayer.deleteScore(statsKey);
+        }
+        for(StatisticKey statsKey : statisticsTotalGamesPlayed.values()) {
+            statsPlayer.deleteScore(statsKey);
+        }
+        
     }
 }
