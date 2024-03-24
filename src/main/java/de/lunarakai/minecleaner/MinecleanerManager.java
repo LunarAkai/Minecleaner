@@ -174,11 +174,11 @@ public class MinecleanerManager {
                 break;
             }
             case 1: {
-                ps.increaseScore(statisticsPointsAcquired, 3);
+                ps.increaseScore(statisticsPointsAcquired, 5);
                 break;
             }
             case 2: {
-                ps.increaseScore(statisticsPointsAcquired, 10);
+                ps.increaseScore(statisticsPointsAcquired, 20);
                 break;
             }
             default: {

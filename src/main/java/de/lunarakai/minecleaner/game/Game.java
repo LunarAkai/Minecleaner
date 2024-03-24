@@ -66,8 +66,7 @@ public class Game {
             }
         }
     }
-
-    // Todo selten auch noch mine bei xFirst-1 
+    
     private void generateMines(int xFirst, int yFirst) {
         for (int i = 0; i < mineCount; i++) {
             int x = (int) (Math.random() * width);
