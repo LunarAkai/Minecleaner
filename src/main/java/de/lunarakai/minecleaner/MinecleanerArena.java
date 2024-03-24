@@ -464,6 +464,7 @@ public class MinecleanerArena {
     }
 
     public boolean isTooFarAway(Player player) {
+        if(currentMinecleanerGame != null && currentMinecleanerGame.gameover) return false;
         if(player.getWorld() != location.getWorld()) {
             return true;
         }
