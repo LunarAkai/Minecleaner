@@ -67,6 +67,7 @@ public class Game {
         }
     }
 
+    // Todo selten auch noch mine bei xFirst-1 
     private void generateMines(int xFirst, int yFirst) {
         for (int i = 0; i < mineCount; i++) {
             int x = (int) (Math.random() * width);
@@ -76,11 +77,8 @@ public class Game {
                 i--;
                 continue;
             }
+
             if(x == xFirst +1 && y == yFirst) {
-                i--;
-                continue;
-            }
-            if(x == xFirst +1 && y == yFirst -1) {
                 i--;
                 continue;
             }
@@ -96,6 +94,8 @@ public class Game {
                 i--;
                 continue;
             }
+
+            //Corners
             if(x == xFirst +1 && y == yFirst +1) {
                 i--;
                 continue;
