@@ -237,6 +237,8 @@ public class MinecleanerArena {
         // }
         
         // show Displays
+
+        //showStartHeads();
     }
 
     public void save(ConfigurationSection arenaSection) {
@@ -270,6 +272,7 @@ public class MinecleanerArena {
     public void startNewGame() {
         currentMinecleanerGame = new Game(plugin, BoardSize.boardSizes[widthIndex], BoardSize.mineCounter[widthIndex]);
         currentMinecleanerGame.start();
+        //removeStartHeads();
         flagsPlaced = 0;
         hasMadeFirstClick = false;
         arenaStatus = ArenaStatus.PLAYING;
@@ -295,7 +298,24 @@ public class MinecleanerArena {
                 setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN);
             }
         }
+        //showStartHeads();
     }
+
+    // public void showStartHeads() {
+    //     setDiplayBlock(4+widthIndex, 2+widthIndex+1, MinecleanerHeads.RAINBOW_S);
+    //     setDiplayBlock(4+widthIndex, 3+widthIndex+1, MinecleanerHeads.RAINBOW_T);
+    //     setDiplayBlock(4+widthIndex, 4+widthIndex+1, MinecleanerHeads.RAINBOW_A);
+    //     setDiplayBlock(4+widthIndex, 5+widthIndex+1, MinecleanerHeads.RAINBOW_R);
+    //     setDiplayBlock(4+widthIndex, 6+widthIndex+1, MinecleanerHeads.RAINBOW_T);
+    // }
+
+    // public void removeStartHeads() {
+    //     setDiplayBlock(4+widthIndex, 2+widthIndex+1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN);
+    //     setDiplayBlock(4+widthIndex, 3+widthIndex+1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN);
+    //     setDiplayBlock(4+widthIndex, 4+widthIndex+1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN);
+    //     setDiplayBlock(4+widthIndex, 5+widthIndex+1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN);
+    //     setDiplayBlock(4+widthIndex, 6+widthIndex+1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN);
+    // }
 
     public void removeBlockDisplays() {
         int size = BoardSize.boardSizes[widthIndex];

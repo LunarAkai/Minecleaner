@@ -160,7 +160,7 @@ public class MinecleanerManager {
         if(sg != null) {
             ps.minScore(sg, millis, isUpdated -> {
                 if(isUpdated != null && isUpdated) {
-                    player.sendMessage(ChatColor.GOLD + "Herzlichen Glückwunsch! Du hast eine neue Bestzeit erreicht!" );
+                    player.sendMessage(ChatColor.GOLD + "Herzlichen Glückwunsch! Du hast eine neue Bestzeit erreicht! " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis) );
                 } else {
                     player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das Minecleaner-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis) + ChatColor.YELLOW + " erfolgreich lösen!");
                 }

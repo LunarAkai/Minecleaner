@@ -167,7 +167,7 @@ public class Game {
     public void flag(int x, int y) {
         Cell cell = getCell(x, y);
 
-        if (cell.getType() == Cell.CellType.Invalid || cell.isRevealed()) {
+        if (cell.getType() == Cell.CellType.Invalid || cell.isRevealed() || cell.getType() == null) {
             return;
         }
 
@@ -179,7 +179,7 @@ public class Game {
     public void reveal(int x, int y) {
         Cell cell = getCell(x, y);
 
-        if(cell.getType() == Cell.CellType.Invalid || cell.isRevealed() || cell.flagged) {
+        if(cell.getType() == Cell.CellType.Invalid || cell.isRevealed() || cell.flagged || cell.getType() == null) {
             return;
         }
 
