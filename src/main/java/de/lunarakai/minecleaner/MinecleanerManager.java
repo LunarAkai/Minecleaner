@@ -170,15 +170,15 @@ public class MinecleanerManager {
         int wIndex = arena.getWidthIndex();
         switch (wIndex) {
             case 0: {
-                ps.increaseScore(statisticsPointsAcquired, 1);
+                ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.small"));
                 break;
             }
             case 1: {
-                ps.increaseScore(statisticsPointsAcquired, 5);
+                ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.medium"));
                 break;
             }
             case 2: {
-                ps.increaseScore(statisticsPointsAcquired, 20);
+                ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.large"));
                 break;
             }
             default: {

@@ -1,0 +1,5 @@
+winpoints:
+  size:
+    small: 1
+    medium: 5
+    large: 20

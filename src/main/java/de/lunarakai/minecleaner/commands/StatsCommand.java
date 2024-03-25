@@ -67,11 +67,10 @@ public class StatsCommand extends SubCommand {
                     if(totalSize > 0) {
                         String sizeName = StringUtil.capitalizeFirstLetter(e.getValue(), false);
                         sender.sendMessage(ChatColor.GREEN + "  " + sizeName + ":");
-                        sender.sendMessage(ChatColor.BLUE + "    Runden gewonnen: " + ChatColor.GREEN + totalWonSize + " von " + totalSize  + " (Dieser Monat: " + totalWonMonth + " von " + totalSizeMonth + ")");
+                        sender.sendMessage(ChatColor.BLUE + "    Runden gewonnen: " + ChatColor.GREEN + totalWonSize + " von " + totalSize  + " (" + MinecleanerStringUtil.percentageString(totalWonSize, totalSize)+ ") " + "(Dieser Monat: " + totalWonMonth + " von " + totalSizeMonth + " (" + MinecleanerStringUtil.percentageString(totalWonMonth, totalSizeMonth)+ ")" + ")");
                         Integer time = data.getBestTime(e.getKey());
                         sender.sendMessage(ChatColor.BLUE + "    Bestzeit: " + ChatColor.GREEN + (time == null ? "-": MinecleanerStringUtil.timeToString(time)));
                     }
-
                 }
             }
         };

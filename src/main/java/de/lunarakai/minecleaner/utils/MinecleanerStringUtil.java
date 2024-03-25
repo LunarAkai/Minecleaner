@@ -28,5 +28,11 @@ public class MinecleanerStringUtil {
         }
         return timeString.toString();
     }
-    
+
+    public static String percentageString(int whatPercentage, int fromPercentage) {
+        float percent = (float) whatPercentage/fromPercentage;
+        percent = percent * 100;
+        String percentageString = String.format("%.1f", percent);
+        return percentageString + "%";
+    }  
 }

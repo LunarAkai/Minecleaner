@@ -21,6 +21,7 @@ public final class MinecleanerPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        this.saveDefaultConfig();
         getServer().getScheduler().runTask(this, this::onLateEnable);
     }
 
