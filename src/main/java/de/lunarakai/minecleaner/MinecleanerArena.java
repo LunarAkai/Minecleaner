@@ -453,9 +453,9 @@ public class MinecleanerArena {
     }
 
     private void sendActionBarMessage(Player player) {
-            TextComponent textComponent = new TextComponent("Flaggen gesetzt: " + flagsPlaced + "  Minen insgesamt: " + BoardSize.mineCounter[widthIndex]);
-            textComponent.setColor(ChatColor.GOLD);
-            player.sendMessage(ChatMessageType.ACTION_BAR, textComponent);
+        TextComponent textComponent = new TextComponent("Flaggen gesetzt: " + flagsPlaced + "  Minen insgesamt: " + BoardSize.mineCounter[widthIndex]);
+        textComponent.setColor(ChatColor.GOLD);
+        player.sendMessage(ChatMessageType.ACTION_BAR, textComponent);
     }
 
     public void showMines() {
