@@ -15,6 +15,7 @@ public class PlayerStatisticsData {
     private int pointsAcquiredTotal;
     private int pointsAcquiredMonth;
     private HashMap<Integer, Integer> bestTime;
+    private HashMap<Integer, Integer> bestTimeThisMonth;
 
     public PlayerStatisticsData(UUID playerUUID, String playerName, 
         HashMap<Integer, Integer> totalGamesPlayedSize, 
@@ -25,7 +26,8 @@ public class PlayerStatisticsData {
         HashMap<Integer, Integer> gamesPlayedSizeThisMonth, 
         int pointsAcquiredTotal, 
         int pointsAcquiredMonth,
-        HashMap<Integer, Integer> bestTime) {
+        HashMap<Integer, Integer> bestTime,
+        HashMap<Integer, Integer> bestTimeThisMonth) {
         this.playerUUID = playerUUID;
         this.playerName = playerName;
 
@@ -42,6 +44,7 @@ public class PlayerStatisticsData {
         this.pointsAcquiredMonth = pointsAcquiredMonth;
 
         this.bestTime = bestTime;
+        this.bestTimeThisMonth = bestTimeThisMonth;
     }
 
     public UUID getPlayerID() {
@@ -90,5 +93,9 @@ public class PlayerStatisticsData {
 
     public Integer getBestTime(Integer widthIndex) {
         return bestTime.get(widthIndex);
+    }
+
+    public Integer getBestTimeThisMonth(Integer widthIndex) {
+        return bestTimeThisMonth.get(widthIndex);
     }
 }

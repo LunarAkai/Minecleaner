@@ -80,6 +80,7 @@ public class MinecleanerManager {
             statisticsTotalGamesPlayed.put(e.getKey(), s);
 
             s = plugin.getCubesideStatistics().getStatisticKey("minecleaner.timerecord." + e.getKey());
+            s.setIsMonthlyStats(true);
             s.setDisplayName("Bestzeit bei Größe " + sizeDisplay);
             statisticsTimeRecord.put(e.getKey(), s);
         }
@@ -232,6 +233,7 @@ public class MinecleanerManager {
         HashMap<Integer, PlayerStatisticsQueryKey> kWonGamesPlayedSize = new HashMap<>();
         HashMap<Integer, PlayerStatisticsQueryKey> kWonGamesPlayedSizeMonth = new HashMap<>();
         HashMap<Integer, PlayerStatisticsQueryKey> kSizeTimeRecord = new HashMap<>();
+        HashMap<Integer, PlayerStatisticsQueryKey> kSizeTimeRecordMonth = new HashMap<>();
         HashMap<Integer, PlayerStatisticsQueryKey> kSizeTotalGamesPlayed = new HashMap<>();
         HashMap<Integer, PlayerStatisticsQueryKey> kSizeTotalGamesPlayedMonth = new HashMap<>();
 
@@ -252,6 +254,8 @@ public class MinecleanerManager {
             StatisticKey statisticKeyTime = statisticsTimeRecord.get(i);
             keys.add(qk = new PlayerStatisticsQueryKey(pStatistics, statisticKeyTime, QueryType.SCORE));
             kSizeTimeRecord.put(i, qk);
+            keys.add(qk = new PlayerStatisticsQueryKey(pStatistics, statisticKeyTime, QueryType.SCORE, TimeFrame.MONTH));
+            kSizeTimeRecordMonth.put(i, qk);
         }
 
         PlayerStatisticsQueryKey kPointsAcquired;
@@ -268,6 +272,7 @@ public class MinecleanerManager {
             HashMap<Integer, Integer> sizeWonGames = new HashMap<>();
             HashMap<Integer, Integer> sizeWonGamesMonth = new HashMap<>();
             HashMap<Integer, Integer> sizeTimeRecord = new HashMap<>();
+            HashMap<Integer, Integer> sizeTimeRecordMonth = new HashMap<>();
             HashMap<Integer, Integer> sizeTotalGamesPlayed = new HashMap<>();
             HashMap<Integer, Integer> sizeTotalGamesPlayedMonth = new HashMap<>();
 
@@ -275,6 +280,7 @@ public class MinecleanerManager {
                 sizeWonGames.put(i, c.getOrDefault(kWonGamesPlayedSize.get(i), 0));
                 sizeWonGamesMonth.put(i, c.getOrDefault(kWonGamesPlayedSizeMonth.get(i), 0));
                 sizeTimeRecord.put(i, c.getOrDefault(kSizeTimeRecord.get(i), null));
+                sizeTimeRecordMonth.put(i, c.getOrDefault(kSizeTimeRecordMonth.get(i), null));
                 sizeTotalGamesPlayed.put(i, c.getOrDefault(kSizeTotalGamesPlayed.get(i), 0));
                 sizeTotalGamesPlayedMonth.put(i, c.getOrDefault(kSizeTotalGamesPlayedMonth.get(i), 0));
             }
@@ -288,7 +294,8 @@ public class MinecleanerManager {
                 sizeWonGamesMonth, 
                 pointsAcquiredTotal, 
                 pointsAcquiredMonth,
-                sizeTimeRecord));
+                sizeTimeRecord,
+                sizeTimeRecordMonth));
         });
     }
 
@@ -306,9 +313,6 @@ public class MinecleanerManager {
         statsPlayer.deleteScore(statisticsWonGamesTotal);
         statsPlayer.deleteScore(statisticsPointsAcquired);
         for(StatisticKey statsKey : statisticsGames.values()) {
-            statsPlayer.deleteScore(statsKey);
-        }
-        for(StatisticKey statsKey : statisticsTimeRecord.values()) {
             statsPlayer.deleteScore(statsKey);
         }
         for(StatisticKey statsKey : statisticsTimeRecord.values()) {
