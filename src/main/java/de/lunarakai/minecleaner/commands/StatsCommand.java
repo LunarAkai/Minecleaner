@@ -54,7 +54,7 @@ public class StatsCommand extends SubCommand {
                 if(playerName == null) {
                     sender.sendMessage(ChatColor.GREEN + "Deine Minecleaner Statistik:");
                 } else {
-                    sender.sendMessage(ChatColor.GREEN + "Minecleaner-Statitik von " + data.getPlayerName() + ":");
+                    sender.sendMessage(ChatColor.GREEN + "Minecleaner-Statistik von " + data.getPlayerName() + ":");
                 }
                 sender.sendMessage(ChatColor.BLUE + "  Punkte erspielt: " + ChatColor.GREEN + data.getPointsAcquiredTotal() + " (Dieser Monat: " + data.getPointsAquiredMonth() + ")");
                 sender.sendMessage(ChatColor.BLUE + "  Runden gewonnen: " + ChatColor.GREEN + data.getWonGamesPlayed() + " (Dieser Monat: " + data.getWonGamesPlayedThisMonth() + ")");
@@ -66,11 +66,13 @@ public class StatsCommand extends SubCommand {
 
                     if(totalSize > 0) {
                         String sizeName = StringUtil.capitalizeFirstLetter(e.getValue(), false);
-                        sender.sendMessage(ChatColor.GREEN + "  " + sizeName + ":");
-                        sender.sendMessage(ChatColor.BLUE + "    Runden gewonnen: " + ChatColor.GREEN + totalWonSize + " von " + totalSize  + " (" + MinecleanerStringUtil.percentageString(totalWonSize, totalSize)+ ") " + "(Dieser Monat: " + totalWonMonth + " von " + totalSizeMonth + " (" + MinecleanerStringUtil.percentageString(totalWonMonth, totalSizeMonth)+ ")" + ")");
+                        sender.sendMessage(ChatColor.AQUA + "  " + sizeName + ":");
+                        sender.sendMessage(ChatColor.BLUE + "    Runden gewonnen: " + ChatColor.GREEN + totalWonSize + " von " + totalSize  + " (" + MinecleanerStringUtil.percentageString(totalWonSize, totalSize)+ ") ");
+                        sender.sendMessage(ChatColor.BLUE + "    Dieser Monat: " + ChatColor.GREEN + totalWonMonth + " von " + totalSizeMonth + " (" + MinecleanerStringUtil.percentageString(totalWonMonth, totalSizeMonth)+ ")");
                         Integer time = data.getBestTime(e.getKey());
                         Integer timeThisMonth = data.getBestTimeThisMonth(e.getKey());
-                        sender.sendMessage(ChatColor.BLUE + "    Bestzeit: " + ChatColor.GREEN + (time == null ? "-" : MinecleanerStringUtil.timeToString(time)) + " (Dieser Monat: " + (timeThisMonth == null ? "-" : MinecleanerStringUtil.timeToString(timeThisMonth))  + ")");                    
+                        sender.sendMessage(ChatColor.BLUE + "    Bestzeit: " + ChatColor.GREEN + (time == null ? "-" : MinecleanerStringUtil.timeToString(time)));                    
+                        sender.sendMessage(ChatColor.BLUE + "    Dieser Monat: " + ChatColor.GREEN + (timeThisMonth == null ? "-" : MinecleanerStringUtil.timeToString(timeThisMonth)));                    
                     }
                 }
             }
