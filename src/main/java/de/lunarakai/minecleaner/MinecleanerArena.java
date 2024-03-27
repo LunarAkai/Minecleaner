@@ -331,21 +331,8 @@ public class MinecleanerArena {
     }
 
     public void showStartHeads() {
-        int correction = 1;
-        int xcorrection = 0;
-
         int width = BoardSize.boardSizesWidth[widthIndex];
         int height = BoardSize.boardSizesHeight[widthIndex];
-        if(widthIndex == 0) {
-            correction = 0;
-        }
-        if(widthIndex == 2) {
-            xcorrection = 1;
-        }
-
-        // x breite/2-2 + 0
-
-        // y höhe * 2/3 -1 
 
         // MINE -
         setDiplayBlock(width/2-2 + 0, height/2 + 1, MinecleanerHeads.MINESWEEPER_LETTER_M, true);
@@ -366,27 +353,25 @@ public class MinecleanerArena {
     }
 
     public void removeStartHeads() {
-        int correction = 1;
-        int xcorrection = 0;
-        if(widthIndex == 0) {
-            correction = 0;
-        }
-        if(widthIndex == 2) {
-            xcorrection = 1;
-        }
-        setDiplayBlock(2+widthIndex+correction, 5+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(3+widthIndex+correction, 5+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(4+widthIndex+correction, 5+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(5+widthIndex+correction, 5+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(6+widthIndex+correction, 5+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        int width = BoardSize.boardSizesWidth[widthIndex];
+        int height = BoardSize.boardSizesHeight[widthIndex];
 
-        setDiplayBlock(1+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(2+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(3+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(4+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(5+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(6+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(7+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);   
+        // MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN
+        // MINE -
+        setDiplayBlock(width/2-2 + 0, height/2 + 1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(width/2-2 + 1, height/2 + 1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(width/2-2 + 2, height/2 + 1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(width/2-2 + 3, height/2 + 1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(width/2-2 + 4, height/2 + 1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+
+        // SWEEPER
+        setDiplayBlock(width/2-3 + 0, height/2 - 1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(width/2-3 + 1, height/2 - 1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(width/2-3 + 2, height/2 - 1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(width/2-3 + 3, height/2 - 1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(width/2-3 + 4, height/2 - 1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(width/2-3 + 5, height/2 - 1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(width/2-3 + 6, height/2 - 1, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true); 
     }
 
     public void removeBlockDisplays() {
