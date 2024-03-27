@@ -48,6 +48,7 @@ public class MinecleanerManager {
         this.sizes.put(0, "klein");
         this.sizes.put(1, "mittel");
         this.sizes.put(2, "groß");
+        this.sizes.put(3, "experte");
 
         this.confirmPlayingInventory = plugin.getServer().createInventory(null, InventoryType.HOPPER, "Minecleaner starten?");
         this.confirmPlayingInventory.setItem(1, 
@@ -181,6 +182,9 @@ public class MinecleanerManager {
             case 2: {
                 ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.large"));
                 break;
+            }
+            case 3: {
+                ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.expert"));
             }
             default: {
                 ps.increaseScore(statisticsPointsAcquired, 0);

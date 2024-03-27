@@ -5,10 +5,12 @@ public class BoardSize {
             9,
             12,
             18,
+            33,
     };
 
     public static int[] boardSizesHeight = {
         9,
+        12,
         12,
         12,
     };
@@ -17,5 +19,6 @@ public class BoardSize {
             12,
             25,
             45,
+            99,
     };
 }
