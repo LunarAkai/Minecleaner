@@ -20,10 +20,10 @@ public class Game {
     private int floodedFlaggedCellsCounter;
     private ArrayList<Cell> explodedCells;
 
-    public Game(MinecleanerPlugin plugin, int width, int mineCount) {
+    public Game(MinecleanerPlugin plugin, int width, int height, int mineCount) {
         this.plugin = plugin;
         this.width = width;
-        this.height = width;
+        this.height = height;
         this.mineCount = mineCount;
 
         this.floodedCells = new ArrayList<>();

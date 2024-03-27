@@ -78,7 +78,7 @@ public class MinecleanerArena {
         this.name = Preconditions.checkNotNull(arenaSection.getString("name"));
         this.location = Preconditions.checkNotNull(arenaSection.getLocation("location"));
         this.widthIndex = Preconditions.checkNotNull(arenaSection.getInt("fieldwidth"));
-        this.blockDisplays = new UUID[BoardSize.boardSizes[widthIndex] * BoardSize.boardSizes[widthIndex]];
+        this.blockDisplays = new UUID[BoardSize.boardSizesWidth[widthIndex] * BoardSize.boardSizesHeight[widthIndex]];
         // this.textDisplays = new UUID[1];
 
         BlockFace orientation = BlockFace.NORTH;
@@ -113,7 +113,7 @@ public class MinecleanerArena {
         this.name = Preconditions.checkNotNull(name, "name");
         this.location = Preconditions.checkNotNull(location, "location");
         this.widthIndex = Preconditions.checkNotNull(widthIndex, ("fieldwidth"));
-        this.blockDisplays = new UUID[BoardSize.boardSizes[widthIndex] * BoardSize.boardSizes[widthIndex]];
+        this.blockDisplays = new UUID[BoardSize.boardSizesWidth[widthIndex] * BoardSize.boardSizesHeight[widthIndex]];
         //this.textDisplays = new UUID[1];
 
         Preconditions.checkArgument(Math.abs(orientation.getModX()) + Math.abs(orientation.getModZ()) == 1, "no cardinal direction");
@@ -149,7 +149,8 @@ public class MinecleanerArena {
      *  Bei Größen WidthIndex 1 + 2 -> Mitte = ein Block nach Links unten versetzt 
      */
     public void generateBlockDisplays() {
-        int size = BoardSize.boardSizes[widthIndex];
+        int sizeWidth = BoardSize.boardSizesWidth[widthIndex];
+        int sizeHeight = BoardSize.boardSizesHeight[widthIndex];
 
         World world = location.getWorld();
         for(UUID id : blockDisplays) {
@@ -191,9 +192,9 @@ public class MinecleanerArena {
 
         Location loc = location.clone();
         
-        for(int fx = 0; fx < size; fx++) {
+        for(int fx = 0; fx < sizeHeight; fx++) {
             final int fxf = fx;
-            for(int fz = 0; fz < size; fz++) {
+            for(int fz = 0; fz < sizeWidth; fz++) {
                 final int fzf = fz;
 
                 loc.set(location.getX() - 0.016 + eastWestGapFixX + southGapFixX - (d1x * fz) / 3.0 + d0x * 0.55 + d1x * 1.847, 
@@ -219,7 +220,7 @@ public class MinecleanerArena {
 
 
                 if(blockDisplay != null) {
-                    blockDisplays[fxf + fzf * size] = blockDisplay.getUniqueId();
+                    blockDisplays[fxf * sizeHeight + fzf] = blockDisplay.getUniqueId();
                 }
             }
         }
@@ -271,9 +272,10 @@ public class MinecleanerArena {
     }
 
     private void setDiplayBlock(int x, int y, MinecleanerHeads head, boolean applyUsualRotation) {
-        int size = BoardSize.boardSizes[widthIndex];
+        int sizeWidth = BoardSize.boardSizesWidth[widthIndex];
+        int sizeHeight = BoardSize.boardSizesHeight[widthIndex];
 
-        UUID blockDisplayId = blockDisplays[x + y * size];
+        UUID blockDisplayId = blockDisplays[x * sizeHeight + y];
         Entity blockDisplay = blockDisplayId != null ? location.getWorld().getEntity(blockDisplayId) : null;
         if(blockDisplay instanceof ItemDisplay) {
             ItemDisplay display = (ItemDisplay) blockDisplay;
@@ -287,7 +289,7 @@ public class MinecleanerArena {
     }
 
     public void startNewGame() {
-        currentMinecleanerGame = new Game(plugin, BoardSize.boardSizes[widthIndex], BoardSize.mineCounter[widthIndex]);
+        currentMinecleanerGame = new Game(plugin, BoardSize.boardSizesWidth[widthIndex], BoardSize.boardSizesHeight[widthIndex], BoardSize.mineCounter[widthIndex]);
         currentMinecleanerGame.start();
         removeStartHeads();
         flagsPlaced = 0;
@@ -313,14 +315,15 @@ public class MinecleanerArena {
     } 
 
     public void removePlayer() {
-        int size = BoardSize.boardSizes[widthIndex];
+        int sizeWidth = BoardSize.boardSizesWidth[widthIndex];
+        int sizeHeight = BoardSize.boardSizesWidth[widthIndex];
 
         this.arenaStatus = ArenaStatus.INACTIVE;
         this.currentPlayer = null;
         this.currentMinecleanerGame = null;
         
-        for(int x = 0; x < size; x++) {
-            for(int y = 0; y < size; y++) {
+        for(int x = 0; x < sizeWidth; x++) {
+            for(int y = 0; y < sizeHeight; y++) {
                 setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
             }
         }
@@ -379,12 +382,13 @@ public class MinecleanerArena {
     }
 
     public void removeBlockDisplays() {
-        int size = BoardSize.boardSizes[widthIndex];
+        int sizeWidth = BoardSize.boardSizesWidth[widthIndex];
+        int sizeHeight = BoardSize.boardSizesHeight[widthIndex];
 
         World world = location.getWorld();
-        for(int fx = 0; fx < size; fx++) {
-            for(int fy = 0; fy < size; fy++) {
-                UUID blockDisplayUuid = blockDisplays[fx + fy * size];
+        for(int fx = 0; fx < sizeWidth; fx++) {
+            for(int fy = 0; fy < sizeHeight; fy++) {
+                UUID blockDisplayUuid = blockDisplays[fx * sizeHeight + fy];
                 Entity blockDisplayEntity = blockDisplayUuid != null ? world.getEntity(blockDisplayUuid) : null;
                 if(blockDisplayEntity instanceof Display blockdisplay) {
                     blockDisplayEntity.remove(); 
@@ -600,7 +604,7 @@ public class MinecleanerArena {
     }
 
     public int getSize() {
-        return BoardSize.boardSizes[widthIndex];
+        return BoardSize.boardSizesWidth[widthIndex];
     }
 
     public long getCurrentGameStartTime() {
