@@ -73,7 +73,7 @@ public class MinecleanerListener implements Listener {
                                 hasRightClicked = true;
                             }
                             //player.sendMessage("Arena click! " + blockxInt + " " + blockzInt + " Right Clicked: " + hasRightClicked);
-                            plugin.getManager().handleFieldClick(e.getPlayer(), blockxInt, blockzInt, hasRightClicked);
+                            plugin.getManager().handleFieldClick(e.getPlayer(), blockzInt, blockxInt, hasRightClicked);
                         }
                     }
                 }

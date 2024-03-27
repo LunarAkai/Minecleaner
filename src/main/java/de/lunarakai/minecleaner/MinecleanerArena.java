@@ -78,7 +78,7 @@ public class MinecleanerArena {
         this.name = Preconditions.checkNotNull(arenaSection.getString("name"));
         this.location = Preconditions.checkNotNull(arenaSection.getLocation("location"));
         this.widthIndex = Preconditions.checkNotNull(arenaSection.getInt("fieldwidth"));
-        this.blockDisplays = new UUID[BoardSize.boardSizes[widthIndex] * BoardSize.boardSizes[widthIndex]];
+        this.blockDisplays = new UUID[BoardSize.boardSizesWidth[widthIndex] * BoardSize.boardSizesHeight[widthIndex]];
         // this.textDisplays = new UUID[1];
 
         BlockFace orientation = BlockFace.NORTH;
@@ -113,7 +113,7 @@ public class MinecleanerArena {
         this.name = Preconditions.checkNotNull(name, "name");
         this.location = Preconditions.checkNotNull(location, "location");
         this.widthIndex = Preconditions.checkNotNull(widthIndex, ("fieldwidth"));
-        this.blockDisplays = new UUID[BoardSize.boardSizes[widthIndex] * BoardSize.boardSizes[widthIndex]];
+        this.blockDisplays = new UUID[BoardSize.boardSizesWidth[widthIndex] * BoardSize.boardSizesHeight[widthIndex]];
         //this.textDisplays = new UUID[1];
 
         Preconditions.checkArgument(Math.abs(orientation.getModX()) + Math.abs(orientation.getModZ()) == 1, "no cardinal direction");
@@ -149,7 +149,8 @@ public class MinecleanerArena {
      *  Bei Größen WidthIndex 1 + 2 -> Mitte = ein Block nach Links unten versetzt 
      */
     public void generateBlockDisplays() {
-        int size = BoardSize.boardSizes[widthIndex];
+        int sizeWidth = BoardSize.boardSizesWidth[widthIndex];
+        int sizeHeight = BoardSize.boardSizesHeight[widthIndex];
 
         World world = location.getWorld();
         for(UUID id : blockDisplays) {
@@ -191,9 +192,9 @@ public class MinecleanerArena {
 
         Location loc = location.clone();
         
-        for(int fx = 0; fx < size; fx++) {
+        for(int fx = 0; fx < sizeHeight; fx++) {
             final int fxf = fx;
-            for(int fz = 0; fz < size; fz++) {
+            for(int fz = 0; fz < sizeWidth; fz++) {
                 final int fzf = fz;
 
                 loc.set(location.getX() - 0.016 + eastWestGapFixX + southGapFixX - (d1x * fz) / 3.0 + d0x * 0.55 + d1x * 1.847, 
@@ -219,7 +220,7 @@ public class MinecleanerArena {
 
 
                 if(blockDisplay != null) {
-                    blockDisplays[fxf + fzf * size] = blockDisplay.getUniqueId();
+                    blockDisplays[fxf * sizeWidth + fzf] = blockDisplay.getUniqueId();
                 }
             }
         }
@@ -271,9 +272,10 @@ public class MinecleanerArena {
     }
 
     private void setDiplayBlock(int x, int y, MinecleanerHeads head, boolean applyUsualRotation) {
-        int size = BoardSize.boardSizes[widthIndex];
+        int sizeWidth = BoardSize.boardSizesWidth[widthIndex];
+        int sizeHeight = BoardSize.boardSizesHeight[widthIndex];
 
-        UUID blockDisplayId = blockDisplays[x + y * size];
+        UUID blockDisplayId = blockDisplays[x + y * sizeWidth];
         Entity blockDisplay = blockDisplayId != null ? location.getWorld().getEntity(blockDisplayId) : null;
         if(blockDisplay instanceof ItemDisplay) {
             ItemDisplay display = (ItemDisplay) blockDisplay;
@@ -287,7 +289,7 @@ public class MinecleanerArena {
     }
 
     public void startNewGame() {
-        currentMinecleanerGame = new Game(plugin, BoardSize.boardSizes[widthIndex], BoardSize.mineCounter[widthIndex]);
+        currentMinecleanerGame = new Game(plugin, BoardSize.boardSizesWidth[widthIndex], BoardSize.boardSizesHeight[widthIndex], BoardSize.mineCounter[widthIndex]);
         currentMinecleanerGame.start();
         removeStartHeads();
         flagsPlaced = 0;
@@ -313,14 +315,15 @@ public class MinecleanerArena {
     } 
 
     public void removePlayer() {
-        int size = BoardSize.boardSizes[widthIndex];
+        int sizeWidth = BoardSize.boardSizesWidth[widthIndex];
+        int sizeHeight = BoardSize.boardSizesHeight[widthIndex];
 
         this.arenaStatus = ArenaStatus.INACTIVE;
         this.currentPlayer = null;
         this.currentMinecleanerGame = null;
         
-        for(int x = 0; x < size; x++) {
-            for(int y = 0; y < size; y++) {
+        for(int x = 0; x < sizeWidth; x++) {
+            for(int y = 0; y < sizeHeight; y++) {
                 setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
             }
         }
@@ -330,27 +333,35 @@ public class MinecleanerArena {
     public void showStartHeads() {
         int correction = 1;
         int xcorrection = 0;
+
+        int width = BoardSize.boardSizesWidth[widthIndex];
+        int height = BoardSize.boardSizesHeight[widthIndex];
         if(widthIndex == 0) {
             correction = 0;
         }
         if(widthIndex == 2) {
             xcorrection = 1;
         }
+
+        // x breite/2-2 + 0
+
+        // y höhe * 2/3 -1 
+
         // MINE -
-        setDiplayBlock(5+widthIndex+xcorrection, 2+widthIndex+correction, MinecleanerHeads.MINESWEEPER_LETTER_M, true);
-        setDiplayBlock(5+widthIndex+xcorrection, 3+widthIndex+correction, MinecleanerHeads.MINESWEEPER_LETTER_I, true);
-        setDiplayBlock(5+widthIndex+xcorrection, 4+widthIndex+correction, MinecleanerHeads.MINESWEEPER_LETTER_N, true);
-        setDiplayBlock(5+widthIndex+xcorrection, 5+widthIndex+correction, MinecleanerHeads.MINESWEEPER_LETTER_E, true);
-        setDiplayBlock(5+widthIndex+xcorrection, 6+widthIndex+correction, MinecleanerHeads.MINESWEEPER_LETTER_MINUS, true);
+        setDiplayBlock(width/2-2 + 0, height/2 + 1, MinecleanerHeads.MINESWEEPER_LETTER_M, true);
+        setDiplayBlock(width/2-2 + 1, height/2 + 1, MinecleanerHeads.MINESWEEPER_LETTER_I, true);
+        setDiplayBlock(width/2-2 + 2, height/2 + 1, MinecleanerHeads.MINESWEEPER_LETTER_N, true);
+        setDiplayBlock(width/2-2 + 3, height/2 + 1, MinecleanerHeads.MINESWEEPER_LETTER_E, true);
+        setDiplayBlock(width/2-2 + 4, height/2 + 1, MinecleanerHeads.MINESWEEPER_LETTER_MINUS, true);
 
         // SWEEPER
-        setDiplayBlock(3+widthIndex+xcorrection, 1+widthIndex+correction, MinecleanerHeads.MINESWEEPER_LETTER_S, true);
-        setDiplayBlock(3+widthIndex+xcorrection, 2+widthIndex+correction, MinecleanerHeads.MINESWEEPER_LETTER_W, true);
-        setDiplayBlock(3+widthIndex+xcorrection, 3+widthIndex+correction, MinecleanerHeads.MINESWEEPER_LETTER_E, true);
-        setDiplayBlock(3+widthIndex+xcorrection, 4+widthIndex+correction, MinecleanerHeads.MINESWEEPER_LETTER_E, true);
-        setDiplayBlock(3+widthIndex+xcorrection, 5+widthIndex+correction, MinecleanerHeads.MINESWEEPER_LETTER_P, true);
-        setDiplayBlock(3+widthIndex+xcorrection, 6+widthIndex+correction, MinecleanerHeads.MINESWEEPER_LETTER_E, true);
-        setDiplayBlock(3+widthIndex+xcorrection, 7+widthIndex+correction, MinecleanerHeads.MINESWEEPER_LETTER_R, true);
+        setDiplayBlock(width/2-3 + 0, height/2 - 1, MinecleanerHeads.MINESWEEPER_LETTER_S, true);
+        setDiplayBlock(width/2-3 + 1, height/2 - 1, MinecleanerHeads.MINESWEEPER_LETTER_W, true);
+        setDiplayBlock(width/2-3 + 2, height/2 - 1, MinecleanerHeads.MINESWEEPER_LETTER_E, true);
+        setDiplayBlock(width/2-3 + 3, height/2 - 1, MinecleanerHeads.MINESWEEPER_LETTER_E, true);
+        setDiplayBlock(width/2-3 + 4, height/2 - 1, MinecleanerHeads.MINESWEEPER_LETTER_P, true);
+        setDiplayBlock(width/2-3 + 5, height/2 - 1, MinecleanerHeads.MINESWEEPER_LETTER_E, true);
+        setDiplayBlock(width/2-3 + 6, height/2 - 1, MinecleanerHeads.MINESWEEPER_LETTER_R, true);
 
     }
 
@@ -363,28 +374,29 @@ public class MinecleanerArena {
         if(widthIndex == 2) {
             xcorrection = 1;
         }
-        setDiplayBlock(5+widthIndex+xcorrection, 2+widthIndex+correction, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(5+widthIndex+xcorrection, 3+widthIndex+correction, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(5+widthIndex+xcorrection, 4+widthIndex+correction, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(5+widthIndex+xcorrection, 5+widthIndex+correction, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(5+widthIndex+xcorrection, 6+widthIndex+correction, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(2+widthIndex+correction, 5+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(3+widthIndex+correction, 5+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(4+widthIndex+correction, 5+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(5+widthIndex+correction, 5+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(6+widthIndex+correction, 5+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
 
-        setDiplayBlock(3+widthIndex+xcorrection, 1+widthIndex+correction, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(3+widthIndex+xcorrection, 2+widthIndex+correction, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(3+widthIndex+xcorrection, 3+widthIndex+correction, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(3+widthIndex+xcorrection, 4+widthIndex+correction, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(3+widthIndex+xcorrection, 5+widthIndex+correction, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(3+widthIndex+xcorrection, 6+widthIndex+correction, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
-        setDiplayBlock(3+widthIndex+xcorrection, 7+widthIndex+correction, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);   
+        setDiplayBlock(1+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(2+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(3+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(4+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(5+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(6+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
+        setDiplayBlock(7+widthIndex+correction, 3+widthIndex+xcorrection, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);   
     }
 
     public void removeBlockDisplays() {
-        int size = BoardSize.boardSizes[widthIndex];
+        int sizeWidth = BoardSize.boardSizesWidth[widthIndex];
+        int sizeHeight = BoardSize.boardSizesHeight[widthIndex];
 
         World world = location.getWorld();
-        for(int fx = 0; fx < size; fx++) {
-            for(int fy = 0; fy < size; fy++) {
-                UUID blockDisplayUuid = blockDisplays[fx + fy * size];
+        for(int fx = 0; fx < sizeWidth; fx++) {
+            for(int fy = 0; fy < sizeHeight; fy++) {
+                UUID blockDisplayUuid = blockDisplays[fx + fy * sizeWidth];
                 Entity blockDisplayEntity = blockDisplayUuid != null ? world.getEntity(blockDisplayUuid) : null;
                 if(blockDisplayEntity instanceof Display blockdisplay) {
                     blockDisplayEntity.remove(); 
@@ -543,9 +555,9 @@ public class MinecleanerArena {
         int d1z = d0x;
 
         Location loc = location.clone();
-
-        for(int fx = -1 - widthIndex; fx < 2; fx++) {
-            for(int fy = -1; fy < 2 + widthIndex; fy++) {
+        
+        for(int fx = -1 - (BoardSize.boardSizesWidth[widthIndex]/3 - 3); fx < 2; fx++) { // boardWith/3 
+            for(int fy = -1; fy < BoardSize.boardSizesHeight[widthIndex]/3 - 1; fy++) { // fy < boardHeight/3 - 1
                 loc.set(location.getX() + d1x * fx, location.getY() + fy, location.getZ() + d1z * fx);
                 blocks.add(loc.clone());
             }
@@ -600,7 +612,7 @@ public class MinecleanerArena {
     }
 
     public int getSize() {
-        return BoardSize.boardSizes[widthIndex];
+        return BoardSize.boardSizesWidth[widthIndex];
     }
 
     public long getCurrentGameStartTime() {

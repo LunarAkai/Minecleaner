@@ -237,7 +237,7 @@ public class MinecleanerManager {
         HashMap<Integer, PlayerStatisticsQueryKey> kSizeTotalGamesPlayed = new HashMap<>();
         HashMap<Integer, PlayerStatisticsQueryKey> kSizeTotalGamesPlayedMonth = new HashMap<>();
 
-        for (int i = 0; i < BoardSize.boardSizes.length; i++) {
+        for (int i = 0; i < BoardSize.boardSizesWidth.length; i++) {
             PlayerStatisticsQueryKey qk;
             StatisticKey statisticKeyGames = statisticsGames.get(i);
             keys.add(qk = new PlayerStatisticsQueryKey(pStatistics, statisticKeyGames, QueryType.SCORE));
@@ -276,7 +276,7 @@ public class MinecleanerManager {
             HashMap<Integer, Integer> sizeTotalGamesPlayed = new HashMap<>();
             HashMap<Integer, Integer> sizeTotalGamesPlayedMonth = new HashMap<>();
 
-            for(int i = 0; i < BoardSize.boardSizes.length; i++) {
+            for(int i = 0; i < BoardSize.boardSizesWidth.length; i++) {
                 sizeWonGames.put(i, c.getOrDefault(kWonGamesPlayedSize.get(i), 0));
                 sizeWonGamesMonth.put(i, c.getOrDefault(kWonGamesPlayedSizeMonth.get(i), 0));
                 sizeTimeRecord.put(i, c.getOrDefault(kSizeTimeRecord.get(i), null));
