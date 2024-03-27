@@ -52,9 +52,9 @@ public class StatsCommand extends SubCommand {
                     return;
                 }
                 if(playerName == null) {
-                    sender.sendMessage(ChatColor.GREEN + "Deine Minecleaner Statistik:");
+                    sender.sendMessage(ChatColor.AQUA + "Deine Minecleaner Statistik:");
                 } else {
-                    sender.sendMessage(ChatColor.GREEN + "Minecleaner-Statistik von " + data.getPlayerName() + ":");
+                    sender.sendMessage(ChatColor.AQUA + "Minecleaner-Statistik von " + data.getPlayerName() + ":");
                 }
                 sender.sendMessage(ChatColor.BLUE + "  Punkte erspielt: " + ChatColor.GREEN + data.getPointsAcquiredTotal() + " (Dieser Monat: " + data.getPointsAquiredMonth() + ")");
                 sender.sendMessage(ChatColor.BLUE + "  Runden gewonnen: " + ChatColor.GREEN + data.getWonGamesPlayed() + " (Dieser Monat: " + data.getWonGamesPlayedThisMonth() + ")");
