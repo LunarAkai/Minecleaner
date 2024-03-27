@@ -7,6 +7,7 @@ import de.iani.playerUUIDCache.PlayerUUIDCache;
 import de.lunarakai.minecleaner.commands.CreateCommand;
 import de.lunarakai.minecleaner.commands.DeleteCommand;
 import de.lunarakai.minecleaner.commands.DeletePlayerScoreCommand;
+import de.lunarakai.minecleaner.commands.InfoCommand;
 import de.lunarakai.minecleaner.commands.ListCommand;
 import de.lunarakai.minecleaner.commands.StatsCommand;
 
@@ -41,6 +42,7 @@ public final class MinecleanerPlugin extends JavaPlugin {
         minecleanerCommand.addCommandMapping(new ListCommand(this), "list");
         minecleanerCommand.addCommandMapping(new StatsCommand(this), "stats");
         minecleanerCommand.addCommandMapping(new DeletePlayerScoreCommand(this), "deleteplayerscores");
+        minecleanerCommand.addCommandMapping(new InfoCommand(this), "info");
     }
 
     @Override

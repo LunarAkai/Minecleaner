@@ -565,7 +565,7 @@ public class MinecleanerArena {
             case 2:
                 return dist > 128.0;
             case 3:
-                return dist > 256.0;
+                return dist > 156.0;
         }
         return dist > 64.0;
     }
