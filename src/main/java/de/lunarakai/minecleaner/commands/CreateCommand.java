@@ -78,7 +78,7 @@ public class CreateCommand extends SubCommand {
                     return true;
                 }
                 if(widthindex > 3) {
-                    sender.sendMessage(ChatColor.DARK_RED + "Arena WidthIndex darf nicht größer als 2 sein");
+                    sender.sendMessage(ChatColor.DARK_RED + "Arena WidthIndex darf nicht größer als 3 sein");
                     sender.sendMessage(ChatColor.DARK_RED + "0 (oder weglassen) = 9*9, 1 = 12*12, 2 = 12*18, 3 = 12*33");
                     return true;
                 }
