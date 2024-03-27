@@ -136,8 +136,8 @@ public class MinecleanerArena {
         BlockData block0 = Material.NETHER_BRICKS.createBlockData();
         BlockData block1 = Material.BRICKS.createBlockData();
 
-        for (int fx = -1 - widthIndex; fx < 2 ; fx++) {
-            for (int fy = -1; fy < 2 + widthIndex; fy++) {
+        for (int fx = -1 - (BoardSize.boardSizesWidth[widthIndex]/3 - 3); fx < 2; fx++) {
+            for (int fy = -1; fy < BoardSize.boardSizesHeight[widthIndex]/3 - 1; fy++) {
                 loc.set(location.getX() + d1x * fx, location.getY() + fy, location.getZ() + d1z * fx);
                 boolean f = (fx + fy) % 2 == 0;
                 world.setBlockData(loc, f ? block0 : block1);
