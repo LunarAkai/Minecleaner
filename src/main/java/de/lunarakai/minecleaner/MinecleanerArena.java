@@ -220,7 +220,7 @@ public class MinecleanerArena {
 
 
                 if(blockDisplay != null) {
-                    blockDisplays[fxf * sizeHeight + fzf] = blockDisplay.getUniqueId();
+                    blockDisplays[fxf * sizeWidth + fzf] = blockDisplay.getUniqueId();
                 }
             }
         }
@@ -275,7 +275,7 @@ public class MinecleanerArena {
         int sizeWidth = BoardSize.boardSizesWidth[widthIndex];
         int sizeHeight = BoardSize.boardSizesHeight[widthIndex];
 
-        UUID blockDisplayId = blockDisplays[x * sizeHeight + y];
+        UUID blockDisplayId = blockDisplays[x + y * sizeWidth];
         Entity blockDisplay = blockDisplayId != null ? location.getWorld().getEntity(blockDisplayId) : null;
         if(blockDisplay instanceof ItemDisplay) {
             ItemDisplay display = (ItemDisplay) blockDisplay;
@@ -388,7 +388,7 @@ public class MinecleanerArena {
         World world = location.getWorld();
         for(int fx = 0; fx < sizeWidth; fx++) {
             for(int fy = 0; fy < sizeHeight; fy++) {
-                UUID blockDisplayUuid = blockDisplays[fx * sizeHeight + fy];
+                UUID blockDisplayUuid = blockDisplays[fx + fy * sizeWidth];
                 Entity blockDisplayEntity = blockDisplayUuid != null ? world.getEntity(blockDisplayUuid) : null;
                 if(blockDisplayEntity instanceof Display blockdisplay) {
                     blockDisplayEntity.remove(); 
