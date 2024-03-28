@@ -5,7 +5,7 @@ public class BoardSize {
             9,
             12,
             18,
-            33,
+            36,
     };
 
     public static int[] boardSizesHeight = {

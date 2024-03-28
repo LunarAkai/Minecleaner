@@ -556,18 +556,39 @@ public class MinecleanerArena {
             return true;
         }
         player.getLocation(tempLoc);
-        double dist = tempLoc.distanceSquared(centerLocation);
-        switch (widthIndex) {
-            case 0:
-                return dist > 64.0;
-            case 1:
-                return dist > 96.0;
-            case 2:
-                return dist > 128.0;
-            case 3:
-                return dist > 156.0;
-        }
-        return dist > 64.0;
+
+        double centerX = centerLocation.getX();
+        double centerY = centerLocation.getY() + (BoardSize.boardSizesHeight[widthIndex]/3)/2.0 - 1;
+        double centerZ = centerLocation.getZ();
+
+        switch (orientation) {
+            case NORTH: {
+                centerX = centerLocation.getX() - ((BoardSize.boardSizesWidth[widthIndex]/3)/2.0) + 1;
+                break;
+            }
+            case EAST: {
+                centerZ = centerLocation.getZ() - ((BoardSize.boardSizesWidth[widthIndex]/3)/2.0) + 1;
+                break;
+            }
+
+            case SOUTH: {
+                centerX = centerLocation.getX() + ((BoardSize.boardSizesWidth[widthIndex]/3)/2.0) -1;
+                break;
+            }
+            case WEST: {
+                centerZ = centerLocation.getZ() + ((BoardSize.boardSizesWidth[widthIndex]/3)/2.0) - 1;
+                break;
+            }  
+            default: {
+                break;
+            }
+         }
+
+        Location trueCenterLocation = new Location(player.getWorld(), centerX, centerY, centerZ);
+        double dist = tempLoc.distanceSquared(trueCenterLocation);
+        player.sendMessage(ChatColor.GOLD + "Dist: " + dist);
+
+        return dist > Math.pow((BoardSize.boardSizesWidth[widthIndex]/4.5) + 6, 2);
     }
 
     public String getName() {
