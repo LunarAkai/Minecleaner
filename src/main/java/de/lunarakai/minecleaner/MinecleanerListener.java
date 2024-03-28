@@ -112,8 +112,9 @@ public class MinecleanerListener implements Listener {
                         boolean hasConfirmed = slot == 1 ? true : false;
                         if(hasConfirmed) {  
                             plugin.getManager().startGame(player);
-                            player.closeInventory();
+                            //player.closeInventory();
                         }
+                        player.closeInventory();
                     }
                 }
             }
