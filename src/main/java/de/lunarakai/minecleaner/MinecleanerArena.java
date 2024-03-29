@@ -1,10 +1,16 @@
 package de.lunarakai.minecleaner;
 
+import com.google.common.base.Preconditions;
+import de.lunarakai.minecleaner.game.BoardSize;
+import de.lunarakai.minecleaner.game.Cell;
+import de.lunarakai.minecleaner.game.Game;
+import de.lunarakai.minecleaner.utils.MinecleanerHeads;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -17,18 +23,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import com.google.common.base.Preconditions;
-import de.lunarakai.minecleaner.game.BoardSize;
-import de.lunarakai.minecleaner.game.Cell;
-import de.lunarakai.minecleaner.game.Game;
-import de.lunarakai.minecleaner.utils.MinecleanerHeads;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public class MinecleanerArena {
     private final MinecleanerPlugin plugin;
