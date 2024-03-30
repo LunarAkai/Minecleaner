@@ -6,7 +6,7 @@
 
     <groupId>de.lunarakai</groupId>
     <artifactId>Minecleaner</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.3b</version>
     <packaging>jar</packaging>
 
     <name>Minecleaner</name>
