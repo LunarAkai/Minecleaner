@@ -31,11 +31,11 @@ public class MinecleanerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST) 
     public void onPlayerInteract(PlayerInteractEvent e) {
+        if(e.getHand() != EquipmentSlot.HAND) return;
         if((e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             Block block = e.getClickedBlock();
             MinecleanerArena arena = plugin.getArenaList().getPlayerArena(e.getPlayer());
             if(arena != null) {
-                if(e.getHand() != EquipmentSlot.HAND) return;
                 e.setCancelled(true);
                 MinecleanerArena arenaClicked = plugin.getArenaList().getArenaAtBlock(block);
                 if(arenaClicked == arena && arena.getArenaStatus() == ArenaStatus.PLAYING) {
