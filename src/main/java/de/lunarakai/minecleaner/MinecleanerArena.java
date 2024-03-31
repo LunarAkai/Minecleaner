@@ -349,6 +349,7 @@ public class MinecleanerArena {
             textdisplay.setVisibleByDefault(true);
             textdisplay.setDisplayHeight(3);
             textdisplay.setDisplayWidth((float) BoardSize.boardSizesWidth[widthIndex] / 3);
+            textdisplay.setPersistent(false);
             textdisplay.text(Component.text(ChatColor.GOLD + "Minesweeper"));
         });
     }
