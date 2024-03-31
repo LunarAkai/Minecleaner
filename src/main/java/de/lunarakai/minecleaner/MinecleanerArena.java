@@ -449,6 +449,7 @@ public class MinecleanerArena {
     }
 
     private void setBlockForCellType(int x, int y, Cell cell) {
+        if(cell.getType() == null) return;
         switch (cell.getType()) {
             case Empty: {
                 if (!cell.isRevealed() || !cell.isFlagged() || !cell.isExploded()) {
