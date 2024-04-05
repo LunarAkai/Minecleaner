@@ -600,9 +600,11 @@ public class MinecleanerArena {
         return blockDisplays;
     }
 
-    public int getSize() {
+    public int getArenaWidth() {
         return BoardSize.boardSizesWidth[widthIndex];
     }
+
+    public int getArenaHeight() { return BoardSize.boardSizesHeight[widthIndex]; }
 
     public long getCurrentGameStartTime() {
         return currentGameStartTime;
