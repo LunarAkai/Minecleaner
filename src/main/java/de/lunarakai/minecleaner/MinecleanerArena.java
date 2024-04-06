@@ -233,20 +233,23 @@ public class MinecleanerArena {
         arenaStatus = ArenaStatus.PLAYING;
         currentGameStartTime = System.currentTimeMillis();
 
-        if((plugin.getManager().getSettingsValue("additionaldisplay", currentPlayer) != 0
-                || plugin.getManager().getSettingsValue("timer", currentPlayer) != 0) && arenaStatus == ArenaStatus.PLAYING) {
-            new BukkitRunnable() {
-                @Override
+        new BukkitRunnable() {
+            @Override
                 public void run() {
-                    if(arenaStatus == ArenaStatus.PLAYING && currentPlayer != null) {
+                if(arenaStatus == ArenaStatus.PLAYING && currentPlayer != null) {
+                    if(!currentMinecleanerGame.gameover) {
                         ingameTime++;
-                        updateIngameInfoTexts();
-                    } else {
-                        cancel();
                     }
+                    if(plugin.getManager().getSettingsValue("additionaldisplay", currentPlayer) != 0
+                            || plugin.getManager().getSettingsValue("timer", currentPlayer) != 0) {
+                        updateIngameInfoTexts();
+                    }
+                } else {
+                    cancel();
                 }
-            }.runTaskTimer(plugin, 1L, 1L);
-        }
+            }
+        }.runTaskTimer(plugin, 1L, 1L);
+
     }
 
     public void addJoiningPlayer(Player player) {
