@@ -71,8 +71,8 @@ public class StatsCommand extends SubCommand {
                         sender.sendMessage(ChatColor.BLUE + "    Dieser Monat: " + ChatColor.GREEN + totalWonMonth + " von " + totalSizeMonth + " (" + MinecleanerStringUtil.percentageString(totalWonMonth, totalSizeMonth)+ ")");
                         Integer time = data.getBestTime(e.getKey());
                         Integer timeThisMonth = data.getBestTimeThisMonth(e.getKey());
-                        sender.sendMessage(ChatColor.BLUE + "    Bestzeit: " + ChatColor.GREEN + (time == null ? "-" : MinecleanerStringUtil.timeToString(time)));                    
-                        sender.sendMessage(ChatColor.BLUE + "    Dieser Monat: " + ChatColor.GREEN + (timeThisMonth == null ? "-" : MinecleanerStringUtil.timeToString(timeThisMonth)));                    
+                        sender.sendMessage(ChatColor.BLUE + "    Bestzeit: " + ChatColor.GREEN + (time == null ? "-" : MinecleanerStringUtil.timeToString(time, false)));
+                        sender.sendMessage(ChatColor.BLUE + "    Dieser Monat: " + ChatColor.GREEN + (timeThisMonth == null ? "-" : MinecleanerStringUtil.timeToString(timeThisMonth, false)));
                     }
                 }
             }

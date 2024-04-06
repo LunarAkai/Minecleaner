@@ -4,7 +4,7 @@ public class MinecleanerStringUtil {
     private MinecleanerStringUtil() {
     }    
     
-    public static String timeToString(long millis) {
+    public static String timeToString(long millis, boolean shorten) {
         int sec = (int) (millis / 1000);
         int min = sec / 60;
         int hours = min / 60;
@@ -12,19 +12,31 @@ public class MinecleanerStringUtil {
         min = min % 60;
         StringBuilder timeString = new StringBuilder();
         if (hours > 0) {
-            timeString.append(hours).append(" Stunden");
+            String hoursString = " Stunden";
+            if(shorten) {
+                hoursString = " h";
+            }
+            timeString.append(hours).append(hoursString);
         }
         if (min > 0 || !timeString.isEmpty()) {
             if (!timeString.isEmpty()) {
                 timeString.append(", ");
             }
-            timeString.append(min).append(" Minuten");
+            String minString = " Minuten";
+            if(shorten) {
+                minString = " min";
+            }
+            timeString.append(min).append(minString);
         }
         if (sec > 0 || !timeString.isEmpty()) {
             if (!timeString.isEmpty()) {
                 timeString.append(" und ");
             }
-            timeString.append(sec).append(" Sekunden");
+            String secondsString = " Sekunden";
+            if(shorten) {
+                secondsString = " s";
+            }
+            timeString.append(sec).append(secondsString);
         }
         return timeString.toString();
     }
