@@ -122,6 +122,39 @@ public class MinecleanerListener implements Listener {
                     }
                 }
             }
+            if(e.getInventory().equals(plugin.getManager().getSettingsInventory())) {
+                e.setCancelled(true);
+                int slot = e.getRawSlot();
+                switch (slot) {
+                    case 12: {
+                        if(plugin.getManager().getSettingsValue("additionaldisplay", player) == 0) {
+                            plugin.getManager().updateSettingsValue("additionaldisplay", 1, player);
+                            player.closeInventory();
+                            player.openInventory(plugin.getManager().showSettingsInventory(player));
+                        } else {
+                            plugin.getManager().updateSettingsValue("additionaldisplay", 0, player);
+                            player.closeInventory();
+                            player.openInventory(plugin.getManager().showSettingsInventory(player));
+                        }
+                        break;
+                    }
+                    case 14: {
+                        if(plugin.getManager().getSettingsValue("timer", player) == 0) {
+                            plugin.getManager().updateSettingsValue("timer", 1, player);
+                            player.closeInventory();
+                            player.openInventory(plugin.getManager().showSettingsInventory(player));
+                        } else {
+                            plugin.getManager().updateSettingsValue("timer", 0, player);
+                            player.closeInventory();
+                            player.openInventory(plugin.getManager().showSettingsInventory(player));
+                        }
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
         }
     }
     

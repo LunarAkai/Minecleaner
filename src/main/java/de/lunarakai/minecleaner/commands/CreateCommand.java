@@ -94,12 +94,12 @@ public class CreateCommand extends SubCommand {
         @Nullable
         RayTraceResult target = player.rayTraceBlocks(6);
         if(target == null || target.getHitBlock() == null) {
-            sender.sendMessage(ChatColor.DARK_RED + "Bitte gucke den Block an, der im Zentrum des Minecleaner-Spielfelds sein soll.");
+            sender.sendMessage(ChatColor.DARK_RED + "Bitte gucke den Block an, der im Zentrum des " + plugin.getDisplayedPluginName() + "-Spielfelds sein soll.");
             return true;
         }
         BlockFace face = target.getHitBlockFace();
         if(face != BlockFace.NORTH && face != BlockFace.WEST && face != BlockFace.EAST && face != BlockFace.SOUTH) {
-            sender.sendMessage(ChatColor.DARK_RED + "Bitte gucke die Seite des Blockes an, wo das Minecleaner-Spielfeld erstellt werden soll.");
+            sender.sendMessage(ChatColor.DARK_RED + "Bitte gucke die Seite des Blockes an, wo das " + plugin.getDisplayedPluginName() + "-Spielfeld erstellt werden soll.");
             return true;
         }
         location = target.getHitBlock().getLocation();

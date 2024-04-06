@@ -52,9 +52,9 @@ public class DeleteCommand extends SubCommand {
         }
         if(arena != null) {
             plugin.getArenaList().removeArena(arena);
-            sender.sendMessage(ChatColor.YELLOW + "Die Minecleaner-Arena " + arena.getName() + " wurde gelöscht.");
+            sender.sendMessage(ChatColor.YELLOW + "Die " + plugin.getDisplayedPluginName() + "-Arena " + arena.getName() + " wurde gelöscht.");
         } else {
-            sender.sendMessage(ChatColor.YELLOW + "Hier befindet sich keine Minecleaner-Arena.");
+            sender.sendMessage(ChatColor.YELLOW + "Hier befindet sich keine " + plugin.getDisplayedPluginName() + "-Arena.");
         }
         return true;
     }

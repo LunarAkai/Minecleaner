@@ -5,12 +5,16 @@ import de.lunarakai.minecleaner.game.BoardSize;
 import de.lunarakai.minecleaner.game.Cell;
 import de.lunarakai.minecleaner.game.Game;
 import de.lunarakai.minecleaner.utils.MinecleanerHeads;
+import de.lunarakai.minecleaner.utils.MinecleanerStringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -23,6 +27,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -41,6 +46,7 @@ public class MinecleanerArena {
     private int flagsPlaced = 0;
     private Player currentPlayer;
     private long currentGameStartTime;
+    private long ingameTime;
     private Game currentMinecleanerGame;
     private final Location tempLoc = new Location(null, 0, 0, 0);
 
@@ -219,6 +225,28 @@ public class MinecleanerArena {
         currentMinecleanerGame = new Game(plugin, BoardSize.boardSizesWidth[widthIndex], BoardSize.boardSizesHeight[widthIndex], BoardSize.mineCounter[widthIndex]);
         currentMinecleanerGame.start();
         showTextDisplay();
+        if(plugin.getManager().getSettingsValue("additionaldisplay", currentPlayer) != 0) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if(arenaStatus == ArenaStatus.PLAYING && currentPlayer != null) {
+                        updateIngameInfoTexts();
+                    }
+                }
+            }.runTaskTimer(plugin, 20L, 20L);
+        }
+
+        if(plugin.getManager().getSettingsValue("timer", currentPlayer) != 0) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if(arenaStatus == ArenaStatus.PLAYING && currentPlayer != null) {
+                        updateIngameInfoTexts();
+                    }
+                }
+            }.runTaskTimer(plugin, 1L, 1L);
+        }
+
         removeStartHeads();
         flagsPlaced = 0;
         hasMadeFirstClick = false;
@@ -350,13 +378,31 @@ public class MinecleanerArena {
             textdisplay.setDisplayHeight(3);
             textdisplay.setDisplayWidth((float) BoardSize.boardSizesWidth[widthIndex] / 3);
             textdisplay.setPersistent(false);
-            textdisplay.text(Component.text(ChatColor.GOLD + "Minesweeper"));
+            textdisplay.text(Component.text(ChatColor.GOLD + plugin.getDisplayedPluginName()));
         });
     }
 
-    private void updateTextDisplay() {
+    private void updateIngameInfoTexts() {
+        String timer = "";
+        if(plugin.getManager().getSettingsValue("timer", currentPlayer) != 0) {
+            ingameTime += 1;
+            timer = ChatColor.GOLD + " Zeit: " + MinecleanerStringUtil.timeToString((ingameTime/20)*1000)  + " ";
+        }
+
         if (textDisplay != null) {
-            textDisplay.text(Component.text(ChatColor.GREEN + "-- Flaggen gesetzt: " + flagsPlaced + " --" + "\n" + ChatColor.RED + "-- Minen insgesamt: " + BoardSize.mineCounter[widthIndex] + " --"));
+            String component = ChatColor.GREEN + "-- Flaggen gesetzt: " + flagsPlaced + " --" + "\n" + ChatColor.RED + "-- Minen insgesamt: " + BoardSize.mineCounter[widthIndex] + " --";
+            //textDisplay.text(Component.text(ChatColor.GREEN + "-- Flaggen gesetzt: " + flagsPlaced + " --" + "\n" + ChatColor.RED + "-- Minen insgesamt: " + BoardSize.mineCounter[widthIndex] + " --"));
+            String newLine = "";
+            String filler = "";
+            if(!timer.equals("")) {
+                newLine = "\n" + ChatColor.GOLD + "-- ";
+                filler = " --";
+            }
+            textDisplay.text(Component.text(component + newLine + timer + filler));
+        }
+        if(plugin.getManager().getSettingsValue("additionaldisplay", currentPlayer) != 0) {
+            String componentActionBar = ChatColor.GREEN + "Flaggen gesetzt: " + flagsPlaced + ChatColor.RED + "  Minen insgesamt: " + BoardSize.mineCounter[widthIndex];
+            currentPlayer.sendActionBar(Component.text(componentActionBar + " " + timer));
         }
     }
 
@@ -394,12 +440,12 @@ public class MinecleanerArena {
                 }
                 if (cell.isFlagged() == true) {
                     flagsPlaced = flagsPlaced + 1;
-                    updateTextDisplay();
+                    updateIngameInfoTexts();
                     setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_FLAG, true);
                 }
                 if (cell.isFlagged() == false) {
                     flagsPlaced = flagsPlaced - 1;
-                    updateTextDisplay();
+                    updateIngameInfoTexts();
                     setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
                 }
             }
@@ -423,7 +469,7 @@ public class MinecleanerArena {
                 if (currentMinecleanerGame.gameover) {
                     plugin.getManager().handleGameover(player, this, !(cell.isRevealed() && cell.isExploded()));
                 } else {
-                    updateTextDisplay();
+                    updateIngameInfoTexts();
                 }
 
                 ArrayList<Cell> floodedCells = currentMinecleanerGame.getfloodedCells();

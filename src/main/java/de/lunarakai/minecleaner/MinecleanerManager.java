@@ -1,9 +1,11 @@
 package de.lunarakai.minecleaner;
 
+import de.iani.cubesidestats.api.SettingKey;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
@@ -11,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -41,6 +44,12 @@ public class MinecleanerManager {
     private final HashMap<Integer, StatisticKey> statisticsTimeRecord;
     private final HashMap<Integer, StatisticKey> statisticsTotalGamesPlayed;
 
+    // Settings
+
+    private Inventory settingsInventory;
+    private SettingKey minecleanerSettingTimerKey;
+    private SettingKey minecleanerAdditionalDisplaySettingKey;
+
     public MinecleanerManager(MinecleanerPlugin plugin) {
         this.plugin = plugin;
         
@@ -50,11 +59,28 @@ public class MinecleanerManager {
         this.sizes.put(2, "groß");
         this.sizes.put(3, "experte");
 
-        this.confirmPlayingInventory = plugin.getServer().createInventory(null, InventoryType.HOPPER, "Minecleaner starten?");
-        this.confirmPlayingInventory.setItem(1, 
+        this.confirmPlayingInventory = plugin.getServer().createInventory(null, InventoryType.HOPPER, plugin.getDisplayedPluginName() + " starten?");
+        this.confirmPlayingInventory.setItem(1,
             ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.GREEN_CONCRETE), ChatColor.GREEN + "Bestätigen")));
         this.confirmPlayingInventory.setItem(3,
             ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.RED_CONCRETE), ChatColor.RED + "Abbrechen")));
+
+        // Settings
+
+
+        minecleanerSettingTimerKey = plugin.getCubesideStatistics().getSettingKey("minecleaner.settings.timer");
+        minecleanerSettingTimerKey.setDefault(0);
+        minecleanerSettingTimerKey.setDisplayName("Timer");
+
+        minecleanerAdditionalDisplaySettingKey = plugin.getCubesideStatistics().getSettingKey("minecleaner.settings.additionaldisplay");
+        minecleanerAdditionalDisplaySettingKey.setDefault(0);
+        minecleanerAdditionalDisplaySettingKey.setDisplayName("Zusätzliche Anzeige in der Action Bar");
+
+        this.settingsInventory = plugin.getServer().createInventory(null, InventoryType.CHEST,
+                plugin.getDisplayedPluginName() + " Einstellungen");
+
+
+        // Statistics
 
         statisticsWonGamesTotal = plugin.getCubesideStatistics().getStatisticKey("minecleaner.wonGamestotal");
         statisticsWonGamesTotal.setIsMonthlyStats(true);
@@ -86,10 +112,6 @@ public class MinecleanerManager {
             statisticsTimeRecord.put(e.getKey(), s);
         }
     }
-
-    public HashMap<Integer, String> getSizes() {
-        return sizes;
-    }
     
     public void joinArena(Player player, MinecleanerArena arena) {
         if (!player.hasPermission(MinecleanerPlugin.PERMISSION_PLAY)) {
@@ -108,7 +130,7 @@ public class MinecleanerManager {
         arena.removePlayer();
         plugin.getArenaList().setArenaForPlayer(player, null);
         if(message) {
-            player.sendMessage(ChatColor.YELLOW + "Das Minecleanerspiel wurde abgebrochen.");
+            player.sendMessage(ChatColor.YELLOW + "Das " + plugin.getDisplayedPluginName() + "spiel wurde abgebrochen.");
         }
     }
 
@@ -117,7 +139,7 @@ public class MinecleanerManager {
         Preconditions.checkArgument(arena != null, "player is in no arena");
         Preconditions.checkState(arena.getArenaStatus() == ArenaStatus.CONFIRM_PLAYING, "not confirming playing status");
         arena.startNewGame();
-        player.sendMessage(ChatColor.YELLOW + "Du hast eine neue Runde Minecleaner gestartet.");
+        player.sendMessage(ChatColor.YELLOW + "Du hast eine neue Runde " + plugin.getDisplayedPluginName() + " gestartet.");
     }
 
     public void handleGameover(Player player, MinecleanerArena arena, boolean isSuccessfullyCleared) {
@@ -128,7 +150,7 @@ public class MinecleanerManager {
 
         if(!isSuccessfullyCleared) {
             world.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
-            player.sendMessage(ChatColor.YELLOW + "Game Over! Du konntest das Minecleaner-Feld nicht erfolgreich lösen!");
+            player.sendMessage(ChatColor.YELLOW + "Game Over! Du konntest das " + plugin.getDisplayedPluginName() + "-Feld nicht erfolgreich lösen!");
             arena.showMines();
             
             if(sg != null) {
@@ -164,7 +186,7 @@ public class MinecleanerManager {
                 if(isUpdated != null && isUpdated) {
                     player.sendMessage(ChatColor.GOLD + "Herzlichen Glückwunsch! Du hast eine neue Bestzeit erreicht! " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis) );
                 } else {
-                    player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das Minecleaner-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis) + ChatColor.YELLOW + " erfolgreich lösen!");
+                    player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis) + ChatColor.YELLOW + " erfolgreich lösen!");
                 }
             });
         }
@@ -209,9 +231,6 @@ public class MinecleanerManager {
         }
     }
 
-    public Inventory getConfirmPlayingInventory() {
-        return confirmPlayingInventory;
-    }
 
     public void handleFieldClick(@NotNull Player player, int x, int y, boolean hasRightClicked) {
         MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
@@ -325,6 +344,63 @@ public class MinecleanerManager {
         for(StatisticKey statsKey : statisticsTotalGamesPlayed.values()) {
             statsPlayer.deleteScore(statsKey);
         }
-        
+    }
+
+    public Inventory showSettingsInventory(Player player) {
+        int current = getSettingsValue("additionaldisplay", player);
+
+        if(current == 0) {
+            settingsInventory.setItem(12,
+                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.NAME_TAG), ChatColor.RED + "Zusätzliche Anzeige in der Action Bar")));
+        } else {
+            settingsInventory.setItem(12,
+                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Zusätzliche Anzeige in der Action Bar")));
+        }
+
+
+        current = getSettingsValue("timer", player);
+
+        if(current == 0) {
+            settingsInventory.setItem(14,
+                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CLOCK), ChatColor.RED + "Timer anzeigen")));
+        } else {
+            settingsInventory.setItem(14,
+                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CLOCK), ChatColor.GREEN + "Timer anzeigen")));
+        }
+
+        return settingsInventory;
+    }
+
+    public int getSettingsValue(String settingsKeyString, Player player) {
+        PlayerStatistics playerStatistics = plugin.getCubesideStatistics().getStatistics(player.getUniqueId());
+        SettingKey settingKey = plugin.getCubesideStatistics().getSettingKey("minecleaner.settings." + settingsKeyString);
+
+        return playerStatistics.getSettingValueOrDefault(settingKey);
+    }
+
+    public void updateSettingsValue(String settingsKeyString, int newValue, Player player) {
+        PlayerStatistics playerStatistics = plugin.getCubesideStatistics().getStatistics(player.getUniqueId());
+        SettingKey settingKey = plugin.getCubesideStatistics().getSettingKey("minecleaner.settings." + settingsKeyString);
+        playerStatistics.setSettingValue(settingKey, newValue);
+    }
+
+    public HashMap<Integer, String> getSizes() {
+        return sizes;
+    }
+
+    public Inventory getConfirmPlayingInventory() {
+        return confirmPlayingInventory;
+    }
+
+    public Inventory getSettingsInventory() {
+        return settingsInventory;
+    }
+
+    public SettingKey getMinecleanerSettingTimerKey() {
+        return minecleanerSettingTimerKey;
+    }
+
+    public SettingKey getMinecleanerAdditionalDisplaySettingKey() {
+        return minecleanerAdditionalDisplaySettingKey;
     }
 }

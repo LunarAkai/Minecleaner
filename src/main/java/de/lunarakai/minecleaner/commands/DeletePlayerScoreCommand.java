@@ -51,7 +51,7 @@ public class DeletePlayerScoreCommand extends SubCommand{
             sender.sendMessage(ChatColor.DARK_RED + "Ein Spieler mit dem Namen '" + player + "' konnte nicht gefunden werden.");
         }
         plugin.getManager().deleteScores(cachedPlayer.getUUID());
-        sender.sendMessage(ChatColor.DARK_RED + "Alle Minecleaner-Statistiken von Spieler '" + cachedPlayer.getName() + "' wurden gelöscht.");
+        sender.sendMessage(ChatColor.DARK_RED + "Alle " + plugin.getDisplayedPluginName() + "-Statistiken von Spieler '" + cachedPlayer.getName() + "' wurden gelöscht.");
         return true;
     }
     

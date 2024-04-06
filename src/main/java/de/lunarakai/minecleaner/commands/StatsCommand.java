@@ -52,7 +52,7 @@ public class StatsCommand extends SubCommand {
                     return;
                 }
                 if(playerName == null) {
-                    sender.sendMessage(ChatColor.AQUA + "Deine Minecleaner Statistik:");
+                    sender.sendMessage(ChatColor.AQUA + "Deine " + plugin.getDisplayedPluginName() + " Statistik:");
                 } else {
                     sender.sendMessage(ChatColor.AQUA + "Minecleaner-Statistik von " + data.getPlayerName() + ":");
                 }

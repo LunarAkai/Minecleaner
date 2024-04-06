@@ -41,7 +41,7 @@ public class ListCommand extends SubCommand{
 
     @Override
     public boolean onCommand(CommandSender sender, Command arg1, String arg2, String commandString, ArgsParser args) throws DisallowsCommandBlockException, RequiresPlayerException, NoPermissionException, IllegalSyntaxException, InternalCommandException {
-        sender.sendMessage(ChatColor.YELLOW + "Angelegte Minecleaner-Arenen");
+        sender.sendMessage(ChatColor.YELLOW + "Angelegte "+ plugin.getDisplayedPluginName() + "-Arenen");
         boolean any = false;
         for(MinecleanerArena arena : plugin.getArenaList().getArenas()) {
             Location location = arena.getLocation();

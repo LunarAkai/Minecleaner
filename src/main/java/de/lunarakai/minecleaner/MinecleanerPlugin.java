@@ -1,5 +1,6 @@
 package de.lunarakai.minecleaner;
 
+import de.lunarakai.minecleaner.commands.SettingsCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import de.iani.cubesidestats.api.CubesideStatisticsAPI;
 import de.iani.cubesideutils.bukkit.commands.CommandRouter;
@@ -43,6 +44,7 @@ public final class MinecleanerPlugin extends JavaPlugin {
         minecleanerCommand.addCommandMapping(new StatsCommand(this), "stats");
         minecleanerCommand.addCommandMapping(new DeletePlayerScoreCommand(this), "deleteplayerscores");
         minecleanerCommand.addCommandMapping(new InfoCommand(this), "info");
+        minecleanerCommand.addCommandMapping(new SettingsCommand(this), "settings");
     }
 
     @Override
@@ -66,5 +68,13 @@ public final class MinecleanerPlugin extends JavaPlugin {
 
     public PlayerUUIDCache getPlayerUUIDCache() {
         return playerUUIDCache;
+    }
+
+    public String getDisplayedPluginName() {
+        return this.getConfig().getString("generalSettings.displayedPluginName");
+    }
+
+    public int getSizeWinpoints(String size) {
+        return this.getConfig().getInt("winpoints.size." + size);
     }
 }
