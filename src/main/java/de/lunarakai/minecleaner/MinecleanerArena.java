@@ -248,6 +248,7 @@ public class MinecleanerArena {
         }
 
         removeStartHeads();
+        ingameTime = 0;
         flagsPlaced = 0;
         hasMadeFirstClick = false;
         arenaStatus = ArenaStatus.PLAYING;
