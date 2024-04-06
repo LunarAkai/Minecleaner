@@ -145,6 +145,9 @@ public class MinecleanerListener implements Listener {
                             player.openInventory(plugin.getManager().showSettingsInventory(player));
                         } else {
                             plugin.getManager().updateSettingsValue("timer", 0, player);
+                            if(arena != null) {
+                                arena.updateIngameInfoTexts();
+                            }
                             player.closeInventory();
                             player.openInventory(plugin.getManager().showSettingsInventory(player));
                         }

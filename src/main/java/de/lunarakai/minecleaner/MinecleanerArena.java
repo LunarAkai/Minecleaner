@@ -380,7 +380,7 @@ public class MinecleanerArena {
         });
     }
 
-    private void updateIngameInfoTexts() {
+    public void updateIngameInfoTexts() {
         String timer = "";
         if(plugin.getManager().getSettingsValue("timer", currentPlayer) != 0) {
             timer = ChatColor.GOLD + " Zeit: " + MinecleanerStringUtil.timeToString((ingameTime/20)*1000, true)  + " ";
