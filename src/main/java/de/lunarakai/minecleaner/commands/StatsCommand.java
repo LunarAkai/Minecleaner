@@ -54,7 +54,7 @@ public class StatsCommand extends SubCommand {
                 if(playerName == null) {
                     sender.sendMessage(ChatColor.AQUA + "Deine " + plugin.getDisplayedPluginName() + " Statistik:");
                 } else {
-                    sender.sendMessage(ChatColor.AQUA + "Minecleaner-Statistik von " + data.getPlayerName() + ":");
+                    sender.sendMessage(ChatColor.AQUA + plugin.getDisplayedPluginName() + "-Statistik von " + data.getPlayerName() + ":");
                 }
                 sender.sendMessage(ChatColor.BLUE + "  Punkte erspielt: " + ChatColor.GREEN + data.getPointsAcquiredTotal() + " (Dieser Monat: " + data.getPointsAquiredMonth() + ")");
                 sender.sendMessage(ChatColor.BLUE + "  Runden gewonnen: " + ChatColor.GREEN + data.getWonGamesPlayed() + " (Dieser Monat: " + data.getWonGamesPlayedThisMonth() + ")");
