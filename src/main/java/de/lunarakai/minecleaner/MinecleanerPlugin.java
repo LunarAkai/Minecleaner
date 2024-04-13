@@ -12,6 +12,8 @@ import de.lunarakai.minecleaner.commands.InfoCommand;
 import de.lunarakai.minecleaner.commands.ListCommand;
 import de.lunarakai.minecleaner.commands.StatsCommand;
 
+import java.util.logging.Level;
+
 public final class MinecleanerPlugin extends JavaPlugin {
     public static final String PERMISSION_PLAY = "minecleaner.play";
     public static final String PERMISSION_ADMIN = "minecleaner.admin";
@@ -29,7 +31,11 @@ public final class MinecleanerPlugin extends JavaPlugin {
 
     public void onLateEnable() {
         playerUUIDCache = (PlayerUUIDCache) getServer().getPluginManager().getPlugin("PlayerUUIDCache");
-        cubesideStatistics = getServer().getServicesManager().load(CubesideStatisticsAPI.class);
+        if(getServer().getPluginManager().getPlugin("CubesideStatistics") != null) {
+            cubesideStatistics = getServer().getServicesManager().load(CubesideStatisticsAPI.class);
+        } else {
+            this.getLogger().log(Level.WARNING, "Cubeside Statistics not found. No Statistics will be available");
+        }
 
         arenaList = new ArenaList(this);
         arenaList.load();
@@ -41,10 +47,13 @@ public final class MinecleanerPlugin extends JavaPlugin {
         minecleanerCommand.addCommandMapping(new CreateCommand(this), "create");
         minecleanerCommand.addCommandMapping(new DeleteCommand(this), "delete");
         minecleanerCommand.addCommandMapping(new ListCommand(this), "list");
-        minecleanerCommand.addCommandMapping(new StatsCommand(this), "stats");
-        minecleanerCommand.addCommandMapping(new DeletePlayerScoreCommand(this), "deleteplayerscores");
         minecleanerCommand.addCommandMapping(new InfoCommand(this), "info");
-        minecleanerCommand.addCommandMapping(new SettingsCommand(this), "settings");
+
+        if(isStatisticsEnabled()) {
+            minecleanerCommand.addCommandMapping(new SettingsCommand(this), "settings");
+            minecleanerCommand.addCommandMapping(new StatsCommand(this), "stats");
+            minecleanerCommand.addCommandMapping(new DeletePlayerScoreCommand(this), "deleteplayerscores");
+        }
     }
 
     @Override
@@ -62,6 +71,9 @@ public final class MinecleanerPlugin extends JavaPlugin {
         return minecleanerManager;
     }
 
+    public boolean isStatisticsEnabled() {
+        return cubesideStatistics != null;
+    }
     public CubesideStatisticsAPI getCubesideStatistics() {
         return cubesideStatistics;
     }

@@ -240,10 +240,13 @@ public class MinecleanerArena {
                     if(!currentMinecleanerGame.gameover) {
                         ingameTime++;
                     }
-                    if(plugin.getManager().getSettingsValue("additionaldisplay", currentPlayer) != 0
-                            || plugin.getManager().getSettingsValue("timer", currentPlayer) != 0) {
-                        updateIngameInfoTexts();
+                    if(plugin.isStatisticsEnabled()) {
+                        if(plugin.getManager().getSettingsValue("additionaldisplay", currentPlayer) != 0
+                                || plugin.getManager().getSettingsValue("timer", currentPlayer) != 0) {
+                            updateIngameInfoTexts();
+                        }
                     }
+
                 } else {
                     cancel();
                 }
@@ -382,8 +385,14 @@ public class MinecleanerArena {
 
     public void updateIngameInfoTexts() {
         String timer = "";
-        if(plugin.getManager().getSettingsValue("timer", currentPlayer) != 0) {
-            timer = ChatColor.GOLD + " Zeit: " + MinecleanerStringUtil.timeToString((ingameTime/20)*1000, true)  + " ";
+        if(plugin.isStatisticsEnabled()) {
+            if(plugin.getManager().getSettingsValue("timer", currentPlayer) != 0) {
+                timer = ChatColor.GOLD + " Zeit: " + MinecleanerStringUtil.timeToString((ingameTime/20)*1000, true)  + " ";
+            }
+            if(plugin.getManager().getSettingsValue("additionaldisplay", currentPlayer) != 0 && plugin.isStatisticsEnabled()) {
+                String componentActionBar = ChatColor.GREEN + "Flaggen gesetzt: " + flagsPlaced + ChatColor.RED + "  Minen insgesamt: " + BoardSize.mineCounter[widthIndex];
+                currentPlayer.sendActionBar(Component.text(componentActionBar + " " + timer));
+            }
         }
 
         if (textDisplay != null) {
@@ -398,10 +407,7 @@ public class MinecleanerArena {
             textDisplay.text(Component.text(component + newLine + timer + filler));
         }
 
-        if(plugin.getManager().getSettingsValue("additionaldisplay", currentPlayer) != 0) {
-            String componentActionBar = ChatColor.GREEN + "Flaggen gesetzt: " + flagsPlaced + ChatColor.RED + "  Minen insgesamt: " + BoardSize.mineCounter[widthIndex];
-            currentPlayer.sendActionBar(Component.text(componentActionBar + " " + timer));
-        }
+
     }
 
     public void removeTextDisplay() {

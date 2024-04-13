@@ -67,52 +67,63 @@ public class MinecleanerManager {
 
         // Settings
 
+        if(plugin.isStatisticsEnabled()) {
+            minecleanerSettingTimerKey = plugin.getCubesideStatistics().getSettingKey("minecleaner.settings.timer");
+            minecleanerSettingTimerKey.setDefault(0);
+            minecleanerSettingTimerKey.setDisplayName("Timer");
 
-        minecleanerSettingTimerKey = plugin.getCubesideStatistics().getSettingKey("minecleaner.settings.timer");
-        minecleanerSettingTimerKey.setDefault(0);
-        minecleanerSettingTimerKey.setDisplayName("Timer");
+            minecleanerAdditionalDisplaySettingKey = plugin.getCubesideStatistics().getSettingKey("minecleaner.settings.additionaldisplay");
+            minecleanerAdditionalDisplaySettingKey.setDefault(0);
+            minecleanerAdditionalDisplaySettingKey.setDisplayName("Zusätzliche Anzeige in der Action Bar");
 
-        minecleanerAdditionalDisplaySettingKey = plugin.getCubesideStatistics().getSettingKey("minecleaner.settings.additionaldisplay");
-        minecleanerAdditionalDisplaySettingKey.setDefault(0);
-        minecleanerAdditionalDisplaySettingKey.setDisplayName("Zusätzliche Anzeige in der Action Bar");
-
-        this.settingsInventory = plugin.getServer().createInventory(null, InventoryType.CHEST,
-                plugin.getDisplayedPluginName() + " Einstellungen");
+            this.settingsInventory = plugin.getServer().createInventory(null, InventoryType.CHEST,
+                    plugin.getDisplayedPluginName() + " Einstellungen");
 
 
-        // Statistics
+            // Statistics
 
-        statisticsWonGamesTotal = plugin.getCubesideStatistics().getStatisticKey("minecleaner.wonGamestotal");
-        statisticsWonGamesTotal.setIsMonthlyStats(true);
-        statisticsWonGamesTotal.setDisplayName("Runden gewonnen");
-        
-        statisticsPointsAcquired = plugin.getCubesideStatistics().getStatisticKey("minecleaner.pointstotal");
-        statisticsPointsAcquired.setIsMonthlyStats(true);
-        statisticsPointsAcquired.setDisplayName("Punkte erspielt");
+            statisticsWonGamesTotal = plugin.getCubesideStatistics().getStatisticKey("minecleaner.wonGamestotal");
+            statisticsWonGamesTotal.setIsMonthlyStats(true);
+            statisticsWonGamesTotal.setDisplayName("Runden gewonnen");
 
-        statisticsGames = new HashMap<>();
-        statisticsTimeRecord = new HashMap<>();
-        statisticsTotalGamesPlayed = new HashMap<>();
+            statisticsPointsAcquired = plugin.getCubesideStatistics().getStatisticKey("minecleaner.pointstotal");
+            statisticsPointsAcquired.setIsMonthlyStats(true);
+            statisticsPointsAcquired.setDisplayName("Punkte erspielt");
 
-        for(Entry<Integer, String> e : this.sizes.entrySet()) {
-            String sizeDisplay = e.getValue();
-            StatisticKey s = plugin.getCubesideStatistics().getStatisticKey("minecleaner.wongames.boardsize." + e.getKey());
-            s.setIsMonthlyStats(true);
-            s.setDisplayName("Runden gewonnen auf Spielfeldgröße " + sizeDisplay);
-            statisticsGames.put(e.getKey(), s);
+            statisticsGames = new HashMap<>();
+            statisticsTimeRecord = new HashMap<>();
+            statisticsTotalGamesPlayed = new HashMap<>();
 
-            s = plugin.getCubesideStatistics().getStatisticKey("minecleaner.gamestotal.boardsize." + e.getKey());
-            s.setIsMonthlyStats(true);
-            s.setDisplayName("Runden gespielt auf Spielfeldgröße " + sizeDisplay );
-            statisticsTotalGamesPlayed.put(e.getKey(), s);
+            for(Entry<Integer, String> e : this.sizes.entrySet()) {
+                String sizeDisplay = e.getValue();
+                StatisticKey s = plugin.getCubesideStatistics().getStatisticKey("minecleaner.wongames.boardsize." + e.getKey());
+                s.setIsMonthlyStats(true);
+                s.setDisplayName("Runden gewonnen auf Spielfeldgröße " + sizeDisplay);
+                statisticsGames.put(e.getKey(), s);
 
-            s = plugin.getCubesideStatistics().getStatisticKey("minecleaner.timerecord." + e.getKey());
-            s.setIsMonthlyStats(true);
-            s.setDisplayName("Bestzeit bei Größe " + sizeDisplay);
-            statisticsTimeRecord.put(e.getKey(), s);
+                s = plugin.getCubesideStatistics().getStatisticKey("minecleaner.gamestotal.boardsize." + e.getKey());
+                s.setIsMonthlyStats(true);
+                s.setDisplayName("Runden gespielt auf Spielfeldgröße " + sizeDisplay );
+                statisticsTotalGamesPlayed.put(e.getKey(), s);
+
+                s = plugin.getCubesideStatistics().getStatisticKey("minecleaner.timerecord." + e.getKey());
+                s.setIsMonthlyStats(true);
+                s.setDisplayName("Bestzeit bei Größe " + sizeDisplay);
+                statisticsTimeRecord.put(e.getKey(), s);
+                }
+            } else {
+            this.statisticsWonGamesTotal = null;
+            this.statisticsPointsAcquired = null;
+            this.statisticsGames = null;
+            this.statisticsTimeRecord = null;
+            this.statisticsTotalGamesPlayed = null;
         }
+
+
+
     }
-    
+
+
     public void joinArena(Player player, MinecleanerArena arena) {
         if (!player.hasPermission(MinecleanerPlugin.PERMISSION_PLAY)) {
             return;
@@ -144,16 +155,19 @@ public class MinecleanerManager {
 
     public void handleGameover(Player player, MinecleanerArena arena, boolean isSuccessfullyCleared) {
         World world = player.getWorld();
-        PlayerStatistics ps = plugin.getCubesideStatistics().getStatistics(player.getUniqueId());
-        StatisticKey sg;
-        sg = statisticsTotalGamesPlayed.get(arena.getWidthIndex());
+        PlayerStatistics ps = null;
+        StatisticKey sg = null;
+        if(plugin.isStatisticsEnabled()) {
+            ps = plugin.getCubesideStatistics().getStatistics(player.getUniqueId());
+            sg = statisticsTotalGamesPlayed.get(arena.getWidthIndex());
+        }
 
         if(!isSuccessfullyCleared) {
             world.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
             player.sendMessage(ChatColor.YELLOW + "Game Over! Du konntest das " + plugin.getDisplayedPluginName() + "-Feld nicht erfolgreich lösen!");
             arena.showMines();
             
-            if(sg != null) {
+            if(sg != null && plugin.isStatisticsEnabled()) {
                 ps.increaseScore(sg, 1);
             }
 
@@ -170,48 +184,52 @@ public class MinecleanerManager {
         
         world.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.5f);
 
-        if(sg != null) {
+        if(sg != null && plugin.isStatisticsEnabled()) {
             ps.increaseScore(sg, 1);
         }
 
-        ps.increaseScore(statisticsWonGamesTotal, 1);
+        if(plugin.isStatisticsEnabled()) {
+            ps.increaseScore(statisticsWonGamesTotal, 1);
 
-        sg = statisticsGames.get(arena.getWidthIndex());
-        if(sg != null) {
-            ps.increaseScore(sg, 1);
-        }
-        sg = statisticsTimeRecord.get(arena.getWidthIndex());
-        if(sg != null) {
-            ps.minScore(sg, millis, isUpdated -> {
-                if(isUpdated != null && isUpdated) {
-                    player.sendMessage(ChatColor.GOLD + "Herzlichen Glückwunsch! Du hast eine neue Bestzeit erreicht! " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) );
-                } else {
-                    player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) + ChatColor.YELLOW + " erfolgreich lösen!");
+            sg = statisticsGames.get(arena.getWidthIndex());
+            if(sg != null) {
+                ps.increaseScore(sg, 1);
+            }
+            sg = statisticsTimeRecord.get(arena.getWidthIndex());
+            if(sg != null) {
+                ps.minScore(sg, millis, isUpdated -> {
+                    if(isUpdated != null && isUpdated) {
+                        player.sendMessage(ChatColor.GOLD + "Herzlichen Glückwunsch! Du hast eine neue Bestzeit erreicht! " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) );
+                    } else {
+                        player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) + ChatColor.YELLOW + " erfolgreich lösen!");
+                    }
+                });
+            }
+
+            int wIndex = arena.getWidthIndex();
+            switch (wIndex) {
+                case 0: {
+                    ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.small"));
+                    break;
                 }
-            });
-        }
-
-        int wIndex = arena.getWidthIndex();
-        switch (wIndex) {
-            case 0: {
-                ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.small"));
-                break;
+                case 1: {
+                    ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.medium"));
+                    break;
+                }
+                case 2: {
+                    ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.large"));
+                    break;
+                }
+                case 3: {
+                    ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.expert"));
+                }
+                default: {
+                    ps.increaseScore(statisticsPointsAcquired, 0);
+                    break;
+                }
             }
-            case 1: {
-                ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.medium"));
-                break;
-            }
-            case 2: {
-                ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.large"));
-                break;
-            }
-            case 3: {
-                ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.expert"));
-            }
-            default: {
-                ps.increaseScore(statisticsPointsAcquired, 0);
-                break;
-            }
+        } else {
+            player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) + ChatColor.YELLOW + " erfolgreich lösen!");
         }
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
