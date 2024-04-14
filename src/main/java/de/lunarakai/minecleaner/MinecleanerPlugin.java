@@ -30,7 +30,12 @@ public final class MinecleanerPlugin extends JavaPlugin {
     }
 
     public void onLateEnable() {
-        playerUUIDCache = (PlayerUUIDCache) getServer().getPluginManager().getPlugin("PlayerUUIDCache");
+        if(getServer().getPluginManager().getPlugin("PlayerUUIDCache") != null) {
+            playerUUIDCache = (PlayerUUIDCache) getServer().getPluginManager().getPlugin("PlayerUUIDCache");
+        } else {
+            this.getLogger().log(Level.WARNING, "PlayerUUIDCache not found.");
+        }
+
         if(getServer().getPluginManager().getPlugin("CubesideStatistics") != null) {
             cubesideStatistics = getServer().getServicesManager().load(CubesideStatisticsAPI.class);
         } else {

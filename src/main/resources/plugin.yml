@@ -4,6 +4,9 @@ author: LunarAkai
 website: https://github.com/LunarAkai/Minecleaner
 main: de.lunarakai.minecleaner.MinecleanerPlugin
 api-version: '1.20'
+depend:
+  - CubesideUtils
+softdepend: [CubesideSettings, PlayerUUIDCache]
 commands:
   minecleaner:
     description: main command

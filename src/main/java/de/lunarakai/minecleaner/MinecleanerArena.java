@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.ChatColor;
@@ -18,6 +20,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
@@ -270,6 +273,9 @@ public class MinecleanerArena {
         this.currentPlayer = null;
         this.currentMinecleanerGame = null;
 
+        // load chunk of block -1 and x+1
+//        loadBlockChunk();
+
         for (int x = 0; x < sizeWidth; x++) {
             for (int y = 0; y < sizeHeight; y++) {
                 setDiplayBlock(x, y, MinecleanerHeads.MINESWEEPER_TILE_UNKNOWN, true);
@@ -278,6 +284,63 @@ public class MinecleanerArena {
         showStartHeads();
         removeTextDisplay();
     }
+
+//    private void loadBlockChunk() {
+//
+//        BlockFace orientation = getOrientation();
+//        Location loc1 = this.getLocation();
+//        Location loc2 = this.getLocation();
+//        double x;
+//        double z;
+//
+//        switch (orientation) {
+//            case NORTH:
+//                // Block -1:
+//                //  x: +1
+//                x = loc1.x() + 3.0;
+//                loc1 = new Location(loc1.getWorld(), x, loc1.y(), loc1.z());
+//                // Block width+1:
+//                //  x: -1;
+//                x = loc2.x() - (double) getArenaWidth()/4 - 1;
+//                loc2 = new Location(loc2.getWorld(), x, loc2.y(), loc2.z());
+//                break;
+//            case EAST:
+//                // Block -1:
+//                //  z: +1
+//                z = loc1.z() + 3.0;
+//                loc1 = new Location(loc2.getWorld(), loc2.x(), loc2.y(), z);
+//                // Block width+1:
+//                //  z: -1;
+//                z = loc2.z() - (double) getArenaWidth()/4 - 1;
+//                loc2 = new Location(loc2.getWorld(), loc2.x(), loc2.y(), z);
+//                break;
+//            case SOUTH:
+//                // Block -1:
+//                //  x: -1
+//                x = loc1.x() - 3.0;
+//                loc1 = new Location(loc1.getWorld(), x, loc1.y(), loc1.z());
+//                // Block width+1:
+//                //  x: +1;
+//                x = loc2.x() + (double) getArenaWidth()/4 + 1;
+//                loc2 = new Location(loc2.getWorld(), x, loc2.y(), loc2.z());
+//                break;
+//            case WEST:
+//                // Block -1:
+//                //  z: -1
+//                z = loc1.z() - 3.0 ;
+//                loc1 = new Location(loc2.getWorld(), loc2.x(), loc2.y(), z);
+//                // Block width+1:
+//                //  z: +1;
+//                z = loc2.z() + (double) getArenaWidth()/4 - 1;
+//                loc2 = new Location(loc2.getWorld(), loc2.x(), loc2.y(), z);
+//                break;
+//        }
+//
+//        plugin.getLogger().log(Level.WARNING, "Loc1: " + loc1);
+//        plugin.getLogger().log(Level.WARNING, "Loc2: " + loc2);
+//        loc1.getWorld().getChunkAt(loc1).load();
+//        loc2.getWorld().getChunkAt(loc2).load();
+//    }
 
     public void showStartHeads() {
         int width = BoardSize.boardSizesWidth[widthIndex];
