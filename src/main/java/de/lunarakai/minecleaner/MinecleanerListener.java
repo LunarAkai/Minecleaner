@@ -38,48 +38,51 @@ public class MinecleanerListener implements Listener {
             if(arena != null) {
                 e.setCancelled(true);
                 MinecleanerArena arenaClicked = plugin.getArenaList().getArenaAtBlock(block);
-                if(arenaClicked == arena && arena.getArenaStatus() == ArenaStatus.PLAYING) {
-                    int d0x = arena.getOrientation().getModX();
-                    int d0z = arena.getOrientation().getModZ();
-                    int d1x = -d0z;
-                    int d1z = d0x;
+                boolean hasRightClicked = false;
+                if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    hasRightClicked = true;
+                }
+                if(!arenaClicked.getCurrentMinecleanerGame().gameover) {
+                    if(arenaClicked == arena && arena.getArenaStatus() == ArenaStatus.PLAYING) {
+                        int d0x = arena.getOrientation().getModX();
+                        int d0z = arena.getOrientation().getModZ();
+                        int d1x = -d0z;
+                        int d1z = d0x;
 
-                    if (e.getBlockFace() == arena.getOrientation()) {
+                        if (e.getBlockFace() == arena.getOrientation()) {
 
-                        Player player = e.getPlayer();
-                        RayTraceResult r2 = player.rayTraceBlocks(36.0);
+                            Player player = e.getPlayer();
+                            RayTraceResult r2 = player.rayTraceBlocks(36.0);
 
-                        if(r2 != null) {
-                            Vector hitPos = r2.getHitPosition();
-                            Vector substract = new Vector(0.5, 0.5, 0.5);
+                            if(r2 != null) {
+                                Vector hitPos = r2.getHitPosition();
+                                Vector substract = new Vector(0.5, 0.5, 0.5);
 
-                            Location loc = hitPos.subtract(arena.getLocation().toVector()).subtract(substract).toLocation(player.getWorld()); //(0.5, 0.5, 0.5); // substract 0.5, 0.5, 0.5
-                            double lx = loc.getX();
-                            double ly = loc.getY();
-                            double lz = loc.getZ();
-                            double dy = ly + 1.5; 
-                            double dz = -d1x * lx - d1z * lz + 1.5;
+                                Location loc = hitPos.subtract(arena.getLocation().toVector()).subtract(substract).toLocation(player.getWorld()); //(0.5, 0.5, 0.5); // substract 0.5, 0.5, 0.5
+                                double lx = loc.getX();
+                                double ly = loc.getY();
+                                double lz = loc.getZ();
+                                double dy = ly + 1.5;
+                                double dz = -d1x * lx - d1z * lz + 1.5;
 
-                            double blockx = (dy / 3.0) * 9.0;
-                            double blockz = (dz / 3.0) * 9.0;
+                                double blockx = (dy / 3.0) * 9.0;
+                                double blockz = (dz / 3.0) * 9.0;
 
-                            int blockxInt = (int) blockx;
-                            int blockzInt = (int) blockz;
-                            blockx -= blockxInt;
-                            blockz -= blockzInt;
+                                int blockxInt = (int) blockx;
+                                int blockzInt = (int) blockz;
+                                blockx -= blockxInt;
+                                blockz -= blockzInt;
 
-                            boolean hasRightClicked = false;
-                            if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                                hasRightClicked = true;
+                                if(blockzInt < arena.getArenaWidth() && blockxInt < arenaClicked.getArenaHeight()) {
+                                    plugin.getManager().handleFieldClick(e.getPlayer(), blockzInt, blockxInt, hasRightClicked);
+                                }
+                                //player.sendMessage("Arena click! " + blockxInt + " " + blockzInt + " Right Clicked: " + hasRightClicked);
                             }
-
-                            if(blockzInt < arena.getArenaWidth() && blockxInt < arenaClicked.getArenaHeight()) {
-                                plugin.getManager().handleFieldClick(e.getPlayer(), blockzInt, blockxInt, hasRightClicked);
-                            }
-                            //player.sendMessage("Arena click! " + blockxInt + " " + blockzInt + " Right Clicked: " + hasRightClicked);
-
                         }
                     }
+                } else if(arenaClicked.hasPlayer() && arenaClicked.getArenaStatus() == ArenaStatus.COMPLETED && !hasRightClicked){
+                    plugin.getManager().getSchedulerGameOver().cancel();
+                    plugin.getManager().leaveArena(arenaClicked.getCurrentPlayer(), false);
                 }
             } else {
                 arena = plugin.getArenaList().getArenaAtBlock(block);

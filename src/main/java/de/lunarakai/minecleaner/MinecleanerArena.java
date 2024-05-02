@@ -503,6 +503,7 @@ public class MinecleanerArena {
 
                 currentMinecleanerGame.flag(x, y);
                 if (currentMinecleanerGame.gameover) {
+                    arenaStatus = ArenaStatus.COMPLETED;
                     plugin.getManager().handleGameover(player, this, true);
                 }
                 if (cell.isFlagged() == true) {
@@ -534,6 +535,7 @@ public class MinecleanerArena {
                 setBlockForCellType(x, y, cell);
 
                 if (currentMinecleanerGame.gameover) {
+                    arenaStatus = ArenaStatus.COMPLETED;
                     plugin.getManager().handleGameover(player, this, !(cell.isRevealed() && cell.isExploded()));
                 } else {
                     updateIngameInfoTexts();
@@ -723,9 +725,12 @@ public class MinecleanerArena {
         return currentGameStartTime;
     }
 
+    public Game getCurrentMinecleanerGame() { return currentMinecleanerGame; }
+
     public int getWidthIndex() {
         return widthIndex;
     }
+
 
     private int getRotationYaw() {
         return switch (orientation) {

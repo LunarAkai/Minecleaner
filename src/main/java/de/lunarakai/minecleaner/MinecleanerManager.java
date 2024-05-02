@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
@@ -13,12 +12,11 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import com.google.common.base.Preconditions;
 import de.iani.cubesidestats.api.PlayerStatistics;
@@ -37,6 +35,7 @@ public class MinecleanerManager {
     private final MinecleanerPlugin plugin;
     private final Inventory confirmPlayingInventory;
     private final HashMap<Integer, String> sizes;
+    public BukkitTask schedulerGameOver;
 
     // Statistics
     private final StatisticKey statisticsWonGamesTotal;
@@ -174,12 +173,12 @@ public class MinecleanerManager {
                 ps.increaseScore(sg, 1);
             }
 
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if(arena.getCurrentPlayer() == null) {
-                    arena.removePlayer(); 
-                 } else {
+            schedulerGameOver = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (arena.getCurrentPlayer() == null) {
+                    arena.removePlayer();
+                } else {
                     leaveArena(player, false);
-                 }
+                }
             }, plugin.getManager().getSettingsValue("resettime", player) * 20L);
             return;
         }
@@ -235,7 +234,7 @@ public class MinecleanerManager {
             player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) + ChatColor.YELLOW + " erfolgreich lösen!");
         }
 
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        schedulerGameOver = Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if(arena.getCurrentPlayer() == null) {
                arena.removePlayer(); 
             } else {
@@ -463,5 +462,7 @@ public class MinecleanerManager {
         return minecleanerAdditionalDisplaySettingKey;
     }
 
-    public SettingKey getMinecleanerResetTimeSettingKey() {return  minecleanerResetTimerSettingKey; }
+    public SettingKey getMinecleanerResetTimeSettingKey() {return minecleanerResetTimerSettingKey; }
+
+    public BukkitTask getSchedulerGameOver() { return schedulerGameOver; }
 }
