@@ -153,6 +153,70 @@ public class MinecleanerListener implements Listener {
                         }
                         break;
                     }
+                    case 16: {
+                        switch (plugin.getManager().getSettingsValue("resettime", player)) {
+                            case 1: {
+                                plugin.getManager().updateSettingsValue("resettime", 2, player);
+                                player.closeInventory();
+                                player.openInventory(plugin.getManager().showSettingsInventory(player));
+                                break;
+                            }
+                            case 2: {
+                                plugin.getManager().updateSettingsValue("resettime", 3, player);
+                                player.closeInventory();
+                                player.openInventory(plugin.getManager().showSettingsInventory(player));
+                                break;
+                            }
+                            case 3: {
+                                plugin.getManager().updateSettingsValue("resettime", 4, player);
+                                player.closeInventory();
+                                player.openInventory(plugin.getManager().showSettingsInventory(player));
+                                break;
+                            }
+                            case 4: {
+                                plugin.getManager().updateSettingsValue("resettime", 5, player);
+                                player.closeInventory();
+                                player.openInventory(plugin.getManager().showSettingsInventory(player));
+                                break;
+                            }
+                            case 5: {
+                                plugin.getManager().updateSettingsValue("resettime", 6, player);
+                                player.closeInventory();
+                                player.openInventory(plugin.getManager().showSettingsInventory(player));
+                                break;
+                            }
+                            case 6: {
+                                plugin.getManager().updateSettingsValue("resettime", 7, player);
+                                player.closeInventory();
+                                player.openInventory(plugin.getManager().showSettingsInventory(player));
+                                break;
+                            }
+                            case 7: {
+                                plugin.getManager().updateSettingsValue("resettime", 8, player);
+                                player.closeInventory();
+                                player.openInventory(plugin.getManager().showSettingsInventory(player));
+                                break;
+                            }
+                            case 8: {
+                                plugin.getManager().updateSettingsValue("resettime", 9, player);
+                                player.closeInventory();
+                                player.openInventory(plugin.getManager().showSettingsInventory(player));
+                                break;
+                            }
+                            case 9: {
+                                plugin.getManager().updateSettingsValue("resettime", 10, player);
+                                player.closeInventory();
+                                player.openInventory(plugin.getManager().showSettingsInventory(player));
+                                break;
+                            }
+                            case 10: {
+                                plugin.getManager().updateSettingsValue("resettime", 1, player);
+                                player.closeInventory();
+                                player.openInventory(plugin.getManager().showSettingsInventory(player));
+                                break;
+                            }
+                        }
+                    }
                     default: {
                         break;
                     }

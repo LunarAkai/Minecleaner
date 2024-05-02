@@ -14,6 +14,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -49,6 +50,7 @@ public class MinecleanerManager {
     private Inventory settingsInventory;
     private SettingKey minecleanerSettingTimerKey;
     private SettingKey minecleanerAdditionalDisplaySettingKey;
+    private SettingKey minecleanerResetTimerSettingKey;
 
     public MinecleanerManager(MinecleanerPlugin plugin) {
         this.plugin = plugin;
@@ -75,6 +77,10 @@ public class MinecleanerManager {
             minecleanerAdditionalDisplaySettingKey = plugin.getCubesideStatistics().getSettingKey("minecleaner.settings.additionaldisplay");
             minecleanerAdditionalDisplaySettingKey.setDefault(0);
             minecleanerAdditionalDisplaySettingKey.setDisplayName("Zusätzliche Anzeige in der Action Bar");
+
+            minecleanerResetTimerSettingKey = plugin.getCubesideStatistics().getSettingKey("minecleaner.settings.resettime");
+            minecleanerResetTimerSettingKey.setDefault(5);
+            minecleanerResetTimerSettingKey.setDisplayName("Dauer die das Spielfeld für das Zurücksetzen brauchen soll");
 
             this.settingsInventory = plugin.getServer().createInventory(null, InventoryType.CHEST,
                     plugin.getDisplayedPluginName() + " Einstellungen");
@@ -118,9 +124,6 @@ public class MinecleanerManager {
             this.statisticsTimeRecord = null;
             this.statisticsTotalGamesPlayed = null;
         }
-
-
-
     }
 
 
@@ -177,7 +180,7 @@ public class MinecleanerManager {
                  } else {
                     leaveArena(player, false);
                  }
-            }, 100L);
+            }, plugin.getManager().getSettingsValue("resettime", player) * 20L);
             return;
         }
         int millis = (int) (System.currentTimeMillis() - arena.getCurrentGameStartTime());
@@ -238,7 +241,7 @@ public class MinecleanerManager {
             } else {
                 leaveArena(player, false);
             }
-        }, 100L);
+        }, plugin.getManager().getSettingsValue("resettime", player) * 20L);
     }
 
     public void clearAllArenas() {
@@ -367,6 +370,9 @@ public class MinecleanerManager {
     public Inventory showSettingsInventory(Player player) {
         int current = getSettingsValue("additionaldisplay", player);
 
+        settingsInventory.setItem(10,
+                ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.BARRIER), ChatColor.RED + "Platzhalter")));
+
         if(current == 0) {
             settingsInventory.setItem(12,
                     ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.NAME_TAG), ChatColor.RED + "Zusätzliche Anzeige in der Action Bar")));
@@ -384,6 +390,41 @@ public class MinecleanerManager {
         } else {
             settingsInventory.setItem(14,
                     ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CLOCK), ChatColor.GREEN + "Timer anzeigen")));
+        }
+
+        current = getSettingsValue("resettime", player);
+
+        switch (current) {
+            case 1:
+                settingsInventory.setItem(16, ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CANDLE), ChatColor.GOLD + "Resetzeit: " + ChatColor.RED + "1s")));
+                break;
+            case 2:
+                settingsInventory.setItem(16, ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CANDLE), ChatColor.GOLD + "Resetzeit: " + ChatColor.RED + "2s")));
+                break;
+            case 3:
+                settingsInventory.setItem(16, ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CANDLE), ChatColor.GOLD + "Resetzeit: " + ChatColor.RED + "3s")));
+                break;
+            case 4:
+                settingsInventory.setItem(16, ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CANDLE), ChatColor.GOLD + "Resetzeit: " + ChatColor.RED + "4s")));
+                break;
+            case 5:
+                settingsInventory.setItem(16, ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CANDLE), ChatColor.GOLD + "Resetzeit: " + ChatColor.RED + "5s")));
+                break;
+            case 6:
+                settingsInventory.setItem(16, ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CANDLE), ChatColor.GOLD + "Resetzeit: " + ChatColor.RED + "6s")));
+                break;
+            case 7:
+                settingsInventory.setItem(16, ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CANDLE), ChatColor.GOLD + "Resetzeit: " + ChatColor.RED + "7s")));
+                break;
+            case 8:
+                settingsInventory.setItem(16, ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CANDLE), ChatColor.GOLD + "Resetzeit: " + ChatColor.RED + "8s")));
+                break;
+            case 9:
+                settingsInventory.setItem(16, ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CANDLE), ChatColor.GOLD + "Resetzeit: " + ChatColor.RED + "9s")));
+                break;
+            case 10:
+                settingsInventory.setItem(16, ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CANDLE), ChatColor.GOLD + "Resetzeit: " + ChatColor.RED + "10s")));
+                break;
         }
 
         return settingsInventory;
@@ -421,4 +462,6 @@ public class MinecleanerManager {
     public SettingKey getMinecleanerAdditionalDisplaySettingKey() {
         return minecleanerAdditionalDisplaySettingKey;
     }
+
+    public SettingKey getMinecleanerResetTimeSettingKey() {return  minecleanerResetTimerSettingKey; }
 }
