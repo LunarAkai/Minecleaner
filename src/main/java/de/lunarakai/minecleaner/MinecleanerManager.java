@@ -146,6 +146,7 @@ public class MinecleanerManager {
         MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
         arena.setArenaStaus(ArenaStatus.INACTIVE);
         Preconditions.checkArgument(arena != null, "player is in no arena");
+        player.closeInventory();
         arena.removePlayer();
         plugin.getArenaList().setArenaForPlayer(player, null);
         if(message) {
@@ -386,10 +387,10 @@ public class MinecleanerManager {
         current = getSettingsValue("additionaldisplay", player);
         if(current == 0) {
             settingsInventory.setItem(12,
-                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.NAME_TAG), ChatColor.RED + "Zusätzliche Anzeige in der Action Bar")));
+                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.NAME_TAG), ChatColor.RED + "Zusätzliche Anzeige in der Action Bar deaktiviert")));
         } else {
             settingsInventory.setItem(12,
-                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Zusätzliche Anzeige in der Action Bar")));
+                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Zusätzliche Anzeige in der Action Bar aktiviert")));
         }
 
 
@@ -397,10 +398,10 @@ public class MinecleanerManager {
 
         if(current == 0) {
             settingsInventory.setItem(14,
-                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CLOCK), ChatColor.RED + "Timer anzeigen")));
+                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CLOCK), ChatColor.RED + "Timer wird nicht angezeigt")));
         } else {
             settingsInventory.setItem(14,
-                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CLOCK), ChatColor.GREEN + "Timer anzeigen")));
+                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.CLOCK), ChatColor.GREEN + "Timer wird angezeigt")));
         }
 
         current = getSettingsValue("resettime", player);

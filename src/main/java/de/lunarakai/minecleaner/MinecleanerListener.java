@@ -38,12 +38,18 @@ public class MinecleanerListener implements Listener {
             if(arena != null) {
                 e.setCancelled(true);
                 MinecleanerArena arenaClicked = plugin.getArenaList().getArenaAtBlock(block);
+
+                if(arenaClicked != arena) {
+                    return;
+                }
+
                 boolean hasRightClicked = false;
                 if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     hasRightClicked = true;
                 }
-                if(!arenaClicked.getCurrentMinecleanerGame().gameover) {
-                    if(arenaClicked == arena && arena.getArenaStatus() == ArenaStatus.PLAYING) {
+
+                if(!arena.getCurrentMinecleanerGame().gameover && (arena.getArenaStatus() == ArenaStatus.PLAYING || arena.getArenaStatus() == ArenaStatus.COMPLETED)) {
+                    if(arena.getArenaStatus() == ArenaStatus.PLAYING) {
                         int d0x = arena.getOrientation().getModX();
                         int d0z = arena.getOrientation().getModZ();
                         int d1x = -d0z;
@@ -73,14 +79,14 @@ public class MinecleanerListener implements Listener {
                                 blockx -= blockxInt;
                                 blockz -= blockzInt;
 
-                                if(blockzInt < arena.getArenaWidth() && blockxInt < arenaClicked.getArenaHeight()) {
+                                if(blockzInt < arena.getArenaWidth() && blockxInt < arena.getArenaHeight()) {
                                     plugin.getManager().handleFieldClick(e.getPlayer(), blockzInt, blockxInt, hasRightClicked);
                                 }
                                 //player.sendMessage("Arena click! " + blockxInt + " " + blockzInt + " Right Clicked: " + hasRightClicked);
                             }
                         }
                     }
-                } else if(arenaClicked.hasPlayer() && arenaClicked.getArenaStatus() == ArenaStatus.COMPLETED && !hasRightClicked && (plugin.getManager().getSettingsValue("allowmanualreset", e.getPlayer()) == 1)) {
+                } else if(arena.hasPlayer() && arena.getArenaStatus() == ArenaStatus.COMPLETED && !hasRightClicked && (plugin.getManager().getSettingsValue("allowmanualreset", e.getPlayer()) == 1)) {
                     plugin.getManager().getSchedulerGameOver().cancel();
                     plugin.getManager().leaveArena(arenaClicked.getCurrentPlayer(), false);
                 }
@@ -126,7 +132,6 @@ public class MinecleanerListener implements Listener {
                 }
             }
             if(e.getInventory().equals(plugin.getManager().getSettingsInventory())) {
-                e.setCancelled(true);
                 int slot = e.getRawSlot();
                 switch (slot) {
                     case 10: {
