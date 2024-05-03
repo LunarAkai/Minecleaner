@@ -180,13 +180,7 @@ public class MinecleanerManager {
                 ps.increaseScore(sg, 1);
             }
 
-            schedulerGameOver = Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (arena.getCurrentPlayer() == null) {
-                    arena.removePlayer();
-                } else {
-                    leaveArena(player, false);
-                }
-            }, plugin.getManager().getSettingsValue("resettime", player) * 20L);
+            scheduleArenaReset(player, arena);
             return;
         }
         int millis = (int) (System.currentTimeMillis() - arena.getCurrentGameStartTime());
@@ -241,11 +235,17 @@ public class MinecleanerManager {
             player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) + ChatColor.YELLOW + " erfolgreich lösen!");
         }
 
+        scheduleArenaReset(player, arena);
+    }
+
+    private void scheduleArenaReset(Player player, MinecleanerArena arena) {
         schedulerGameOver = Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if(arena.getCurrentPlayer() == null) {
-               arena.removePlayer(); 
-            } else {
-                leaveArena(player, false);
+            if(arena.getArenaStatus() == ArenaStatus.COMPLETED) {
+                if (arena.getCurrentPlayer() == null) {
+                    arena.removePlayer();
+                } else {
+                    leaveArena(player, false);
+                }
             }
         }, plugin.getManager().getSettingsValue("resettime", player) * 20L);
     }
