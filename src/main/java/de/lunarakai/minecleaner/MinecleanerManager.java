@@ -50,6 +50,7 @@ public class MinecleanerManager {
     private SettingKey minecleanerSettingTimerKey;
     private SettingKey minecleanerAdditionalDisplaySettingKey;
     private SettingKey minecleanerResetTimerSettingKey;
+    private SettingKey minecleanerAllowManualResetSettingKey;
 
     public MinecleanerManager(MinecleanerPlugin plugin) {
         this.plugin = plugin;
@@ -80,6 +81,10 @@ public class MinecleanerManager {
             minecleanerResetTimerSettingKey = plugin.getCubesideStatistics().getSettingKey("minecleaner.settings.resettime");
             minecleanerResetTimerSettingKey.setDefault(5);
             minecleanerResetTimerSettingKey.setDisplayName("Dauer die das Spielfeld für das Zurücksetzen brauchen soll");
+
+            minecleanerAllowManualResetSettingKey = plugin.getCubesideStatistics().getSettingKey("minecleaner.settings.allowmanualreset");
+            minecleanerAllowManualResetSettingKey.setDefault(0);
+            minecleanerAllowManualResetSettingKey.setDisplayName("Erlaube das manuelle Zurücksetzen des Spielfeldes");
 
             this.settingsInventory = plugin.getServer().createInventory(null, InventoryType.CHEST,
                     plugin.getDisplayedPluginName() + " Einstellungen");
@@ -139,6 +144,7 @@ public class MinecleanerManager {
 
     public void leaveArena(Player player, boolean message) {
         MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
+        arena.setArenaStaus(ArenaStatus.INACTIVE);
         Preconditions.checkArgument(arena != null, "player is in no arena");
         arena.removePlayer();
         plugin.getArenaList().setArenaForPlayer(player, null);
@@ -367,11 +373,17 @@ public class MinecleanerManager {
     }
 
     public Inventory showSettingsInventory(Player player) {
-        int current = getSettingsValue("additionaldisplay", player);
+        int current = getSettingsValue("allowmanualreset", player);
 
-        settingsInventory.setItem(10,
-                ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.BARRIER), ChatColor.RED + "Platzhalter")));
+        if(current == 0) {
+            settingsInventory.setItem(10,
+                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.SHEARS), ChatColor.RED + "Manuelles Resetten deaktiviert")));
+        } else {
+            settingsInventory.setItem(10,
+                    ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.SHEARS), ChatColor.GREEN + "Manuelles Resetten aktiviert")));
+        }
 
+        current = getSettingsValue("additionaldisplay", player);
         if(current == 0) {
             settingsInventory.setItem(12,
                     ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.NAME_TAG), ChatColor.RED + "Zusätzliche Anzeige in der Action Bar")));

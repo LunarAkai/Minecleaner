@@ -10,17 +10,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
@@ -503,7 +499,10 @@ public class MinecleanerArena {
 
                 currentMinecleanerGame.flag(x, y);
                 if (currentMinecleanerGame.gameover) {
-                    arenaStatus = ArenaStatus.COMPLETED;
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                         arenaStatus = ArenaStatus.COMPLETED;
+                    }, 5L);
+
                     plugin.getManager().handleGameover(player, this, true);
                 }
                 if (cell.isFlagged() == true) {
@@ -535,7 +534,9 @@ public class MinecleanerArena {
                 setBlockForCellType(x, y, cell);
 
                 if (currentMinecleanerGame.gameover) {
-                    arenaStatus = ArenaStatus.COMPLETED;
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                        arenaStatus = ArenaStatus.COMPLETED;
+                    }, 5L);
                     plugin.getManager().handleGameover(player, this, !(cell.isRevealed() && cell.isExploded()));
                 } else {
                     updateIngameInfoTexts();
@@ -731,6 +732,9 @@ public class MinecleanerArena {
         return widthIndex;
     }
 
+    public void setArenaStaus(ArenaStatus status) {
+        this.arenaStatus = status;
+    }
 
     private int getRotationYaw() {
         return switch (orientation) {
@@ -740,4 +744,5 @@ public class MinecleanerArena {
             default -> 0;
         };
     }
+
 }

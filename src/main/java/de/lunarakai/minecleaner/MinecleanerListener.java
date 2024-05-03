@@ -80,7 +80,7 @@ public class MinecleanerListener implements Listener {
                             }
                         }
                     }
-                } else if(arenaClicked.hasPlayer() && arenaClicked.getArenaStatus() == ArenaStatus.COMPLETED && !hasRightClicked){
+                } else if(arenaClicked.hasPlayer() && arenaClicked.getArenaStatus() == ArenaStatus.COMPLETED && !hasRightClicked && (plugin.getManager().getSettingsValue("allowmanualreset", e.getPlayer()) == 1)) {
                     plugin.getManager().getSchedulerGameOver().cancel();
                     plugin.getManager().leaveArena(arenaClicked.getCurrentPlayer(), false);
                 }
@@ -129,6 +129,18 @@ public class MinecleanerListener implements Listener {
                 e.setCancelled(true);
                 int slot = e.getRawSlot();
                 switch (slot) {
+                    case 10: {
+                        if(plugin.getManager().getSettingsValue("allowmanualreset", player) == 0) {
+                            plugin.getManager().updateSettingsValue("allowmanualreset", 1, player);
+                            player.closeInventory();
+                            player.openInventory(plugin.getManager().showSettingsInventory(player));
+                        } else {
+                            plugin.getManager().updateSettingsValue("allowmanualreset", 0, player);
+                            player.closeInventory();
+                            player.openInventory(plugin.getManager().showSettingsInventory(player));
+                        }
+                        break;
+                    }
                     case 12: {
                         if(plugin.getManager().getSettingsValue("additionaldisplay", player) == 0) {
                             plugin.getManager().updateSettingsValue("additionaldisplay", 1, player);
