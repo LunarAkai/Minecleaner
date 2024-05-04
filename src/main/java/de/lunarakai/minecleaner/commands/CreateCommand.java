@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
@@ -21,6 +23,8 @@ import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerArena;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
 import net.md_5.bungee.api.ChatColor;
+
+import static de.lunarakai.minecleaner.utils.MinecleanerComponentUtils.createLangComponent;
 
 public class CreateCommand extends SubCommand {
     private static final Pattern VALID_ARENA_NAME = Pattern.compile("^[a-z0-9_]+$");
@@ -55,11 +59,11 @@ public class CreateCommand extends SubCommand {
         }
         String name = args.getNext().toLowerCase().trim();
         if(!VALID_ARENA_NAME.matcher(name).matches()) {
-            sender.sendMessage(ChatColor.DARK_RED + "Ungültiger Arenaname. Erlaubt sind Buchstaben, Zahlen und der Unterstrich");
+            sender.sendMessage(createLangComponent("arena.name.invalid", NamedTextColor.DARK_RED));
             return true;
         }
         if(plugin.getArenaList().getArena(name) != null) {
-            sender.sendMessage(ChatColor.DARK_RED + "Eine Arena mit diesem Namen existiert bereits");
+            sender.sendMessage(createLangComponent( "arena.name.exists", NamedTextColor.DARK_RED));
             return true;
         }
         boolean noblocks = false;
@@ -73,13 +77,13 @@ public class CreateCommand extends SubCommand {
                 try {
                     widthindex = Integer.parseInt(arg);
                 } catch(NumberFormatException e) {
-                    sender.sendMessage(ChatColor.DARK_RED + "Kein Valider Arena WidthIndex!");
-                    sender.sendMessage(ChatColor.DARK_RED + "0 (oder weglassen) = 9*9, 1 = 12*12, 2 = 12*18, 3 = 12*33");
+                    sender.sendMessage(createLangComponent("arena.widthindex.invalid", NamedTextColor.DARK_RED));
+                    sender.sendMessage(createLangComponent("arena.widthindex.validOptions", NamedTextColor.DARK_RED));
                     return true;
                 }
                 if(widthindex > 3) {
-                    sender.sendMessage(ChatColor.DARK_RED + "Arena WidthIndex darf nicht größer als 3 sein");
-                    sender.sendMessage(ChatColor.DARK_RED + "0 (oder weglassen) = 9*9, 1 = 12*12, 2 = 12*18, 3 = 12*33");
+                    sender.sendMessage(createLangComponent( "arena.widthindex.toolarge", NamedTextColor.DARK_RED));
+                    sender.sendMessage(createLangComponent("arena.widthindex.validOptions", NamedTextColor.DARK_RED));
                     return true;
                 }
             } else {
@@ -94,12 +98,14 @@ public class CreateCommand extends SubCommand {
         @Nullable
         RayTraceResult target = player.rayTraceBlocks(6);
         if(target == null || target.getHitBlock() == null) {
-            sender.sendMessage(ChatColor.DARK_RED + "Bitte gucke den Block an, der im Zentrum des " + plugin.getDisplayedPluginName() + "-Spielfelds sein soll.");
+            //sender.sendMessage(ChatColor.DARK_RED + "Bitte gucke den Block an, der im Zentrum des " + plugin.getDisplayedPluginName() + "-Spielfelds sein soll.");
+            sender.sendMessage(createLangComponent( "arena.create.lookAtCenter", plugin.getDisplayedPluginName(), NamedTextColor.DARK_RED));
             return true;
         }
         BlockFace face = target.getHitBlockFace();
         if(face != BlockFace.NORTH && face != BlockFace.WEST && face != BlockFace.EAST && face != BlockFace.SOUTH) {
-            sender.sendMessage(ChatColor.DARK_RED + "Bitte gucke die Seite des Blockes an, wo das " + plugin.getDisplayedPluginName() + "-Spielfeld erstellt werden soll.");
+            //sender.sendMessage(ChatColor.DARK_RED + "Bitte gucke die Seite des Blockes an, wo das " + plugin.getDisplayedPluginName() + "-Spielfeld erstellt werden soll.");
+            sender.sendMessage(createLangComponent("arena.create.lookAtSide", plugin.getDisplayedPluginName(), NamedTextColor.DARK_RED));
             return true;
         }
         location = target.getHitBlock().getLocation();
@@ -107,7 +113,7 @@ public class CreateCommand extends SubCommand {
 
         MinecleanerArena newArena = new MinecleanerArena(plugin, name, location, widthindex, orientation);
         if(plugin.getArenaList().collidesWithArena(newArena)) {
-            sender.sendMessage(ChatColor.DARK_RED + "An dieser Stelle befindet sich bereits eine Arena.");
+            sender.sendMessage(createLangComponent("arena.create.otherArena", NamedTextColor.DARK_RED));
             return true;
         }
         newArena.generateBlockDisplays();
@@ -115,7 +121,7 @@ public class CreateCommand extends SubCommand {
             newArena.generateBackgroundBlocks();
         }
         plugin.getArenaList().addArena(newArena);
-        sender.sendMessage(ChatColor.GREEN + "Die Arena wurde erfolgreich angelegt.");
+        sender.sendMessage(createLangComponent("arena.create.success", NamedTextColor.GREEN));
         return true;
     }
 
@@ -151,5 +157,4 @@ public class CreateCommand extends SubCommand {
         }
         return List.of();
     }
-    
 }

@@ -1,6 +1,10 @@
 package de.lunarakai.minecleaner;
 
 import de.lunarakai.minecleaner.commands.SettingsCommand;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.translation.GlobalTranslator;
+import net.kyori.adventure.translation.TranslationRegistry;
+import net.kyori.adventure.util.UTF8ResourceBundleControl;
 import org.bukkit.plugin.java.JavaPlugin;
 import de.iani.cubesidestats.api.CubesideStatisticsAPI;
 import de.iani.cubesideutils.bukkit.commands.CommandRouter;
@@ -12,6 +16,8 @@ import de.lunarakai.minecleaner.commands.InfoCommand;
 import de.lunarakai.minecleaner.commands.ListCommand;
 import de.lunarakai.minecleaner.commands.StatsCommand;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 
 public final class MinecleanerPlugin extends JavaPlugin {
@@ -26,6 +32,18 @@ public final class MinecleanerPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
+
+        TranslationRegistry registry = TranslationRegistry.create(Key.key("minecleaner:lang"));
+
+        ResourceBundle bundle_en_US = ResourceBundle.getBundle("lang.en_US", Locale.US, UTF8ResourceBundleControl.get());
+        registry.registerAll(Locale.US, bundle_en_US, true);
+        GlobalTranslator.translator().addSource(registry);
+
+        ResourceBundle bundle_de_DE = ResourceBundle.getBundle("lang.de_DE", Locale.GERMAN, UTF8ResourceBundleControl.get());
+        registry.registerAll(Locale.GERMAN, bundle_de_DE, true);
+
+        GlobalTranslator.translator().addSource(registry);
+
         getServer().getScheduler().runTask(this, this::onLateEnable);
     }
 
@@ -41,6 +59,10 @@ public final class MinecleanerPlugin extends JavaPlugin {
         } else {
             this.getLogger().log(Level.WARNING, "Cubeside Statistics not found. No Statistics will be available");
         }
+
+
+
+
 
         arenaList = new ArenaList(this);
         arenaList.load();
