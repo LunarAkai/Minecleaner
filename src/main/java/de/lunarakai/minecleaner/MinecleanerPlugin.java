@@ -60,10 +60,6 @@ public final class MinecleanerPlugin extends JavaPlugin {
             this.getLogger().log(Level.WARNING, "Cubeside Statistics not found. No Statistics will be available");
         }
 
-
-
-
-
         arenaList = new ArenaList(this);
         arenaList.load();
 
