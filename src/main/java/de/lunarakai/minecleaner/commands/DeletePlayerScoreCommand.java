@@ -1,5 +1,6 @@
 package de.lunarakai.minecleaner.commands;
 
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import de.iani.cubesideutils.bukkit.commands.SubCommand;
@@ -12,6 +13,8 @@ import de.iani.cubesideutils.commands.ArgsParser;
 import de.iani.playerUUIDCache.CachedPlayer;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
 import net.md_5.bungee.api.ChatColor;
+
+import static de.lunarakai.minecleaner.utils.MinecleanerComponentUtils.createLangComponent;
 
 public class DeletePlayerScoreCommand extends SubCommand{
     private final MinecleanerPlugin plugin;
@@ -48,10 +51,10 @@ public class DeletePlayerScoreCommand extends SubCommand{
 
         CachedPlayer cachedPlayer = plugin.getPlayerUUIDCache().getPlayer(player);
         if(cachedPlayer == null) {
-            sender.sendMessage(ChatColor.DARK_RED + "Ein Spieler mit dem Namen '" + player + "' konnte nicht gefunden werden.");
+            sender.sendMessage(createLangComponent("data.delete.playerNotFound", player, NamedTextColor.DARK_RED));
         }
         plugin.getManager().deleteScores(cachedPlayer.getUUID());
-        sender.sendMessage(ChatColor.DARK_RED + "Alle " + plugin.getDisplayedPluginName() + "-Statistiken von Spieler '" + cachedPlayer.getName() + "' wurden gelöscht.");
+        sender.sendMessage(createLangComponent("data.delete.deleted", plugin.getDisplayedPluginName(), cachedPlayer.getName(), NamedTextColor.DARK_RED));
         return true;
     }
     

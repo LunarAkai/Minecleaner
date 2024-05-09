@@ -2,6 +2,8 @@ package de.lunarakai.minecleaner.commands;
 
 import java.util.Collection;
 import java.util.List;
+
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,6 +17,8 @@ import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerArena;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
 import net.md_5.bungee.api.ChatColor;
+
+import static de.lunarakai.minecleaner.utils.MinecleanerComponentUtils.createLangComponent;
 
 public class ListCommand extends SubCommand{
 
@@ -41,7 +45,7 @@ public class ListCommand extends SubCommand{
 
     @Override
     public boolean onCommand(CommandSender sender, Command arg1, String arg2, String commandString, ArgsParser args) throws DisallowsCommandBlockException, RequiresPlayerException, NoPermissionException, IllegalSyntaxException, InternalCommandException {
-        sender.sendMessage(ChatColor.YELLOW + "Angelegte "+ plugin.getDisplayedPluginName() + "-Arenen");
+        sender.sendMessage(createLangComponent("arena.list", plugin.getDisplayedPluginName(), NamedTextColor.YELLOW));
         boolean any = false;
         for(MinecleanerArena arena : plugin.getArenaList().getArenas()) {
             Location location = arena.getLocation();
@@ -49,7 +53,7 @@ public class ListCommand extends SubCommand{
             any = true;
         }
         if(!any) {
-            sender.sendMessage(ChatColor.GRAY + "  (keine)");
+            sender.sendMessage("  " + createLangComponent("arena.list.none", NamedTextColor.GRAY));
         }
         return true;
     }

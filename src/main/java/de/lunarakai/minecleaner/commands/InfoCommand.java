@@ -1,5 +1,7 @@
 package de.lunarakai.minecleaner.commands;
 
+import de.iani.cubesideutils.NamedChatColor;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import de.iani.cubesideutils.bukkit.commands.SubCommand;
@@ -11,6 +13,8 @@ import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
 import net.md_5.bungee.api.ChatColor;
+
+import static de.lunarakai.minecleaner.utils.MinecleanerComponentUtils.createLangComponent;
 
 public class InfoCommand extends SubCommand{
     MinecleanerPlugin plugin;
@@ -38,11 +42,11 @@ public class InfoCommand extends SubCommand{
     public boolean onCommand(CommandSender sender, Command arg1, String arg2, String arg3,
             ArgsParser args) throws DisallowsCommandBlockException, RequiresPlayerException,
             NoPermissionException, IllegalSyntaxException, InternalCommandException {
-                sender.sendMessage(ChatColor.GREEN + "--- " + ChatColor.AQUA + plugin.getName() + ChatColor.GREEN + " ---");
-                sender.sendMessage(ChatColor.AQUA + "Version: " + ChatColor.GREEN + plugin.getPluginMeta().getVersion());
-                sender.sendMessage(ChatColor.AQUA + "Entwickelt von: " + ChatColor.GREEN + plugin.getPluginMeta().getAuthors().get(0));
-                sender.sendMessage(ChatColor.AQUA + "Website: " + ChatColor.GREEN + plugin.getPluginMeta().getWebsite());
-                sender.sendMessage(ChatColor.AQUA + "Lizenz: " + ChatColor.GREEN + "GPL-3.0");
+                sender.sendMessage(NamedChatColor.GREEN + "--- " + ChatColor.AQUA + plugin.getName() + ChatColor.GREEN + " ---");
+                sender.sendMessage(createLangComponent("minecleaner.info.version", NamedTextColor.AQUA) + ": " + ChatColor.GREEN + plugin.getPluginMeta().getVersion());
+                sender.sendMessage(createLangComponent("minecleaner.info.developer", NamedTextColor.AQUA) + ": " + ChatColor.GREEN + plugin.getPluginMeta().getAuthors().get(0));
+                sender.sendMessage(createLangComponent("minecleaner.info.website", NamedTextColor.AQUA) + ": " + ChatColor.GREEN + plugin.getPluginMeta().getWebsite());
+                sender.sendMessage(createLangComponent("minecleaner.info.license", NamedTextColor.AQUA) + ": " + ChatColor.GREEN + "GPL-3.0");
                 return true;
     }
 }

@@ -20,4 +20,11 @@ public class MinecleanerComponentUtils {
                 .build();
     }
 
+    public static TextComponent createLangComponent(String langKey, String arg0, String arg1, NamedTextColor namedColor) {
+        return Component.text()
+                .color(namedColor)
+                .append(Component.translatable(langKey, Component.text(arg0), Component.text(arg1)))
+                .build();
+    }
+
 }

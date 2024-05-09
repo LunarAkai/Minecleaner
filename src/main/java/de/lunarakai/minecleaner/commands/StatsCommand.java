@@ -2,6 +2,9 @@ package de.lunarakai.minecleaner.commands;
 
 import java.util.Map.Entry;
 import java.util.function.Consumer;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,6 +20,8 @@ import de.lunarakai.minecleaner.MinecleanerPlugin;
 import de.lunarakai.minecleaner.PlayerStatisticsData;
 import de.lunarakai.minecleaner.utils.MinecleanerStringUtil;
 import net.md_5.bungee.api.ChatColor;
+
+import static de.lunarakai.minecleaner.utils.MinecleanerComponentUtils.createLangComponent;
 
 public class StatsCommand extends SubCommand {
     private final MinecleanerPlugin plugin;
@@ -48,13 +53,13 @@ public class StatsCommand extends SubCommand {
             @Override
             public void accept(PlayerStatisticsData data) {
                 if(data == null) {
-                    sender.sendMessage(ChatColor.GREEN + "Für Spieler '" + playerName + "' existieren keine Daten.");
+                    sender.sendMessage(createLangComponent("data.player.noData", playerName, NamedTextColor.GREEN));
                     return;
                 }
                 if(playerName == null) {
-                    sender.sendMessage(ChatColor.AQUA + "Deine " + plugin.getDisplayedPluginName() + " Statistik:");
+                    sender.sendMessage(createLangComponent("data.player.self", plugin.getDisplayedPluginName(), NamedTextColor.AQUA).append(Component.text(":")));
                 } else {
-                    sender.sendMessage(ChatColor.AQUA + plugin.getDisplayedPluginName() + "-Statistik von " + data.getPlayerName() + ":");
+                    sender.sendMessage(createLangComponent("data.player.other", plugin.getDisplayedPluginName(), data.getPlayerName(), NamedTextColor.AQUA).append(Component.text(":")));
                 }
                 sender.sendMessage(ChatColor.BLUE + "  Punkte erspielt: " + ChatColor.GREEN + data.getPointsAcquiredTotal() + " (Dieser Monat: " + data.getPointsAquiredMonth() + ")");
                 sender.sendMessage(ChatColor.BLUE + "  Runden gewonnen: " + ChatColor.GREEN + data.getWonGamesPlayed() + " (Dieser Monat: " + data.getWonGamesPlayedThisMonth() + ")");
