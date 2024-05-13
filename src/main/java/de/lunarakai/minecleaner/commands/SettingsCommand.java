@@ -8,6 +8,7 @@ import de.iani.cubesideutils.bukkit.commands.exceptions.NoPermissionException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
+import de.lunarakai.minecleaner.MinecleanerSettingsInventory;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -39,7 +40,7 @@ public class SettingsCommand extends SubCommand {
     public boolean onCommand(CommandSender sender, Command command, String s, String s1, ArgsParser args) throws DisallowsCommandBlockException, RequiresPlayerException, NoPermissionException, IllegalSyntaxException, InternalCommandException {
         Player player = (Player) sender;
 
-        player.openInventory(plugin.getManager().showSettingsInventory(player));
+        new MinecleanerSettingsInventory(player, plugin).open();
         return true;
     }
 }
