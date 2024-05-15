@@ -2,6 +2,8 @@ package de.lunarakai.minecleaner.commands;
 
 import java.util.Collection;
 import java.util.List;
+
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
@@ -17,6 +19,8 @@ import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerArena;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
 import net.md_5.bungee.api.ChatColor;
+
+import static de.lunarakai.minecleaner.utils.MinecleanerComponentUtils.createLangComponent;
 
 public class DeleteCommand extends SubCommand {
     private final MinecleanerPlugin plugin;
@@ -52,9 +56,9 @@ public class DeleteCommand extends SubCommand {
         }
         if(arena != null) {
             plugin.getArenaList().removeArena(arena);
-            sender.sendMessage(ChatColor.YELLOW + "Die " + plugin.getDisplayedPluginName() + "-Arena " + arena.getName() + " wurde gelöscht.");
+            sender.sendMessage(createLangComponent("arena.delete.success", plugin.getDisplayedPluginName(), arena.getName(), NamedTextColor.YELLOW));
         } else {
-            sender.sendMessage(ChatColor.YELLOW + "Hier befindet sich keine " + plugin.getDisplayedPluginName() + "-Arena.");
+            sender.sendMessage(createLangComponent("arena.delete.noarena", plugin.getDisplayedPluginName(), NamedTextColor.YELLOW));
         }
         return true;
     }
