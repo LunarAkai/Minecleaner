@@ -2,11 +2,10 @@ package de.lunarakai.minecleaner;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -119,17 +118,37 @@ public class ArenaList {
         }
     }
 
-    public MinecleanerArena getPlayersArena(Player[] players) {
-        MinecleanerArena[] arenas = new MinecleanerArena[players.length];
-        for(int i = 0; i < players.length; i++) {
-            arenas[i] = playersInArena.get(players[i].getUniqueId());
-        }
-        boolean match = Arrays.stream(arenas).allMatch(s -> s.equals(arenas[0]));
-        if(match) {
-            return arenas[0];
+    public MinecleanerArena getPlayerArena(Player player) {
+        int arraySize = plugin.getGroupManager().getGroup(player) != null ? plugin.getGroupManager().getGroup(player).getPlayers().size() : 1;
+        Player[] players = new Player[arraySize];
+
+        if(plugin.getGroupManager().getGroup(player) != null) {
+            for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player).getPlayers().iterator(); iterator.hasNext();) {
+                Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
+                Arrays.fill(players, iteratorPlayer);
+            }
         } else {
-            return null;
+            Arrays.fill(players, player);
         }
+        return getPlayerArena(players);
+    }
+
+    public MinecleanerArena getPlayerArena(Player[] players) {
+        if(plugin.getGroupManager().getGroup(players[0]) != null) {
+            MinecleanerArena[] arenas = new MinecleanerArena[players.length];
+            for(int i = 0; i < players.length; i++) {
+                arenas[i] = playersInArena.get(players[i].getUniqueId());
+            }
+            boolean match = Arrays.stream(arenas).allMatch(s -> s.equals(arenas[0]));
+            if(match) {
+                return arenas[0];
+            } else {
+                return null;
+            }
+        } else {
+            return playersInArena.get(players[0].getUniqueId());
+        }
+
     }
 
     public MinecleanerArena getArenaAtBlock(Block block) {
@@ -142,7 +161,7 @@ public class ArenaList {
 
     public void removeArena(MinecleanerArena arena) {
         if(arena.hasPlayers()) {
-            plugin.getManager().leaveArena(arena.getCurrentPlayers(), true);
+            plugin.getManager().leaveArena(arena.getCurrentPlayers(), true, true);
         }
         
         for(UUID id : arena.getBlockDisplays()) {

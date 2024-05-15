@@ -1,16 +1,16 @@
-package de.lunarakai.minecleaner.commands;
+package de.lunarakai.minecleaner.commands.groups;
 
 import de.iani.cubesideutils.bukkit.commands.SubCommand;
 import de.iani.cubesideutils.bukkit.commands.exceptions.*;
 import de.iani.cubesideutils.commands.ArgsParser;
-import de.lunarakai.minecleaner.MinecleanerGroup;
+import de.lunarakai.minecleaner.MinecleanerGroupManager;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 public class InviteCommand extends SubCommand {
     /*
@@ -45,18 +45,30 @@ public class InviteCommand extends SubCommand {
     public boolean onCommand(CommandSender sender, Command command, String s, String commandString, ArgsParser args) throws DisallowsCommandBlockException, RequiresPlayerException, NoPermissionException, IllegalSyntaxException, InternalCommandException {
         Player player = (Player) sender;
         if(args.remaining() < 1 || args.remaining() >= 2) {
-            sender.sendMessage(ChatColor.DARK_RED + commandString + getUsage());
+            sender.sendMessage(Component.text(commandString + getUsage(), NamedTextColor.DARK_RED));
             return true;
         }
         String playerName = args.getNext().trim();
         Player invitedPlayer = plugin.getServer().getPlayer(playerName);
 
-        MinecleanerGroup group = new MinecleanerGroup();
-        group.createGroup(player);
-        UUID groupUUID = group.getGroupUUID(player);
+        MinecleanerGroupManager groupManager = plugin.getGroupManager();
+        if(groupManager.getInvitedGroup(player) != null) {
+            player.sendMessage(Component.text("Du wurdest bereits in eine Gruppe eingeladen. Bitte kümmere dich zuerst um die Einladung bevor du eine eigene Gruppe erstellst.", NamedTextColor.YELLOW));
+            return true;
+        }
 
-        group.invitePlayerToGroup(groupUUID, invitedPlayer);
+        if(groupManager.getGroup(player) != null && Bukkit.getPlayer(groupManager.getGroup(player).getOwner()).equals(player)) {
+            player.sendMessage(Component.text("Nur als Ersteller der Gruppe bist du berechtigt Leute einzuladen.", NamedTextColor.YELLOW));
+            return true;
+        }
 
-        return false;
+        if(groupManager.getGroup(player) == null) {
+            groupManager.createGroup(player);
+        }
+
+        assert invitedPlayer != null;
+        groupManager.getGroup(player).invitePlayerToGroup(invitedPlayer);
+
+        return true;
     }
 }

@@ -1,17 +1,15 @@
-package de.lunarakai.minecleaner.commands;
+package de.lunarakai.minecleaner.commands.groups;
 
 import de.iani.cubesideutils.bukkit.commands.SubCommand;
 import de.iani.cubesideutils.bukkit.commands.exceptions.*;
 import de.iani.cubesideutils.commands.ArgsParser;
-import de.lunarakai.minecleaner.MinecleanerGroup;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.HashMap;
-import java.util.UUID;
 
 public class AcceptCommand extends SubCommand {
     private final MinecleanerPlugin plugin;
@@ -39,12 +37,18 @@ public class AcceptCommand extends SubCommand {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String s1, ArgsParser argsParser) throws DisallowsCommandBlockException, RequiresPlayerException, NoPermissionException, IllegalSyntaxException, InternalCommandException {
         Player player = (Player) commandSender;
 
-        if() {
-            UUID groupUUID = invitedPlayersHashMap.get(player.getUniqueId());
+        if(plugin.getGroupManager().getInvitedGroup(player) != null && plugin.getGroupManager().getGroup(player) == null) {
+            Player groupOwner = Bukkit.getPlayer(plugin.getGroupManager().getInvitedGroup(player).getOwner());
+            plugin.getGroupManager().getInvitedGroup(player).addPlayerToGroup(player);
 
+            assert groupOwner != null;
+            groupOwner.sendMessage(Component.text(player.getName() + " hat deine Einladung angenommen.", NamedTextColor.GREEN));
+            player.sendMessage(Component.text("Du hast die Einladung angenommen", NamedTextColor.GREEN));
+
+            return true;
         } else {
-            player.sendMessage(Component.text("Du wurdest in keine Gruppe eingeladen."));
+            player.sendMessage(Component.text("Du wurdest in keine Gruppe eingeladen.", NamedTextColor.YELLOW));
         }
-        return false;
+        return true;
     }
 }

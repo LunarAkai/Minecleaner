@@ -25,6 +25,7 @@ public final class MinecleanerPlugin extends JavaPlugin {
     public static final String PERMISSION_ADMIN = "minecleaner.admin";
 
     private MinecleanerManager minecleanerManager;
+    private MinecleanerGroupManager minecleanerGroupManager;
     private ArenaList arenaList;
     private CubesideStatisticsAPI cubesideStatistics;
     private PlayerUUIDCache playerUUIDCache;
@@ -64,6 +65,7 @@ public final class MinecleanerPlugin extends JavaPlugin {
         arenaList.load();
 
         minecleanerManager = new MinecleanerManager(this);
+        minecleanerGroupManager = new MinecleanerGroupManager();
         getServer().getPluginManager().registerEvents(new MinecleanerListener(this), this);
 
         CommandRouter minecleanerCommand = new CommandRouter(getCommand("minecleaner"));
@@ -84,6 +86,9 @@ public final class MinecleanerPlugin extends JavaPlugin {
         if(minecleanerManager != null) {
             minecleanerManager.clearAllArenas();
         }
+        if(minecleanerGroupManager != null) {
+            minecleanerGroupManager.deleteAllGroups();
+        }
     }
 
     public ArenaList getArenaList() {
@@ -93,6 +98,8 @@ public final class MinecleanerPlugin extends JavaPlugin {
     public MinecleanerManager getManager() {
         return minecleanerManager;
     }
+
+    public MinecleanerGroupManager getGroupManager() { return minecleanerGroupManager; }
 
     public boolean isStatisticsEnabled() {
         return cubesideStatistics != null;

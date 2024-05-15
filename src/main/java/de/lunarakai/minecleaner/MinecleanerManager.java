@@ -133,31 +133,52 @@ public class MinecleanerManager {
         if (!players[0].hasPermission(MinecleanerPlugin.PERMISSION_PLAY)) {
             return;
         }
-        Preconditions.checkArgument(plugin.getArenaList().getPlayersArena(players) == null, "player is in an arena");
+        Preconditions.checkArgument(plugin.getArenaList().getPlayerArena(players) == null, "player is in an arena");
         Preconditions.checkArgument(arena.getArenaStatus() == ArenaStatus.INACTIVE, "arena is in use");
         arena.addJoiningPlayers(players);
         plugin.getArenaList().setArenaForPlayers(players, arena);
-        players[0].openInventory(confirmPlayingInventory);
-    }
-
-    public void leaveArena(Player[] players, boolean message) {
-        MinecleanerArena arena = plugin.getArenaList().getPlayersArena(players);
-        arena.setArenaStaus(ArenaStatus.INACTIVE);
-        Preconditions.checkArgument(arena != null, "player is in no arena");
         for(int i = 0; i < players.length; i++) {
-            players[i].closeInventory();
-        }
-        arena.removePlayers();
-        plugin.getArenaList().setArenaForPlayers(players, null);
-        if(message) {
-            for(int i = 0; i < players.length; i++) {
-                players[i].sendMessage(ChatColor.YELLOW + "Das " + plugin.getDisplayedPluginName() + "spiel wurde abgebrochen.");
+            if(plugin.getGroupManager().getGroup(players[i]) == null) {
+                players[i].openInventory(confirmPlayingInventory);
+                break;
+            }
+            if(players[i] == Bukkit.getPlayer(plugin.getGroupManager().getGroup(players[i]).getOwner())) {
+                players[i].openInventory(confirmPlayingInventory);
             }
         }
     }
 
+    public void leaveArena(Player[] players, boolean message, boolean reset) {
+        MinecleanerGroupManager.MinecleanerGroup group = null;
+        MinecleanerArena arena;
+        if(plugin.getGroupManager().getGroup(players[0]) != null) {
+            group = plugin.getGroupManager().getGroup(players[0]);
+            arena = plugin.getArenaList().getPlayerArena(Objects.requireNonNull(Bukkit.getPlayer(group.getOwner())));
+        } else {
+            arena = plugin.getArenaList().getPlayerArena(players);
+        }
+
+        Preconditions.checkArgument(arena != null, "player is in no arena");
+
+        if(reset) {
+            arena.setArenaStaus(ArenaStatus.INACTIVE);
+            for(int i = 0; i < players.length; i++) {
+                players[i].closeInventory();
+            }
+            arena.removePlayers();
+            if(message) {
+                for(int i = 0; i < players.length; i++) {
+                    players[i].sendMessage(ChatColor.YELLOW + "Das " + plugin.getDisplayedPluginName() + "spiel wurde abgebrochen.");
+                }
+            }
+        }
+
+        plugin.getArenaList().setArenaForPlayers(players, null);
+    }
+
+
     public void startGame(Player[] players) {
-        MinecleanerArena arena = plugin.getArenaList().getPlayersArena(players);
+        MinecleanerArena arena = plugin.getArenaList().getPlayerArena(players);
         Preconditions.checkArgument(arena != null, "player is in no arena");
         Preconditions.checkState(arena.getArenaStatus() == ArenaStatus.CONFIRM_PLAYING, "not confirming playing status");
         arena.startNewGame();
@@ -167,30 +188,35 @@ public class MinecleanerManager {
 
     }
 
-    public void handleGameover(Player player, MinecleanerArena arena, boolean isSuccessfullyCleared) {
-        World world = player.getWorld();
+    public void handleGameover(Player[] player, MinecleanerArena arena, boolean isSuccessfullyCleared) {
+        if(plugin.getGroupManager().getGroup(player[0]) != null) {
+            // Todo
+            //  eigene Extra Punkte
+            return;
+        }
+        World world = player[0].getWorld();
         PlayerStatistics ps = null;
         StatisticKey sg = null;
         if(plugin.isStatisticsEnabled()) {
-            ps = plugin.getCubesideStatistics().getStatistics(player.getUniqueId());
+            ps = plugin.getCubesideStatistics().getStatistics(player[0].getUniqueId());
             sg = statisticsTotalGamesPlayed.get(arena.getWidthIndex());
         }
 
         if(!isSuccessfullyCleared) {
-            world.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
-            player.sendMessage(ChatColor.YELLOW + "Game Over! Du konntest das " + plugin.getDisplayedPluginName() + "-Feld nicht erfolgreich lösen!");
+            world.playSound(player[0].getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
+            player[0].sendMessage(ChatColor.YELLOW + "Game Over! Du konntest das " + plugin.getDisplayedPluginName() + "-Feld nicht erfolgreich lösen!");
             arena.showMines();
             
             if(sg != null && plugin.isStatisticsEnabled()) {
                 ps.increaseScore(sg, 1);
             }
 
-            scheduleArenaReset(player, arena);
+            scheduleArenaReset(player[0], arena);
             return;
         }
         int millis = (int) (System.currentTimeMillis() - arena.getCurrentGameStartTime());
         
-        world.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.5f);
+        world.playSound(player[0].getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.5f);
 
         if(sg != null && plugin.isStatisticsEnabled()) {
             ps.increaseScore(sg, 1);
@@ -207,9 +233,9 @@ public class MinecleanerManager {
             if(sg != null) {
                 ps.minScore(sg, millis, isUpdated -> {
                     if(isUpdated != null && isUpdated) {
-                        player.sendMessage(ChatColor.GOLD + "Herzlichen Glückwunsch! Du hast eine neue Bestzeit erreicht! " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) );
+                        player[0].sendMessage(ChatColor.GOLD + "Herzlichen Glückwunsch! Du hast eine neue Bestzeit erreicht! " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) );
                     } else {
-                        player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) + ChatColor.YELLOW + " erfolgreich lösen!");
+                        player[0].sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) + ChatColor.YELLOW + " erfolgreich lösen!");
                     }
                 });
             }
@@ -237,10 +263,10 @@ public class MinecleanerManager {
                 }
             }
         } else {
-            player.sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) + ChatColor.YELLOW + " erfolgreich lösen!");
+            player[0].sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) + ChatColor.YELLOW + " erfolgreich lösen!");
         }
 
-        scheduleArenaReset(player, arena);
+        scheduleArenaReset(player[0], arena);
     }
 
     private void scheduleArenaReset(Player player, MinecleanerArena arena) {
@@ -249,7 +275,17 @@ public class MinecleanerManager {
                 if (arena.getCurrentPlayers() == null) {
                     arena.removePlayers();
                 } else {
-                    leaveArena(player, false);
+                    int arraySize = plugin.getGroupManager().getGroup(player) != null ? plugin.getGroupManager().getGroup(player).getPlayers().size() : 1;
+                    Player[] players = new Player[arraySize];
+                    if(plugin.getGroupManager().getGroup(player) != null) {
+                        for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player).getPlayers().iterator(); iterator.hasNext();) {
+                            Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
+                            Arrays.fill(players, iteratorPlayer);
+                        }
+                    } else {
+                        Arrays.fill(players, player);
+                    }
+                    leaveArena(players, false, true);
                 }
             }
         }, plugin.getManager().getSettingsValue("resettime", player) * 20L);
@@ -258,14 +294,13 @@ public class MinecleanerManager {
     public void clearAllArenas() {
         for(MinecleanerArena arena : plugin.getArenaList().getArenas()) {
             if(arena.hasPlayers()) {
-                leaveArena(arena.getCurrentPlayers(), true);
+                leaveArena(arena.getCurrentPlayers(), true, true);
             }
         }
     }
 
-
     public void handleFieldClick(@NotNull Player player, int x, int y, boolean hasRightClicked) {
-        MinecleanerArena arena = plugin.getArenaList().getPlayersArena(player);
+        MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
         Preconditions.checkArgument(arena != null, "player is in no arena");
         Preconditions.checkState(arena.getArenaStatus() == ArenaStatus.PLAYING, "not running");
 

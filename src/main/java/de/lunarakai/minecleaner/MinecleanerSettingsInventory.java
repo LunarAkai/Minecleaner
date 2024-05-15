@@ -100,7 +100,7 @@ public class MinecleanerSettingsInventory extends AbstractWindow {
                 if(plugin.getManager().getSettingsValue("timer", player) == 0) {
                     plugin.getManager().updateSettingsValue("timer", 1, player);
                 } else {
-                    MinecleanerArena arena = plugin.getArenaList().getPlayersArena(player);
+                    MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
                     plugin.getManager().updateSettingsValue("timer", 0, player);
                     if(arena != null) {
                         arena.updateIngameInfoTexts();
