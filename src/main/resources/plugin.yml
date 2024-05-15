@@ -1,7 +1,7 @@
 name: Minecleaner
 version: '${project.version}-${git.commit.id.abbrev}'
 author: LunarAkai
-website: https://github.com/LunarAkai/Minecleaner
+website: https://git.lunarakai.de/LunarAkai/NewMinecleaner
 main: de.lunarakai.minecleaner.MinecleanerPlugin
 api-version: '1.20'
 depend:

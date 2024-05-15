@@ -43,10 +43,10 @@ public class InfoCommand extends SubCommand{
             ArgsParser args) throws DisallowsCommandBlockException, RequiresPlayerException,
             NoPermissionException, IllegalSyntaxException, InternalCommandException {
                 sender.sendMessage(NamedChatColor.GREEN + "--- " + ChatColor.AQUA + plugin.getName() + ChatColor.GREEN + " ---");
-                sender.sendMessage(createLangComponent("minecleaner.info.version", NamedTextColor.AQUA) + ": " + ChatColor.GREEN + plugin.getPluginMeta().getVersion());
-                sender.sendMessage(createLangComponent("minecleaner.info.developer", NamedTextColor.AQUA) + ": " + ChatColor.GREEN + plugin.getPluginMeta().getAuthors().get(0));
-                sender.sendMessage(createLangComponent("minecleaner.info.website", NamedTextColor.AQUA) + ": " + ChatColor.GREEN + plugin.getPluginMeta().getWebsite());
-                sender.sendMessage(createLangComponent("minecleaner.info.license", NamedTextColor.AQUA) + ": " + ChatColor.GREEN + "GPL-3.0");
+                sender.sendMessage(createLangComponent("minecleaner.info.version", ": ", plugin.getPluginMeta().getVersion(), NamedTextColor.AQUA, NamedTextColor.GREEN));
+                sender.sendMessage(createLangComponent("minecleaner.info.developer", ": ", plugin.getPluginMeta().getAuthors().get(0), NamedTextColor.AQUA, NamedTextColor.GREEN));
+                sender.sendMessage(createLangComponent("minecleaner.info.website", ": ", plugin.getPluginMeta().getWebsite(), NamedTextColor.AQUA, NamedTextColor.GREEN));
+                sender.sendMessage(createLangComponent("minecleaner.info.license", ": ", "GPL-3.0", NamedTextColor.AQUA, NamedTextColor.GREEN));
                 return true;
     }
 }

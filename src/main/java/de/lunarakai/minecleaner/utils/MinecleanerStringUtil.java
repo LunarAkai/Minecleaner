@@ -1,6 +1,6 @@
 package de.lunarakai.minecleaner.utils;
 
-import de.iani.cubesideutils.StringUtil;
+import java.net.URL;
 
 public class MinecleanerStringUtil {
     private MinecleanerStringUtil() {
@@ -51,5 +51,15 @@ public class MinecleanerStringUtil {
         percent = percent * 100;
         String percentageString = String.format("%.1f", percent);
         return percentageString + "%";
-    }  
+    }
+
+    public static boolean isValidURL(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            url.toURI();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
