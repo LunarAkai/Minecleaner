@@ -1,5 +1,7 @@
 package de.lunarakai.minecleaner.utils;
 
+import de.iani.cubesideutils.StringUtil;
+
 public class MinecleanerStringUtil {
     private MinecleanerStringUtil() {
     }    

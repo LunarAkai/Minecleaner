@@ -48,7 +48,7 @@ public class MinecleanerListener implements Listener {
                     hasRightClicked = true;
                 }
 
-                if(!arena.getCurrentMinecleanerGame().gameover && (arena.getArenaStatus() == ArenaStatus.PLAYING || arena.getArenaStatus() == ArenaStatus.COMPLETED)) {
+                if(arena.getCurrentMinecleanerGame() != null && !arena.getCurrentMinecleanerGame().gameover && (arena.getArenaStatus() == ArenaStatus.PLAYING || arena.getArenaStatus() == ArenaStatus.COMPLETED)) {
                     if(arena.getArenaStatus() == ArenaStatus.PLAYING) {
                         int d0x = arena.getOrientation().getModX();
                         int d0z = arena.getOrientation().getModZ();
@@ -128,117 +128,6 @@ public class MinecleanerListener implements Listener {
                             //player.closeInventory();
                         }
                         player.closeInventory();
-                    }
-                }
-            }
-            if(e.getInventory().equals(plugin.getManager().getSettingsInventory())) {
-                int slot = e.getRawSlot();
-                switch (slot) {
-                    case 10: {
-                        if(plugin.getManager().getSettingsValue("allowmanualreset", player) == 0) {
-                            plugin.getManager().updateSettingsValue("allowmanualreset", 1, player);
-                            player.closeInventory();
-                            player.openInventory(plugin.getManager().showSettingsInventory(player));
-                        } else {
-                            plugin.getManager().updateSettingsValue("allowmanualreset", 0, player);
-                            player.closeInventory();
-                            player.openInventory(plugin.getManager().showSettingsInventory(player));
-                        }
-                        break;
-                    }
-                    case 12: {
-                        if(plugin.getManager().getSettingsValue("additionaldisplay", player) == 0) {
-                            plugin.getManager().updateSettingsValue("additionaldisplay", 1, player);
-                            player.closeInventory();
-                            player.openInventory(plugin.getManager().showSettingsInventory(player));
-                        } else {
-                            plugin.getManager().updateSettingsValue("additionaldisplay", 0, player);
-                            player.closeInventory();
-                            player.openInventory(plugin.getManager().showSettingsInventory(player));
-                        }
-                        break;
-                    }
-                    case 14: {
-                        if(plugin.getManager().getSettingsValue("timer", player) == 0) {
-                            plugin.getManager().updateSettingsValue("timer", 1, player);
-                            player.closeInventory();
-                            player.openInventory(plugin.getManager().showSettingsInventory(player));
-                        } else {
-                            plugin.getManager().updateSettingsValue("timer", 0, player);
-                            if(arena != null) {
-                                arena.updateIngameInfoTexts();
-                            }
-                            player.closeInventory();
-                            player.openInventory(plugin.getManager().showSettingsInventory(player));
-                        }
-                        break;
-                    }
-                    case 16: {
-                        switch (plugin.getManager().getSettingsValue("resettime", player)) {
-                            case 1: {
-                                plugin.getManager().updateSettingsValue("resettime", 2, player);
-                                player.closeInventory();
-                                player.openInventory(plugin.getManager().showSettingsInventory(player));
-                                break;
-                            }
-                            case 2: {
-                                plugin.getManager().updateSettingsValue("resettime", 3, player);
-                                player.closeInventory();
-                                player.openInventory(plugin.getManager().showSettingsInventory(player));
-                                break;
-                            }
-                            case 3: {
-                                plugin.getManager().updateSettingsValue("resettime", 4, player);
-                                player.closeInventory();
-                                player.openInventory(plugin.getManager().showSettingsInventory(player));
-                                break;
-                            }
-                            case 4: {
-                                plugin.getManager().updateSettingsValue("resettime", 5, player);
-                                player.closeInventory();
-                                player.openInventory(plugin.getManager().showSettingsInventory(player));
-                                break;
-                            }
-                            case 5: {
-                                plugin.getManager().updateSettingsValue("resettime", 6, player);
-                                player.closeInventory();
-                                player.openInventory(plugin.getManager().showSettingsInventory(player));
-                                break;
-                            }
-                            case 6: {
-                                plugin.getManager().updateSettingsValue("resettime", 7, player);
-                                player.closeInventory();
-                                player.openInventory(plugin.getManager().showSettingsInventory(player));
-                                break;
-                            }
-                            case 7: {
-                                plugin.getManager().updateSettingsValue("resettime", 8, player);
-                                player.closeInventory();
-                                player.openInventory(plugin.getManager().showSettingsInventory(player));
-                                break;
-                            }
-                            case 8: {
-                                plugin.getManager().updateSettingsValue("resettime", 9, player);
-                                player.closeInventory();
-                                player.openInventory(plugin.getManager().showSettingsInventory(player));
-                                break;
-                            }
-                            case 9: {
-                                plugin.getManager().updateSettingsValue("resettime", 10, player);
-                                player.closeInventory();
-                                player.openInventory(plugin.getManager().showSettingsInventory(player));
-                                break;
-                            }
-                            case 10: {
-                                plugin.getManager().updateSettingsValue("resettime", 1, player);
-                                player.closeInventory();
-                                player.openInventory(plugin.getManager().showSettingsInventory(player));
-                                break;
-                            }
-                        }
-                    }
-                    default: {
-                        break;
                     }
                 }
             }

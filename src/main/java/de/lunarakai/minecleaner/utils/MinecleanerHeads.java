@@ -1,14 +1,8 @@
 package de.lunarakai.minecleaner.utils;
 
-import java.util.Arrays;
+import de.iani.cubesideutils.bukkit.items.CustomHeads;
 import java.util.UUID;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
-import com.destroystokyo.paper.profile.PlayerProfile;
-import com.destroystokyo.paper.profile.ProfileProperty;
 
 public enum MinecleanerHeads {
     MINESWEEPER_TILE_0("38206373-5653-4431-85aa-6276f3f9a046", "Minesweeper Tile 0", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzRjMjg0YTRlOTc0MDA1ZWE4ZDFkNGQwNjc0ZWMwODk0ZWZkOGY2ZGQwMjQ4NjM5YTZjZmE5NGY4NTM4OCJ9fX0="),
@@ -38,40 +32,11 @@ public enum MinecleanerHeads {
     
     private ItemStack head;
  
-    private MinecleanerHeads(String ownerUUIDString, String ownerName, String texturesProperty) {
-        head = createHead(UUID.fromString(ownerUUIDString), ownerName, texturesProperty);
+    MinecleanerHeads(String ownerUUIDString, String ownerName, String texturesProperty) {
+        head = CustomHeads.createHead(UUID.fromString(ownerUUIDString), ownerName, texturesProperty);
     }
- 
+
     public ItemStack getHead() {
         return new ItemStack(head);
     }
- 
-    public ItemStack getHead(String displayName) {
-        return getHead(displayName, (String[]) null);
-    }
- 
-    public ItemStack getHead(String displayName, String... lore) {
-        ItemStack stack = getHead();
-        ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(displayName);
-        if (lore != null && lore.length > 0) {
-            meta.setLore(Arrays.asList(lore));
-        }
-        stack.setItemMeta(meta);
-        return stack;
-    }
- 
-    public static ItemStack createHead(UUID ownerUUID, String ownerName, String texturesProperty) {
-        if (ownerName == null) {
-            ownerName = ownerUUID.toString().substring(0, 16);
-        }
-        ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta meta = (SkullMeta) stack.getItemMeta();
-        PlayerProfile profile = Bukkit.createProfile(ownerUUID, ownerName);
-        profile.setProperty(new ProfileProperty("textures", texturesProperty));
-        meta.setPlayerProfile(profile);
-        stack.setItemMeta(meta);
-        return stack;
-    }
-    
 }
