@@ -34,7 +34,7 @@ public class MinecleanerListener implements Listener {
         if(e.getHand() != EquipmentSlot.HAND) return;
         if((e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             Block block = e.getClickedBlock();
-            MinecleanerArena arena = plugin.getArenaList().getPlayerArena(e.getPlayer());
+            MinecleanerArena arena = plugin.getArenaList().getPlayersArena(e.getPlayer());
             if(arena != null) {
                 e.setCancelled(true);
                 MinecleanerArena arenaClicked = plugin.getArenaList().getArenaAtBlock(block);
@@ -86,9 +86,9 @@ public class MinecleanerListener implements Listener {
                             }
                         }
                     }
-                } else if(arena.hasPlayer() && arena.getArenaStatus() == ArenaStatus.COMPLETED && !hasRightClicked && (plugin.getManager().getSettingsValue("allowmanualreset", e.getPlayer()) == 1)) {
+                } else if(arena.hasPlayers() && arena.getArenaStatus() == ArenaStatus.COMPLETED && !hasRightClicked && (plugin.getManager().getSettingsValue("allowmanualreset", e.getPlayer()) == 1)) {
                     plugin.getManager().getSchedulerGameOver().cancel();
-                    plugin.getManager().leaveArena(arenaClicked.getCurrentPlayer(), false);
+                    plugin.getManager().leaveArena(arenaClicked.getCurrentPlayers(), false);
                 }
             } else {
                 arena = plugin.getArenaList().getArenaAtBlock(block);
@@ -116,15 +116,24 @@ public class MinecleanerListener implements Listener {
     @EventHandler
     public void onPlayerInventoryClick(InventoryClickEvent e) {
         if(e.getWhoClicked() instanceof Player player) {
-            MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
+            MinecleanerArena arena = plugin.getArenaList().getPlayersArena(player);
             if(arena != null) {
                 if(e.getInventory().equals(plugin.getManager().getConfirmPlayingInventory())) {
                     e.setCancelled(true);
                     if(arena.getArenaStatus() == ArenaStatus.CONFIRM_PLAYING) {
                         int slot = e.getRawSlot();
                         boolean hasConfirmed = slot == 1 ? true : false;
-                        if(hasConfirmed) {  
-                            plugin.getManager().startGame(player);
+                        if(hasConfirmed) {
+                            Player[] players;
+                            if(MinecleanerGroup.isInGroup(player)) {
+                                players = new Player[MinecleanerGroup.getGroupSize()];
+                                players[0] = player;
+                            } else {
+                                players = new Player[1];
+                                players[0] = player;
+                            }
+                            plugin.getManager().startGame(players);
+
                             //player.closeInventory();
                         }
                         player.closeInventory();
@@ -137,7 +146,7 @@ public class MinecleanerListener implements Listener {
     @EventHandler
     public void onPlayerInventoryClose(InventoryCloseEvent e) {
         if(e.getPlayer() instanceof Player player) {
-            MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
+            MinecleanerArena arena = plugin.getArenaList().getPlayersArena(player);
             if(arena != null) {
                 if(arena.getArenaStatus() == ArenaStatus.CONFIRM_PLAYING && e.getInventory().equals(plugin.getManager().getConfirmPlayingInventory())) {
                     plugin.getManager().leaveArena(player, false);
@@ -149,7 +158,7 @@ public class MinecleanerListener implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
         final Player player = e.getPlayer();
-        MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
+        MinecleanerArena arena = plugin.getArenaList().getPlayersArena(player);
         if(arena != null) {
             if(arena.isTooFarAway(player)) {
                 player.sendMessage(ChatColor.YELLOW + "Du hast dich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.");
@@ -160,7 +169,7 @@ public class MinecleanerListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        MinecleanerArena arena = plugin.getArenaList().getPlayerArena(e.getPlayer());
+        MinecleanerArena arena = plugin.getArenaList().getPlayersArena(e.getPlayer());
         if(arena != null) {
             plugin.getManager().leaveArena(e.getPlayer(), false);
         }

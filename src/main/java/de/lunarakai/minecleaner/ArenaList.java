@@ -2,6 +2,7 @@ package de.lunarakai.minecleaner;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
@@ -106,16 +107,29 @@ public class ArenaList {
         return false;
     }
 
-    public void setArenaForPlayer(Player player, MinecleanerArena arena) {
+    public void setArenaForPlayers(Player[] players, MinecleanerArena arena) {
         if(arena != null) {
-            playersInArena.put(player.getUniqueId(), arena);
+            for(int i = 0; i < players.length; i++) {
+                playersInArena.put(players[i].getUniqueId(), arena);
+            }
         } else {
-            playersInArena.remove(player.getUniqueId());
+            for(int i = 0; i < players.length; i++) {
+                playersInArena.remove(players[i].getUniqueId());
+            }
         }
     }
 
-    public MinecleanerArena getPlayerArena(Player player) {
-        return playersInArena.get(player.getUniqueId());
+    public MinecleanerArena getPlayersArena(Player[] players) {
+        MinecleanerArena[] arenas = new MinecleanerArena[players.length];
+        for(int i = 0; i < players.length; i++) {
+            arenas[i] = playersInArena.get(players[i].getUniqueId());
+        }
+        boolean match = Arrays.stream(arenas).allMatch(s -> s.equals(arenas[0]));
+        if(match) {
+            return arenas[0];
+        } else {
+            return null;
+        }
     }
 
     public MinecleanerArena getArenaAtBlock(Block block) {
@@ -127,8 +141,8 @@ public class ArenaList {
     }
 
     public void removeArena(MinecleanerArena arena) {
-        if(arena.hasPlayer()) {
-            plugin.getManager().leaveArena(arena.getCurrentPlayer(), true);
+        if(arena.hasPlayers()) {
+            plugin.getManager().leaveArena(arena.getCurrentPlayers(), true);
         }
         
         for(UUID id : arena.getBlockDisplays()) {

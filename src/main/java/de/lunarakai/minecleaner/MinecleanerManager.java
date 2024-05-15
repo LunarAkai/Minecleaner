@@ -1,11 +1,9 @@
 package de.lunarakai.minecleaner;
 
 import de.iani.cubesidestats.api.SettingKey;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -131,35 +129,42 @@ public class MinecleanerManager {
     }
 
 
-    public void joinArena(Player player, MinecleanerArena arena) {
-        if (!player.hasPermission(MinecleanerPlugin.PERMISSION_PLAY)) {
+    public void joinArena(Player[] players, MinecleanerArena arena) {
+        if (!players[0].hasPermission(MinecleanerPlugin.PERMISSION_PLAY)) {
             return;
         }
-        Preconditions.checkArgument(plugin.getArenaList().getPlayerArena(player) == null, "player is in an arena");
+        Preconditions.checkArgument(plugin.getArenaList().getPlayersArena(players) == null, "player is in an arena");
         Preconditions.checkArgument(arena.getArenaStatus() == ArenaStatus.INACTIVE, "arena is in use");
-        arena.addJoiningPlayer(player);
-        plugin.getArenaList().setArenaForPlayer(player, arena);
-        player.openInventory(confirmPlayingInventory);
+        arena.addJoiningPlayers(players);
+        plugin.getArenaList().setArenaForPlayers(players, arena);
+        players[0].openInventory(confirmPlayingInventory);
     }
 
-    public void leaveArena(Player player, boolean message) {
-        MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
+    public void leaveArena(Player[] players, boolean message) {
+        MinecleanerArena arena = plugin.getArenaList().getPlayersArena(players);
         arena.setArenaStaus(ArenaStatus.INACTIVE);
         Preconditions.checkArgument(arena != null, "player is in no arena");
-        player.closeInventory();
-        arena.removePlayer();
-        plugin.getArenaList().setArenaForPlayer(player, null);
+        for(int i = 0; i < players.length; i++) {
+            players[i].closeInventory();
+        }
+        arena.removePlayers();
+        plugin.getArenaList().setArenaForPlayers(players, null);
         if(message) {
-            player.sendMessage(ChatColor.YELLOW + "Das " + plugin.getDisplayedPluginName() + "spiel wurde abgebrochen.");
+            for(int i = 0; i < players.length; i++) {
+                players[i].sendMessage(ChatColor.YELLOW + "Das " + plugin.getDisplayedPluginName() + "spiel wurde abgebrochen.");
+            }
         }
     }
 
-    public void startGame(Player player) {
-        MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
+    public void startGame(Player[] players) {
+        MinecleanerArena arena = plugin.getArenaList().getPlayersArena(players);
         Preconditions.checkArgument(arena != null, "player is in no arena");
         Preconditions.checkState(arena.getArenaStatus() == ArenaStatus.CONFIRM_PLAYING, "not confirming playing status");
         arena.startNewGame();
-        player.sendMessage(ChatColor.YELLOW + "Du hast eine neue Runde " + plugin.getDisplayedPluginName() + " gestartet.");
+        for(int i = 0; i < players.length; i++) {
+            players[i].sendMessage(ChatColor.YELLOW + "Du hast eine neue Runde " + plugin.getDisplayedPluginName() + " gestartet.");
+        }
+
     }
 
     public void handleGameover(Player player, MinecleanerArena arena, boolean isSuccessfullyCleared) {
@@ -241,8 +246,8 @@ public class MinecleanerManager {
     private void scheduleArenaReset(Player player, MinecleanerArena arena) {
         schedulerGameOver = Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if(arena.getArenaStatus() == ArenaStatus.COMPLETED) {
-                if (arena.getCurrentPlayer() == null) {
-                    arena.removePlayer();
+                if (arena.getCurrentPlayers() == null) {
+                    arena.removePlayers();
                 } else {
                     leaveArena(player, false);
                 }
@@ -252,15 +257,15 @@ public class MinecleanerManager {
 
     public void clearAllArenas() {
         for(MinecleanerArena arena : plugin.getArenaList().getArenas()) {
-            if(arena.hasPlayer()) {
-                leaveArena(arena.getCurrentPlayer(), true);
+            if(arena.hasPlayers()) {
+                leaveArena(arena.getCurrentPlayers(), true);
             }
         }
     }
 
 
     public void handleFieldClick(@NotNull Player player, int x, int y, boolean hasRightClicked) {
-        MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
+        MinecleanerArena arena = plugin.getArenaList().getPlayersArena(player);
         Preconditions.checkArgument(arena != null, "player is in no arena");
         Preconditions.checkState(arena.getArenaStatus() == ArenaStatus.PLAYING, "not running");
 
