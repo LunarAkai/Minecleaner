@@ -4,6 +4,7 @@ package de.lunarakai.minecleaner;
 import de.lunarakai.minecleaner.commands.CreateCommand;
 import de.lunarakai.minecleaner.commands.DeleteCommand;
 import de.lunarakai.minecleaner.commands.DeletePlayerScoreCommand;
+import de.lunarakai.minecleaner.commands.HelpCommand;
 import de.lunarakai.minecleaner.commands.InfoCommand;
 import de.lunarakai.minecleaner.commands.ListCommand;
 import de.lunarakai.minecleaner.commands.ListPlayersInArenaCommand;
@@ -22,7 +23,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import de.iani.cubesidestats.api.CubesideStatisticsAPI;
 import de.iani.cubesideutils.bukkit.commands.CommandRouter;
 import de.iani.playerUUIDCache.PlayerUUIDCache;
-
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -81,6 +81,7 @@ public final class MinecleanerPlugin extends JavaPlugin {
         minecleanerCommand.addCommandMapping(new ListCommand(this), "list");
         minecleanerCommand.addCommandMapping(new InfoCommand(this), "info");
         minecleanerCommand.addCommandMapping(new ListPlayersInArenaCommand(this), "currentplayers");
+        minecleanerCommand.addCommandMapping(new HelpCommand(this), "help");
 
         // Groups
         minecleanerCommand.addCommandMapping(new InviteCommand(this), "invite");
