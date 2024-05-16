@@ -43,6 +43,10 @@ public class AcceptCommand extends SubCommand {
 
         if(plugin.getGroupManager().getInvitedGroup(player) != null && plugin.getGroupManager().getGroup(player) == null) {
             Player groupOwner = Bukkit.getPlayer(plugin.getGroupManager().getInvitedGroup(player).getOwner());
+            if(plugin.getArenaList().getPlayerArena(groupOwner) != null) {
+                player.sendMessage(Component.text("Du kannst keine Einladung annehmen währen die Person, die dich eingeladen hat, in einer Runde ist.", NamedTextColor.DARK_RED));
+                return true;
+            }
             plugin.getGroupManager().getInvitedGroup(player).addPlayerToGroup(player);
 
             assert groupOwner != null;

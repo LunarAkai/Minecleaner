@@ -7,6 +7,7 @@ import de.iani.cubesideutils.bukkit.commands.exceptions.InternalCommandException
 import de.iani.cubesideutils.bukkit.commands.exceptions.NoPermissionException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
+import de.lunarakai.minecleaner.MinecleanerArena;
 import de.lunarakai.minecleaner.MinecleanerGroupManager;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
 import net.kyori.adventure.text.Component;
@@ -48,6 +49,12 @@ public class InviteCommand extends SubCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String commandString, ArgsParser args) throws DisallowsCommandBlockException, RequiresPlayerException, NoPermissionException, IllegalSyntaxException, InternalCommandException {
         Player player = (Player) sender;
+
+        if(plugin.getArenaList().getPlayerArena(player) != null) {
+            player.sendMessage(Component.text("Du kannst keine Einladung verschicken während du in einer Runde bist.", NamedTextColor.DARK_RED));
+            return true;
+        }
+
         if(args.remaining() < 1 || args.remaining() >= 2) {
             sender.sendMessage(Component.text(commandString + getUsage(), NamedTextColor.DARK_RED));
             return true;
@@ -66,7 +73,7 @@ public class InviteCommand extends SubCommand {
             return true;
         }
 
-        if(groupManager.getGroup(player) != null && Bukkit.getPlayer(groupManager.getGroup(player).getOwner()).equals(player)) {
+        if(groupManager.getGroup(player) != null && !Bukkit.getPlayer(groupManager.getGroup(player).getOwner()).equals(player)) {
             player.sendMessage(Component.text("Nur als Ersteller der Gruppe bist du berechtigt Leute einzuladen.", NamedTextColor.YELLOW));
             return true;
         }

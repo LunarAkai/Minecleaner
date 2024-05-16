@@ -3,6 +3,7 @@ package de.lunarakai.minecleaner;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.logging.Level;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -93,6 +94,7 @@ public class MinecleanerListener implements Listener {
                     }
                 } else if(arena.hasPlayers() && arena.getArenaStatus() == ArenaStatus.COMPLETED && !hasRightClicked && (plugin.getManager().getSettingsValue("allowmanualreset", e.getPlayer()) == 1)) {
                     plugin.getManager().getSchedulerGameOver().cancel();
+                    plugin.getLogger().log(Level.INFO, "canceled reset for arena " + arena.getName() + " loc: " + arena.getLocation());
                     plugin.getManager().leaveArena(arenaClicked.getCurrentPlayers(), false, true);
                 }
             } else {

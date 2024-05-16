@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -348,6 +349,10 @@ public class MinecleanerManager {
     }
 
     private void scheduleArenaReset(Player player, MinecleanerArena arena) {
+        plugin.getLogger().log(Level.INFO, "scheduled reset for arena '" + arena.getName() + "', loc: " + arena.getLocation() + " ArenaStatus: " + arena.getArenaStatus() + " in " + plugin.getManager().getSettingsValue("resettime", player) * 20 + " ticks. Current Players: " + Arrays.toString(arena.getCurrentPlayers()));
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            plugin.getLogger().log(Level.INFO, "ArenaStatus for arena '" + arena.getName() + "', loc: " + arena.getLocation() + " after 5 Ticks (should be completed): " + arena.getArenaStatus());
+        }, 5L);
         schedulerGameOver = Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if(arena.getArenaStatus() == ArenaStatus.COMPLETED) {
                 if (arena.getCurrentPlayers() == null) {
