@@ -94,11 +94,9 @@ public class MinecleanerGroupManager {
         }
     }
 
-    private UUID groupCreator;
     private final Set<MinecleanerGroup> groups;
 
     public MinecleanerGroupManager() {
-        this.groupCreator = null;
         this.groups = new HashSet<>();
     }
 

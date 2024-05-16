@@ -201,6 +201,26 @@ public class MinecleanerListener implements Listener {
                     };
                     plugin.getManager().leaveArena(players, false, true);
                 }
+            } else {
+                Player ownerPlayer = Bukkit.getPlayer(plugin.getGroupManager().getGroup(player).getOwner());
+                if(ownerPlayer.equals(player)) {
+                    if(arena.isTooFarAway(ownerPlayer)) {
+
+                        for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player).getPlayers().iterator(); iterator.hasNext();) {
+                            Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
+                            if(iteratorPlayer == ownerPlayer) {
+                                iteratorPlayer.sendMessage(Component.text("Du hast dich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.", NamedTextColor.YELLOW));
+                                continue;
+                            }
+                            assert iteratorPlayer != null;
+                            iteratorPlayer.sendMessage(Component.text("Der Ersteller der Gruppe hat sich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.", NamedTextColor.YELLOW));
+                        }
+                        Player[] players = new Player[] {
+                                ownerPlayer
+                        };
+                        plugin.getManager().leaveArena(players, false, true);
+                    }
+                }
             }
         }
     }
@@ -212,9 +232,10 @@ public class MinecleanerListener implements Listener {
             if(plugin.getGroupManager().getGroup(e.getPlayer()) != null) {
                 if(plugin.getGroupManager().getGroup(e.getPlayer()).getOwner().equals(e.getPlayer())) {
                     Player[] players = new Player[plugin.getGroupManager().getGroup(e.getPlayer()).getPlayers().size()];
+                    int i = 0;
                     for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(e.getPlayer()).getPlayers().iterator(); iterator.hasNext();) {
                         Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
-                        Arrays.fill(players, iteratorPlayer);
+                        players[i] = iteratorPlayer;
                     }
                     plugin.getManager().leaveArena(players, false, true);
                     return;
