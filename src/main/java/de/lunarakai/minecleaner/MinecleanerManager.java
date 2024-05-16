@@ -216,41 +216,57 @@ public class MinecleanerManager {
     }
 
     public void handleGameover(Player[] player, MinecleanerArena arena, boolean isSuccessfullyCleared) {
+
         if(plugin.getGroupManager().getGroup(player[0]) != null) {
             World world = player[0].getWorld();
+
             if(!isSuccessfullyCleared) {
                 world.playSound(player[0].getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
-
-                int arraySize = plugin.getGroupManager().getGroup(player[0]) != null ? plugin.getGroupManager().getGroup(player[0]).getPlayers().size() : 1;
-                Player[] players = new Player[arraySize];
 
                 for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player[0]).getPlayers().iterator(); iterator.hasNext();) {
                         Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
                     assert iteratorPlayer != null;
                     iteratorPlayer.sendMessage(Component.text("Game Over! Ihr konntest das " + plugin.getDisplayedPluginName() + "-Feld nicht erfolgreich lösen!", NamedTextColor.YELLOW));
+                    if(plugin.isStatisticsEnabled()) {
+
+                        PlayerStatistics ps = plugin.getCubesideStatistics().getStatistics(iteratorPlayer.getUniqueId());
+                        ps.increaseScore(statisticsTotalGamesPlayed.get(arena.getWidthIndex()), 1);
+                    }
                 }
 
                 arena.showMines();
-                scheduleArenaReset(player[0], arena);
+                scheduleArenaReset(Bukkit.getPlayer(plugin.getGroupManager().getGroup(player[0]).getOwner()), arena);
                 return;
             }
-            // Todo: Punkte durch Anzahl der Leute in der Gruppe teilen => bei floats abrunden (heißt für Kleine (1 Punkt normal) => 0 Punkte in der Gruppe)
+
             int millis = (int) (System.currentTimeMillis() - arena.getCurrentGameStartTime());
             world.playSound(player[0].getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.5f);
-            int arraySize = plugin.getGroupManager().getGroup(player[0]) != null ? plugin.getGroupManager().getGroup(player[0]).getPlayers().size() : 1;
-            Player[] players = new Player[arraySize];
+            MinecleanerGroupManager.MinecleanerGroup group = plugin.getGroupManager().getGroup(player[0]);
 
-            for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player[0]).getPlayers().iterator(); iterator.hasNext();) {
-                Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
-                assert iteratorPlayer != null;
-                iteratorPlayer.sendMessage(Component.text(
-                        "Glückwunsch, ihr konntest das " + plugin.getDisplayedPluginName() + "-Feld in ", NamedTextColor.YELLOW)
-                        .append(Component.text(MinecleanerStringUtil.timeToString(millis, false), NamedTextColor.RED))
-                        .append(Component.text(" erfolgreich lösen!", NamedTextColor.YELLOW)));
+            for(UUID currentPlayer : group.getPlayers()) {
+
+                Player iteratorPlayer = Bukkit.getPlayer(currentPlayer);
+                if(iteratorPlayer != null)
+                    iteratorPlayer.sendMessage(Component.text(
+                            "Glückwunsch, ihr konntet das " + plugin.getDisplayedPluginName() + "-Feld in ", NamedTextColor.YELLOW)
+                            .append(Component.text(MinecleanerStringUtil.timeToString(millis, false), NamedTextColor.RED))
+                            .append(Component.text(" erfolgreich lösen!", NamedTextColor.YELLOW)));
+
+                if(!plugin.isStatisticsEnabled())
+                    continue;
+
+                PlayerStatistics ps = plugin.getCubesideStatistics().getStatistics(currentPlayer);
+                ps.increaseScore(statisticsTotalGamesPlayed.get(arena.getWidthIndex()), 1);
+                ps.increaseScore(statisticsWonGamesTotal, 1);
+                ps.increaseScore(statisticsGames.get(arena.getWidthIndex()), 1);
+
+                int wIndex = arena.getWidthIndex();
+                increaseScore(wIndex, ps, group.getPlayers().size());
             }
-            scheduleArenaReset(player[0], arena);
+            scheduleArenaReset(Bukkit.getPlayer(group.getOwner()), arena);
             return;
         }
+
         World world = player[0].getWorld();
         PlayerStatistics ps = null;
         StatisticKey sg = null;
@@ -298,32 +314,37 @@ public class MinecleanerManager {
             }
 
             int wIndex = arena.getWidthIndex();
-            switch (wIndex) {
-                case 0: {
-                    ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.small"));
-                    break;
-                }
-                case 1: {
-                    ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.medium"));
-                    break;
-                }
-                case 2: {
-                    ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.large"));
-                    break;
-                }
-                case 3: {
-                    ps.increaseScore(statisticsPointsAcquired, plugin.getConfig().getInt("winpoints.size.expert"));
-                }
-                default: {
-                    ps.increaseScore(statisticsPointsAcquired, 0);
-                    break;
-                }
-            }
+            increaseScore(wIndex, ps, 1);
         } else {
             player[0].sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) + ChatColor.YELLOW + " erfolgreich lösen!");
         }
 
         scheduleArenaReset(player[0], arena);
+    }
+
+    private void increaseScore(int wIndex, PlayerStatistics ps, int groupSize) {
+        switch (wIndex) {
+            case 0: {
+                ps.increaseScore(statisticsPointsAcquired, (int) Math.floor((double) plugin.getConfig().getInt("winpoints.size.small") /groupSize));
+                break;
+            }
+            case 1: {
+                ps.increaseScore(statisticsPointsAcquired, (int) Math.floor((double) plugin.getConfig().getInt("winpoints.size.medium") /groupSize));
+                break;
+            }
+            case 2: {
+                ps.increaseScore(statisticsPointsAcquired, (int) Math.floor((double) plugin.getConfig().getInt("winpoints.size.large") /groupSize));
+                break;
+            }
+            case 3: {
+                ps.increaseScore(statisticsPointsAcquired, (int) Math.floor((double) plugin.getConfig().getInt("winpoints.size.expert") /groupSize));
+                break;
+            }
+            default: {
+                ps.increaseScore(statisticsPointsAcquired, 0);
+                break;
+            }
+        }
     }
 
     private void scheduleArenaReset(Player player, MinecleanerArena arena) {
