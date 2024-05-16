@@ -1,6 +1,19 @@
 package de.lunarakai.minecleaner;
 
+
+import de.lunarakai.minecleaner.commands.CreateCommand;
+import de.lunarakai.minecleaner.commands.DeleteCommand;
+import de.lunarakai.minecleaner.commands.DeletePlayerScoreCommand;
+import de.lunarakai.minecleaner.commands.InfoCommand;
+import de.lunarakai.minecleaner.commands.ListCommand;
+import de.lunarakai.minecleaner.commands.ListPlayersInArenaCommand;
 import de.lunarakai.minecleaner.commands.SettingsCommand;
+import de.lunarakai.minecleaner.commands.StatsCommand;
+import de.lunarakai.minecleaner.commands.groups.AcceptCommand;
+import de.lunarakai.minecleaner.commands.groups.DenyCommand;
+import de.lunarakai.minecleaner.commands.groups.DismantleGroupCommand;
+import de.lunarakai.minecleaner.commands.groups.InviteCommand;
+import de.lunarakai.minecleaner.commands.groups.ListGroupMembersCommand;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
@@ -9,12 +22,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import de.iani.cubesidestats.api.CubesideStatisticsAPI;
 import de.iani.cubesideutils.bukkit.commands.CommandRouter;
 import de.iani.playerUUIDCache.PlayerUUIDCache;
-import de.lunarakai.minecleaner.commands.CreateCommand;
-import de.lunarakai.minecleaner.commands.DeleteCommand;
-import de.lunarakai.minecleaner.commands.DeletePlayerScoreCommand;
-import de.lunarakai.minecleaner.commands.InfoCommand;
-import de.lunarakai.minecleaner.commands.ListCommand;
-import de.lunarakai.minecleaner.commands.StatsCommand;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -25,6 +32,7 @@ public final class MinecleanerPlugin extends JavaPlugin {
     public static final String PERMISSION_ADMIN = "minecleaner.admin";
 
     private MinecleanerManager minecleanerManager;
+    private MinecleanerGroupManager minecleanerGroupManager;
     private ArenaList arenaList;
     private CubesideStatisticsAPI cubesideStatistics;
     private PlayerUUIDCache playerUUIDCache;
@@ -64,6 +72,7 @@ public final class MinecleanerPlugin extends JavaPlugin {
         arenaList.load();
 
         minecleanerManager = new MinecleanerManager(this);
+        minecleanerGroupManager = new MinecleanerGroupManager();
         getServer().getPluginManager().registerEvents(new MinecleanerListener(this), this);
 
         CommandRouter minecleanerCommand = new CommandRouter(getCommand("minecleaner"));
@@ -71,6 +80,14 @@ public final class MinecleanerPlugin extends JavaPlugin {
         minecleanerCommand.addCommandMapping(new DeleteCommand(this), "delete");
         minecleanerCommand.addCommandMapping(new ListCommand(this), "list");
         minecleanerCommand.addCommandMapping(new InfoCommand(this), "info");
+        minecleanerCommand.addCommandMapping(new ListPlayersInArenaCommand(this), "currentplayers");
+
+        // Groups
+        minecleanerCommand.addCommandMapping(new InviteCommand(this), "invite");
+        minecleanerCommand.addCommandMapping(new AcceptCommand(this), "accept");
+        minecleanerCommand.addCommandMapping(new DenyCommand(this), "deny");
+        minecleanerCommand.addCommandMapping(new DismantleGroupCommand(this), "dismantlegroup");
+        minecleanerCommand.addCommandMapping(new ListGroupMembersCommand(this), "groupmembers");
 
         if(isStatisticsEnabled()) {
             minecleanerCommand.addCommandMapping(new SettingsCommand(this), "settings");
@@ -84,6 +101,9 @@ public final class MinecleanerPlugin extends JavaPlugin {
         if(minecleanerManager != null) {
             minecleanerManager.clearAllArenas();
         }
+        if(minecleanerGroupManager != null) {
+            minecleanerGroupManager.deleteAllGroups();
+        }
     }
 
     public ArenaList getArenaList() {
@@ -93,6 +113,8 @@ public final class MinecleanerPlugin extends JavaPlugin {
     public MinecleanerManager getManager() {
         return minecleanerManager;
     }
+
+    public MinecleanerGroupManager getGroupManager() { return minecleanerGroupManager; }
 
     public boolean isStatisticsEnabled() {
         return cubesideStatistics != null;

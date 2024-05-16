@@ -2,7 +2,6 @@ package de.lunarakai.minecleaner.commands;
 
 import java.util.Collection;
 import java.util.List;
-
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -18,7 +17,6 @@ import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerArena;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
-import net.md_5.bungee.api.ChatColor;
 
 import static de.lunarakai.minecleaner.utils.MinecleanerComponentUtils.createLangComponent;
 
@@ -67,5 +65,4 @@ public class DeleteCommand extends SubCommand {
     public Collection<String> onTabComplete(CommandSender sender, Command command, String alias, ArgsParser args) {
         return List.of();
     }
-    
 }

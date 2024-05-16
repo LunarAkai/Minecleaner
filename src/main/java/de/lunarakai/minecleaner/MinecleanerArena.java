@@ -43,7 +43,7 @@ public class MinecleanerArena {
     private TextDisplay textDisplay;
     private boolean hasMadeFirstClick = false;
     private int flagsPlaced = 0;
-    private Player currentPlayer;
+    private Player[] currentPlayers;
     private long currentGameStartTime;
     private long ingameTime;
     private Game currentMinecleanerGame;
@@ -235,13 +235,13 @@ public class MinecleanerArena {
         new BukkitRunnable() {
             @Override
                 public void run() {
-                if(arenaStatus == ArenaStatus.PLAYING && currentPlayer != null) {
+                if(arenaStatus == ArenaStatus.PLAYING && currentPlayers != null) {
                     if(!currentMinecleanerGame.gameover) {
                         ingameTime++;
                     }
                     if(plugin.isStatisticsEnabled()) {
-                        if(plugin.getManager().getSettingsValue("additionaldisplay", currentPlayer) != 0
-                                || plugin.getManager().getSettingsValue("timer", currentPlayer) != 0) {
+                        if(plugin.getManager().getSettingsValue("additionaldisplay", currentPlayers[0]) != 0
+                                || plugin.getManager().getSettingsValue("timer", currentPlayers[0]) != 0) {
                             updateIngameInfoTexts();
                         }
                     }
@@ -254,19 +254,19 @@ public class MinecleanerArena {
 
     }
 
-    public void addJoiningPlayer(Player player) {
-        Preconditions.checkNotNull(player);
+    public void addJoiningPlayers(Player[] players) {
+        Preconditions.checkNotNull(players);
         Preconditions.checkState(arenaStatus == ArenaStatus.INACTIVE);
         this.arenaStatus = ArenaStatus.CONFIRM_PLAYING;
-        this.currentPlayer = player;
+        this.currentPlayers = players;
     }
 
-    public void removePlayer() {
+    public void removePlayers() {
         int sizeWidth = BoardSize.boardSizesWidth[widthIndex];
         int sizeHeight = BoardSize.boardSizesHeight[widthIndex];
 
         this.arenaStatus = ArenaStatus.INACTIVE;
-        this.currentPlayer = null;
+        this.currentPlayers = null;
         this.currentMinecleanerGame = null;
 
         // load chunk of block -1 and x+1
@@ -382,8 +382,8 @@ public class MinecleanerArena {
     }
 
     private void showTextDisplay() {
-        Player player = this.getCurrentPlayer();
-        World world = player.getWorld();
+        Player[] players = this.getCurrentPlayers();
+        World world = players[0].getWorld();
 
         double textCenterX = centerLocation.getX();
         double textCenterY = centerLocation.getY() + ((double) BoardSize.boardSizesHeight[widthIndex] / 3 - 2.75 - widthIndex);
@@ -417,7 +417,7 @@ public class MinecleanerArena {
             }
         }
 
-        Location textDisplayLocation = new Location(player.getWorld(), textCenterX, textCenterY, textCenterZ);
+        Location textDisplayLocation = new Location(players[0].getWorld(), textCenterX, textCenterY, textCenterZ);
 
         textDisplay = world.spawn(textDisplayLocation.add(-1, 2 + widthIndex, -0.25), TextDisplay.class, textdisplay -> {
             Transformation transformation = textdisplay.getTransformation();
@@ -445,12 +445,14 @@ public class MinecleanerArena {
     public void updateIngameInfoTexts() {
         String timer = "";
         if(plugin.isStatisticsEnabled()) {
-            if(plugin.getManager().getSettingsValue("timer", currentPlayer) != 0) {
+            if(plugin.getManager().getSettingsValue("timer", currentPlayers[0]) != 0) {
                 timer = ChatColor.GOLD + " Zeit: " + MinecleanerStringUtil.timeToString((ingameTime/20)*1000, true)  + " ";
             }
-            if(plugin.getManager().getSettingsValue("additionaldisplay", currentPlayer) != 0 && plugin.isStatisticsEnabled()) {
+            if(plugin.getManager().getSettingsValue("additionaldisplay", currentPlayers[0]) != 0 && plugin.isStatisticsEnabled()) {
                 String componentActionBar = ChatColor.GREEN + "Flaggen gesetzt: " + flagsPlaced + ChatColor.RED + "  Minen insgesamt: " + BoardSize.mineCounter[widthIndex];
-                currentPlayer.sendActionBar(Component.text(componentActionBar + " " + timer));
+                for(int i = 0; i < currentPlayers.length; i++) {
+                    currentPlayers[i].sendActionBar(Component.text(componentActionBar + " " + timer));
+                }
             }
         }
 
@@ -495,7 +497,7 @@ public class MinecleanerArena {
         if (currentMinecleanerGame != null && !currentMinecleanerGame.gameover) {
             Cell cell = currentMinecleanerGame.getCell(x, y);
             if (!cell.isRevealed()) {
-                Player player = this.currentPlayer;
+                Player[] players = this.currentPlayers;
 
                 currentMinecleanerGame.flag(x, y);
                 if (currentMinecleanerGame.gameover) {
@@ -503,7 +505,7 @@ public class MinecleanerArena {
                          arenaStatus = ArenaStatus.COMPLETED;
                     }, 5L);
 
-                    plugin.getManager().handleGameover(player, this, true);
+                    plugin.getManager().handleGameover(players, this, true);
                 }
                 if (cell.isFlagged() == true) {
                     flagsPlaced = flagsPlaced + 1;
@@ -523,7 +525,7 @@ public class MinecleanerArena {
         if (currentMinecleanerGame != null && !currentMinecleanerGame.gameover) {
             Cell cell = currentMinecleanerGame.getCell(x, y);
             if (!cell.isFlagged()) {
-                Player player = this.currentPlayer;
+                Player[] players = this.currentPlayers;
 
                 if (!hasMadeFirstClick) {
                     currentMinecleanerGame.firstClick(x, y);
@@ -537,7 +539,7 @@ public class MinecleanerArena {
                     Bukkit.getScheduler().runTaskLater(plugin, () -> {
                         arenaStatus = ArenaStatus.COMPLETED;
                     }, 5L);
-                    plugin.getManager().handleGameover(player, this, !(cell.isRevealed() && cell.isExploded()));
+                    plugin.getManager().handleGameover(players, this, !(cell.isRevealed() && cell.isExploded()));
                 } else {
                     updateIngameInfoTexts();
                 }
@@ -692,12 +694,12 @@ public class MinecleanerArena {
         return name;
     }
 
-    public boolean hasPlayer() {
-        return currentPlayer != null;
+    public boolean hasPlayers() {
+        return currentPlayers != null;
     }
 
-    public Player getCurrentPlayer() {
-        return currentPlayer;
+    public Player[] getCurrentPlayers() {
+        return currentPlayers;
     }
 
     public Location getLocation() {

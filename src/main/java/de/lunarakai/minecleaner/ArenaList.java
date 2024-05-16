@@ -2,10 +2,13 @@ package de.lunarakai.minecleaner;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.UUID;
 import java.util.logging.Level;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -106,16 +109,74 @@ public class ArenaList {
         return false;
     }
 
-    public void setArenaForPlayer(Player player, MinecleanerArena arena) {
+    public void setArenaForPlayers(Player[] players, MinecleanerArena arena) {
         if(arena != null) {
-            playersInArena.put(player.getUniqueId(), arena);
+            for(int i = 0; i < players.length; i++) {
+                playersInArena.put(players[i].getUniqueId(), arena);
+            }
         } else {
-            playersInArena.remove(player.getUniqueId());
+            for(int i = 0; i < players.length; i++) {
+                playersInArena.remove(players[i].getUniqueId());
+            }
         }
     }
 
     public MinecleanerArena getPlayerArena(Player player) {
-        return playersInArena.get(player.getUniqueId());
+        if(playersInArena.get(player.getUniqueId()) == null) {
+            return null;
+        }
+        int arraySize = plugin.getGroupManager().getGroup(player) != null ? plugin.getGroupManager().getGroup(player).getPlayers().size() : 1;
+        Player[] players = new Player[arraySize];
+
+        if(plugin.getGroupManager().getGroup(player) != null) {
+            int i = 0;
+            for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player).getPlayers().iterator(); iterator.hasNext();) {
+                Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
+                players[i] = iteratorPlayer;
+                i++;
+            }
+        } else {
+            Arrays.fill(players, player);
+        }
+        return getPlayerArena(players);
+    }
+
+    public MinecleanerArena getPlayerArena(Player[] players) {
+        return playersInArena.get(players[0].getUniqueId());
+//        if(plugin.getGroupManager().getGroup(players[0]) != null) {
+//            if(players.length == 1) {
+//                return null;
+//            }
+//            MinecleanerArena[] arenas = new MinecleanerArena[players.length];
+//            for(int i = 0; i < players.length; i++) {
+//                if(playersInArena.get(players[i].getUniqueId()) != null) {
+//                    if(playersInArena.get(Bukkit.getPlayer(plugin.getGroupManager().getGroup(players[0]).getOwner()).getUniqueId()) != null)  {
+//                        arenas[i] = playersInArena.get(players[i].getUniqueId());
+//                        continue;
+//                    }
+//                    arenas[i] = null;
+//                } else {
+//                    arenas = null;
+//                }
+//            }
+//            if(playersInArena.get(players[0].getUniqueId()) == null)  {
+//                return null;
+//            }
+//
+//            if(arenas != null && arenas[0] != null) {
+//                MinecleanerArena[] finalArenas = arenas;
+//                boolean match = Arrays.stream(arenas).allMatch(s -> s.equals(finalArenas[0]));
+//                if(match) {
+//                    return arenas[0];
+//                } else {
+//                    return null;
+//                }
+//            }
+//            return null;
+//
+//        } else {
+//            return playersInArena.get(players[0].getUniqueId());
+//        }
     }
 
     public MinecleanerArena getArenaAtBlock(Block block) {
@@ -127,8 +188,8 @@ public class ArenaList {
     }
 
     public void removeArena(MinecleanerArena arena) {
-        if(arena.hasPlayer()) {
-            plugin.getManager().leaveArena(arena.getCurrentPlayer(), true);
+        if(arena.hasPlayers()) {
+            plugin.getManager().leaveArena(arena.getCurrentPlayers(), true, true);
         }
         
         for(UUID id : arena.getBlockDisplays()) {
