@@ -1,11 +1,13 @@
 package de.lunarakai.minecleaner;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import java.util.*;
 
 public class MinecleanerGroupManager {
 
@@ -19,6 +21,8 @@ public class MinecleanerGroupManager {
             this.owner = owner;
             this.players = new HashSet<>();
             this.invitedPlayers = new HashSet<>();
+
+            players.add(owner);
         }
 
         public UUID getOwner() {
@@ -90,7 +94,7 @@ public class MinecleanerGroupManager {
         }
     }
 
-    private final UUID groupCreator;
+    private UUID groupCreator;
     private final Set<MinecleanerGroup> groups;
 
     public MinecleanerGroupManager() {
@@ -103,7 +107,6 @@ public class MinecleanerGroupManager {
         if (getGroup(player) != null) {
             return;
         }
-
         groups.add(new MinecleanerGroup(player.getUniqueId()));
     }
 
@@ -127,7 +130,7 @@ public class MinecleanerGroupManager {
         return null;
     }
 
-    private void deleteGroup(MinecleanerGroup minecleanerGroup) {
+    public void deleteGroup(MinecleanerGroup minecleanerGroup) {
         groups.remove(minecleanerGroup);
     }
 

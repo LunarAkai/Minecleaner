@@ -1,7 +1,11 @@
 package de.lunarakai.minecleaner.commands.groups;
 
 import de.iani.cubesideutils.bukkit.commands.SubCommand;
-import de.iani.cubesideutils.bukkit.commands.exceptions.*;
+import de.iani.cubesideutils.bukkit.commands.exceptions.DisallowsCommandBlockException;
+import de.iani.cubesideutils.bukkit.commands.exceptions.IllegalSyntaxException;
+import de.iani.cubesideutils.bukkit.commands.exceptions.InternalCommandException;
+import de.iani.cubesideutils.bukkit.commands.exceptions.NoPermissionException;
+import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerGroupManager;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
@@ -51,6 +55,11 @@ public class InviteCommand extends SubCommand {
         String playerName = args.getNext().trim();
         Player invitedPlayer = plugin.getServer().getPlayer(playerName);
 
+        if(invitedPlayer == player) {
+            player.sendMessage(Component.text("Du kannst dich nicht selber in eine Gruppe einladen.", NamedTextColor.DARK_RED));
+            return true;
+        }
+
         MinecleanerGroupManager groupManager = plugin.getGroupManager();
         if(groupManager.getInvitedGroup(player) != null) {
             player.sendMessage(Component.text("Du wurdest bereits in eine Gruppe eingeladen. Bitte kümmere dich zuerst um die Einladung bevor du eine eigene Gruppe erstellst.", NamedTextColor.YELLOW));
@@ -67,6 +76,8 @@ public class InviteCommand extends SubCommand {
         }
 
         assert invitedPlayer != null;
+        player.sendMessage(Component.text("Du hast " + invitedPlayer.getName() + " in eine " + plugin.getDisplayedPluginName() + "-Gruppe eingeladen", NamedTextColor.GREEN));
+        invitedPlayer.sendMessage(Component.text("Du wurdest von " + player.getName() + " in eine " + plugin.getDisplayedPluginName() + "-Gruppe eingeladen.", NamedTextColor.GREEN));
         groupManager.getGroup(player).invitePlayerToGroup(invitedPlayer);
 
         return true;

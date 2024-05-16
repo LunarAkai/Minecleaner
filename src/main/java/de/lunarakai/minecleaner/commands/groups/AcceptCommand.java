@@ -1,7 +1,11 @@
 package de.lunarakai.minecleaner.commands.groups;
 
 import de.iani.cubesideutils.bukkit.commands.SubCommand;
-import de.iani.cubesideutils.bukkit.commands.exceptions.*;
+import de.iani.cubesideutils.bukkit.commands.exceptions.DisallowsCommandBlockException;
+import de.iani.cubesideutils.bukkit.commands.exceptions.IllegalSyntaxException;
+import de.iani.cubesideutils.bukkit.commands.exceptions.InternalCommandException;
+import de.iani.cubesideutils.bukkit.commands.exceptions.NoPermissionException;
+import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
 import net.kyori.adventure.text.Component;

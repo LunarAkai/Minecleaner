@@ -1,10 +1,11 @@
 package de.lunarakai.minecleaner;
 
-import java.sql.Array;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.UUID;
-
+import java.util.logging.Level;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -101,13 +102,18 @@ public class MinecleanerListener implements Listener {
                     e.setCancelled(true);
                     if(e.getHand() == EquipmentSlot.HAND) {
                         if(arena.getArenaStatus() == ArenaStatus.INACTIVE) {
-                            int arraySize = plugin.getGroupManager().getGroup(e.getPlayer()) != null ? plugin.getGroupManager().getGroup(e.getPlayer()).getPlayers().size() : 1;
+                            int arraySize = 1;
+                            if(plugin.getGroupManager().getGroup(e.getPlayer()) != null) {
+                                arraySize = plugin.getGroupManager().getGroup(e.getPlayer()).getPlayers().size();
+                            }
                             Player[] players = new Player[arraySize];
 
                             if(plugin.getGroupManager().getGroup(e.getPlayer()) != null) {
+                                int i = 0;
                                 for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(e.getPlayer()).getPlayers().iterator(); iterator.hasNext();) {
                                     Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
-                                    Arrays.fill(players, iteratorPlayer);
+                                    players[i] = iteratorPlayer;
+                                    i++;
                                 }
                             } else {
                                 Arrays.fill(players, e.getPlayer());
@@ -187,12 +193,14 @@ public class MinecleanerListener implements Listener {
         final Player player = e.getPlayer();
         MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
         if(arena != null) {
-            if(arena.isTooFarAway(player) && plugin.getGroupManager().getGroup(player) == null) {
-                player.sendMessage(ChatColor.YELLOW + "Du hast dich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.");
-                Player[] players = new Player[] {
-                        player
-                };
-                plugin.getManager().leaveArena(players, false, true);
+            if(plugin.getGroupManager().getGroup(player) == null) {
+                if((arena.isTooFarAway(player))) {
+                    player.sendMessage(ChatColor.YELLOW + "Du hast dich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.");
+                    Player[] players = new Player[] {
+                            player
+                    };
+                    plugin.getManager().leaveArena(players, false, true);
+                }
             }
         }
     }
@@ -221,6 +229,35 @@ public class MinecleanerListener implements Listener {
                         e.getPlayer()
                 };
                 plugin.getManager().leaveArena(players, false, true);
+            }
+        } else {
+            if(plugin.getGroupManager().getGroup(e.getPlayer()) != null) {
+                if(plugin.getGroupManager().getGroup(e.getPlayer()).getOwner().equals(e.getPlayer())) {
+                    int i = 0;
+                    Player[] players = new Player[plugin.getGroupManager().getGroup(e.getPlayer()).getPlayers().size()];
+                    for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(e.getPlayer()).getPlayers().iterator(); iterator.hasNext();) {
+                        Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
+                        if(iteratorPlayer == e.getPlayer()) {
+                            i++;
+                            continue;
+                        }
+                        players[i] = iteratorPlayer;
+                        players[i].sendMessage(Component.text("Die " + plugin.getDisplayedPluginName() + "gruppe in der du dich befindest wurde aufgelöst. Die Person, welche die Gruppe erstellt hat, hat den Server verlassen", NamedTextColor.YELLOW));
+                        i++;
+                    }
+                    if(plugin.getArenaList().getPlayerArena(e.getPlayer()) != null) {
+                        plugin.getManager().leaveArena(players, false, true);
+                    }
+                    return;
+                }
+                Player[] players = new Player[] {
+                        e.getPlayer()
+                };
+                plugin.getGroupManager().getGroup(e.getPlayer()).removePlayerFromGroup(e.getPlayer());
+                if(plugin.getArenaList().getPlayerArena(e.getPlayer()) != null) {
+                    plugin.getManager().leaveArena(players, false, false);
+                }
+
             }
         }
     }

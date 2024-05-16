@@ -2,7 +2,6 @@ package de.lunarakai.minecleaner.commands;
 
 import java.util.Map.Entry;
 import java.util.function.Consumer;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
