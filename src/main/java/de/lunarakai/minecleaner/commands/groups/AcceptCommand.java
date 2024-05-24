@@ -8,8 +8,7 @@ import de.iani.cubesideutils.bukkit.commands.exceptions.NoPermissionException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import de.lunarakai.minecleaner.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -44,18 +43,17 @@ public class AcceptCommand extends SubCommand {
         if(plugin.getGroupManager().getInvitedGroup(player) != null && plugin.getGroupManager().getGroup(player) == null) {
             Player groupOwner = Bukkit.getPlayer(plugin.getGroupManager().getInvitedGroup(player).getOwner());
             if(plugin.getArenaList().getPlayerArena(groupOwner) != null) {
-                player.sendMessage(Component.text("Du kannst keine Einladung annehmen währen die Person, die dich eingeladen hat, in einer Runde ist.", NamedTextColor.DARK_RED));
+                ChatUtils.sendSingleLineWarningMessage(player, "Du kannst keine Einladung annehmen während die Person, die dich eingeladen hat, in einer Runde ist.");
                 return true;
             }
             plugin.getGroupManager().getInvitedGroup(player).addPlayerToGroup(player);
 
             assert groupOwner != null;
-            groupOwner.sendMessage(Component.text(player.getName() + " hat deine Einladung angenommen.", NamedTextColor.GREEN));
-            player.sendMessage(Component.text("Du hast die Einladung angenommen", NamedTextColor.GREEN));
-
+            ChatUtils.sendSingleLineSuccessMessage(groupOwner, player.getName() + " hat deine Einladung angenommen.");
+            ChatUtils.sendSingleLineSuccessMessage(player, "Du hast die Einladung angenommen");
             return true;
         } else {
-            player.sendMessage(Component.text("Du wurdest in keine Gruppe eingeladen.", NamedTextColor.YELLOW));
+            ChatUtils.sendSingleLineWarningMessage(player, "Du wurdest in keine Gruppe eingeladen.");
         }
         return true;
     }

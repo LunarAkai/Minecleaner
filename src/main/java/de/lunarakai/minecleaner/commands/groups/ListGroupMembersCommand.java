@@ -8,6 +8,7 @@ import de.iani.cubesideutils.bukkit.commands.exceptions.NoPermissionException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
+import de.lunarakai.minecleaner.utils.ChatUtils;
 import java.util.Iterator;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
@@ -44,11 +45,11 @@ public class ListGroupMembersCommand extends SubCommand {
         Player player = (Player) commandSender;
 
         if(plugin.getGroupManager().getGroup(player) == null) {
-            player.sendMessage(Component.text("Du bist in keiner Gruppe.", NamedTextColor.YELLOW));
+            ChatUtils.sendSingleLineWarningMessage(player, "Du bist in keiner Gruppe.");
             return true;
         }
 
-        player.sendMessage(Component.text("-- Mitglieder deiner " + plugin.getDisplayedPluginName() + "gruppe --", NamedTextColor.AQUA));
+        ChatUtils.sendSingleLineSpecialMessage(player, "-- Mitglieder deiner " + plugin.getDisplayedPluginName() + "gruppe --", NamedTextColor.AQUA);
         for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player).getPlayers().iterator(); iterator.hasNext();) {
             Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
             String ownerString = "";

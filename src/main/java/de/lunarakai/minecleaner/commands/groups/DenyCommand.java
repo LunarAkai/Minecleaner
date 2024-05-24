@@ -9,8 +9,7 @@ import de.iani.cubesideutils.bukkit.commands.SubCommand;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerGroupManager;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import de.lunarakai.minecleaner.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -53,12 +52,11 @@ public class DenyCommand extends SubCommand {
             }
 
             assert groupOwner != null;
-            groupOwner.sendMessage(Component.text(player.getName() + " hat deine Einladung abgelehnt.", NamedTextColor.RED));
-            player.sendMessage(Component.text("Du hast die Einladung abgelehnt", NamedTextColor.YELLOW));
-
+            ChatUtils.sendSingleLineWarningMessage(groupOwner, player.getName() + " hat deine Einladung abgelehnt.");
+            ChatUtils.sendSingleLineInfoMessage(player, "Du hast die Einladung abgelehnt");
             return true;
         } else {
-            player.sendMessage(Component.text("Du wurdest in keine Gruppe eingeladen.", NamedTextColor.YELLOW));
+            ChatUtils.sendSingleLineWarningMessage(player, "Du wurdest in keine Gruppe eingeladen.");
         }
         return true;
     }

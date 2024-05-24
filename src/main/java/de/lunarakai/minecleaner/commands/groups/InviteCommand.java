@@ -7,9 +7,9 @@ import de.iani.cubesideutils.bukkit.commands.exceptions.InternalCommandException
 import de.iani.cubesideutils.bukkit.commands.exceptions.NoPermissionException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
-import de.lunarakai.minecleaner.MinecleanerArena;
 import de.lunarakai.minecleaner.MinecleanerGroupManager;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
+import de.lunarakai.minecleaner.utils.ChatUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -51,30 +51,35 @@ public class InviteCommand extends SubCommand {
         Player player = (Player) sender;
 
         if(plugin.getArenaList().getPlayerArena(player) != null) {
-            player.sendMessage(Component.text("Du kannst keine Einladung verschicken während du in einer Runde bist.", NamedTextColor.DARK_RED));
+            ChatUtils.sendSingleLineWarningMessage(player, "Du kannst keine Einladung verschicken während du in einer Runde bist.");
             return true;
         }
 
         if(args.remaining() < 1 || args.remaining() >= 2) {
-            sender.sendMessage(Component.text(commandString + getUsage(), NamedTextColor.DARK_RED));
+            ChatUtils.sendSingleLineWarningMessage(player, commandString + getUsage());
             return true;
         }
         String playerName = args.getNext().trim();
         Player invitedPlayer = plugin.getServer().getPlayer(playerName);
 
         if(invitedPlayer == player) {
-            player.sendMessage(Component.text("Du kannst dich nicht selber in eine Gruppe einladen.", NamedTextColor.DARK_RED));
+            ChatUtils.sendSingleLineWarningMessage(player, "Du kannst dich nicht selber in eine Gruppe einladen.");
+            return true;
+        }
+
+        if(plugin.getArenaList().getPlayerArena(invitedPlayer) != null) {
+            ChatUtils.sendSingleLineWarningMessage(player, "Du kannst Spieler nicht einladen, die bereits in einer Runde sind.");
             return true;
         }
 
         MinecleanerGroupManager groupManager = plugin.getGroupManager();
         if(groupManager.getInvitedGroup(player) != null) {
-            player.sendMessage(Component.text("Du wurdest bereits in eine Gruppe eingeladen. Bitte kümmere dich zuerst um die Einladung bevor du eine eigene Gruppe erstellst.", NamedTextColor.YELLOW));
+            ChatUtils.sendSingleLineInfoMessage(player, "Du wurdest bereits in eine Gruppe eingeladen. Bitte kümmere dich zuerst um die Einladung bevor du eine eigene Gruppe erstellst.");
             return true;
         }
 
         if(groupManager.getGroup(player) != null && !Bukkit.getPlayer(groupManager.getGroup(player).getOwner()).equals(player)) {
-            player.sendMessage(Component.text("Nur als Ersteller der Gruppe bist du berechtigt Leute einzuladen.", NamedTextColor.YELLOW));
+            ChatUtils.sendSingleLineInfoMessage(player, "Nur als Ersteller der Gruppe bist du berechtigt Leute einzuladen.");
             return true;
         }
 

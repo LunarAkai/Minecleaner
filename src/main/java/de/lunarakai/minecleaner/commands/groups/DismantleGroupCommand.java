@@ -8,10 +8,9 @@ import de.iani.cubesideutils.bukkit.commands.exceptions.NoPermissionException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
+import de.lunarakai.minecleaner.utils.ChatUtils;
 import java.util.Iterator;
 import java.util.UUID;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -44,20 +43,19 @@ public class DismantleGroupCommand extends SubCommand {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String s1, ArgsParser argsParser) throws DisallowsCommandBlockException, RequiresPlayerException, NoPermissionException, IllegalSyntaxException, InternalCommandException {
         Player player = (Player) commandSender;
         if(plugin.getGroupManager().getGroup(player) == null) {
-            player.sendMessage(Component.text("Du bist in keiner Gruppe die du auflösen könntest.", NamedTextColor.YELLOW));
+            ChatUtils.sendSingleLineWarningMessage(player, "Du bist in keiner Gruppe die du auflösen könntest.");
             return true;
         }
         Player groupOwnerPlayer = Bukkit.getPlayer(plugin.getGroupManager().getGroup(player).getOwner());
 
         if(player != groupOwnerPlayer) {
-            player.sendMessage(Component.text("Du bist nicht berechtigt deine Gruppe aufzulösen.", NamedTextColor.YELLOW));
+            ChatUtils.sendSingleLineWarningMessage(player, "Du bist nicht berechtigt deine Gruppe aufzulösen.");
             return true;
         }
 
-
         for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player).getPlayers().iterator(); iterator.hasNext();) {
             Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
-            iteratorPlayer.sendMessage(Component.text("Die Gruppe in der du dich befindest wurde aufgelöst.", NamedTextColor.YELLOW));
+            ChatUtils.sendSingleLineWarningMessage(iteratorPlayer, "Die Gruppe in der du dich befindest wurde aufgelöst.");
         }
         plugin.getGroupManager().deleteGroup(plugin.getGroupManager().getGroup(player));
 

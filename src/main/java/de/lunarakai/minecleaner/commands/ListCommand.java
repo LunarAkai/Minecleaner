@@ -44,7 +44,7 @@ public class ListCommand extends SubCommand{
 
     @Override
     public boolean onCommand(CommandSender sender, Command arg1, String arg2, String commandString, ArgsParser args) throws DisallowsCommandBlockException, RequiresPlayerException, NoPermissionException, IllegalSyntaxException, InternalCommandException {
-        sender.sendMessage(createLangComponent("arena.list", plugin.getDisplayedPluginName(), NamedTextColor.YELLOW));
+        sender.sendMessage(createLangComponent("arena.list.created", plugin.getDisplayedPluginName(), NamedTextColor.YELLOW));
         boolean any = false;
         for(MinecleanerArena arena : plugin.getArenaList().getArenas()) {
             Location location = arena.getLocation();

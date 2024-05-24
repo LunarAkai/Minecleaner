@@ -185,6 +185,7 @@ public class Game {
 
         switch (cell.getType()) {
             case Mine: {
+                resetFloodedFlaggedCellCounter();
                 explode(cell);
                 break;
             }
