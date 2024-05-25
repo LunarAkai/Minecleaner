@@ -51,7 +51,7 @@ public class ListPlayersInArenaCommand extends SubCommand {
         if(arena != null) {
             ChatUtils.sendSimpleSpecialMessage(player, "Players in Arena: " + Arrays.toString(arena.getCurrentPlayers()), NamedTextColor.GRAY);
         } else {
-            ChatUtils.sendSimpleSpecialMessage(player, "Hier befindet sich keine Arena.", NamedTextColor.GRAY);
+            ChatUtils.sendSimpleSpecialMessage(player, "arena.common.noarena", NamedTextColor.GRAY);
         }
         return true;
     }

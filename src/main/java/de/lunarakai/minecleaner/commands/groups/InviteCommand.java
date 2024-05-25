@@ -52,7 +52,7 @@ public class InviteCommand extends SubCommand {
         Player player = (Player) sender;
 
         if(plugin.getArenaList().getPlayerArena(player) != null) {
-            ChatUtils.sendSimpleWarningMessage(player, "Du kannst keine Einladung verschicken während du in einer Runde bist.");
+            ChatUtils.sendSimpleWarningMessage(player, "group.invite.notwhileinround");
             return true;
         }
 
@@ -64,28 +64,28 @@ public class InviteCommand extends SubCommand {
         Player invitedPlayer = plugin.getServer().getPlayer(playerName);
 
         if(invitedPlayer == null) {
-            ChatUtils.sendSimpleWarningMessage(player, "Du kannst keine Person einladen, die entweder offline oder auf einen anderen Server ist.");
+            ChatUtils.sendSimpleWarningMessage(player, "group.invite.offline");
             return true;
         }
 
         if(invitedPlayer == player) {
-            ChatUtils.sendSimpleWarningMessage(player, "Du kannst dich nicht selber in eine Gruppe einladen.");
+            ChatUtils.sendSimpleWarningMessage(player, "group.invite.notyourself");
             return true;
         }
 
         if(plugin.getArenaList().getPlayerArena(invitedPlayer) != null) {
-            ChatUtils.sendSimpleWarningMessage(player, "Du kannst Spieler nicht einladen, die bereits in einer Runde sind.");
+            ChatUtils.sendSimpleWarningMessage(player, "group.invite.invitedinround");
             return true;
         }
 
         MinecleanerGroupManager groupManager = plugin.getGroupManager();
         if(groupManager.getInvitedGroup(player) != null) {
-            ChatUtils.sendSimpleInfoMessage(player, "Du wurdest bereits in eine Gruppe eingeladen. Bitte kümmere dich zuerst um die Einladung bevor du eine eigene Gruppe erstellst.");
+            ChatUtils.sendSimpleInfoMessage(player, "group.invite.alreadyinvited");
             return true;
         }
 
         if(groupManager.getGroup(player) != null && !Bukkit.getPlayer(groupManager.getGroup(player).getOwner()).equals(player)) {
-            ChatUtils.sendSimpleInfoMessage(player, "Nur als Ersteller der Gruppe bist du berechtigt Leute einzuladen.");
+            ChatUtils.sendSimpleInfoMessage(player, "group.invite.nopermission");
             return true;
         }
 

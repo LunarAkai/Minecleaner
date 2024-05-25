@@ -43,17 +43,17 @@ public class AcceptCommand extends SubCommand {
         if(plugin.getGroupManager().getInvitedGroup(player) != null && plugin.getGroupManager().getGroup(player) == null) {
             Player groupOwner = Bukkit.getPlayer(plugin.getGroupManager().getInvitedGroup(player).getOwner());
             if(plugin.getArenaList().getPlayerArena(groupOwner) != null) {
-                ChatUtils.sendSimpleWarningMessage(player, "Du kannst keine Einladung annehmen während die Person, die dich eingeladen hat, in einer Runde ist.");
+                ChatUtils.sendSimpleWarningMessage(player, "group.invite.creatorinround");
                 return true;
             }
             plugin.getGroupManager().getInvitedGroup(player).addPlayerToGroup(player);
 
             assert groupOwner != null;
             ChatUtils.sendSimpleSuccessMessage(groupOwner, player.getName() + " hat deine Einladung angenommen.");
-            ChatUtils.sendSimpleSuccessMessage(player, "Du hast die Einladung angenommen");
+            ChatUtils.sendSimpleSuccessMessage(player, "group.invite.accepted");
             return true;
         } else {
-            ChatUtils.sendSimpleInfoMessage(player, "Du wurdest in keine Gruppe eingeladen.");
+            ChatUtils.sendSimpleInfoMessage(player, "group.invite.notinvited");
         }
         return true;
     }

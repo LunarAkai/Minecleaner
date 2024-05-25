@@ -53,10 +53,10 @@ public class DenyCommand extends SubCommand {
 
             assert groupOwner != null;
             ChatUtils.sendSimpleWarningMessage(groupOwner, player.getName() + " hat deine Einladung abgelehnt.");
-            ChatUtils.sendSimpleInfoMessage(player, "Du hast die Einladung abgelehnt.");
+            ChatUtils.sendSimpleInfoMessage(player, "group.invite.denied");
             return true;
         } else {
-            ChatUtils.sendSimpleWarningMessage(player, "Du wurdest in keine Gruppe eingeladen.");
+            ChatUtils.sendSimpleWarningMessage(player, "group.invite.notinvited");
         }
         return true;
     }

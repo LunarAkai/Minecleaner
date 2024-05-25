@@ -43,19 +43,19 @@ public class DismantleGroupCommand extends SubCommand {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String s1, ArgsParser argsParser) throws DisallowsCommandBlockException, RequiresPlayerException, NoPermissionException, IllegalSyntaxException, InternalCommandException {
         Player player = (Player) commandSender;
         if(plugin.getGroupManager().getGroup(player) == null) {
-            ChatUtils.sendSimpleWarningMessage(player, "Du bist in keiner Gruppe die du auflösen könntest.");
+            ChatUtils.sendSimpleWarningMessage(player, "group.common.notingroup");
             return true;
         }
         Player groupOwnerPlayer = Bukkit.getPlayer(plugin.getGroupManager().getGroup(player).getOwner());
 
         if(player != groupOwnerPlayer) {
-            ChatUtils.sendSimpleWarningMessage(player, "Du bist nicht berechtigt deine Gruppe aufzulösen.");
+            ChatUtils.sendSimpleWarningMessage(player, "group.dismantle.nopermission");
             return true;
         }
 
         for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player).getPlayers().iterator(); iterator.hasNext();) {
             Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
-            ChatUtils.sendSimpleWarningMessage(iteratorPlayer, "Die Gruppe in der du dich befindest wurde aufgelöst.");
+            ChatUtils.sendSimpleWarningMessage(iteratorPlayer, "group.dismantle.yourgroup");
         }
         plugin.getGroupManager().deleteGroup(plugin.getGroupManager().getGroup(player));
 

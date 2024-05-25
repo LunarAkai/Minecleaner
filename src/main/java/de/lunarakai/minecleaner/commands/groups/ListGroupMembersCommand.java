@@ -45,7 +45,7 @@ public class ListGroupMembersCommand extends SubCommand {
         Player player = (Player) commandSender;
 
         if(plugin.getGroupManager().getGroup(player) == null) {
-            ChatUtils.sendSimpleInfoMessage(player, "Du bist in keiner Gruppe.");
+            ChatUtils.sendSimpleInfoMessage(player, "group.common.notingroup");
             return true;
         }
 
