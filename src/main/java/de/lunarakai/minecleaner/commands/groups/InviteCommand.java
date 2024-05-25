@@ -11,6 +11,7 @@ import de.lunarakai.minecleaner.MinecleanerGroupManager;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
 import de.lunarakai.minecleaner.utils.ChatUtils;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -95,6 +96,7 @@ public class InviteCommand extends SubCommand {
         assert invitedPlayer != null;
         player.sendMessage(Component.text("Du hast " + invitedPlayer.getName() + " in eine " + plugin.getDisplayedPluginName() + "-Gruppe eingeladen", NamedTextColor.GREEN));
         invitedPlayer.sendMessage(Component.text("Du wurdest von " + player.getName() + " in eine " + plugin.getDisplayedPluginName() + "-Gruppe eingeladen.", NamedTextColor.GREEN));
+        invitedPlayer.sendMessage(Component.text("[Annehmen] ", NamedTextColor.GREEN).clickEvent(ClickEvent.runCommand("/minesweeper accept")).append(Component.text(" [Ablehnen]", NamedTextColor.RED).clickEvent(ClickEvent.runCommand("/minesweeper deny"))));
         groupManager.getGroup(player).invitePlayerToGroup(invitedPlayer);
 
         return true;
