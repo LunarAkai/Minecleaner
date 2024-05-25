@@ -107,7 +107,7 @@ public class MinecleanerListener implements Listener {
                             }
 
                             if(plugin.getGroupManager().getGroup(e.getPlayer()) != null && plugin.getGroupManager().getGroup(e.getPlayer()).getOwner() != e.getPlayer().getUniqueId()) {
-                                ChatUtils.sendSimpleWarningMessage(e.getPlayer(), "Nur der Ersteller der Gruppe kann eine neue Runde starten!");
+                                ChatUtils.sendSimpleWarningMessage(e.getPlayer(), "group.game.nopermission");
                                 return;
                             }
                             Player[] players = new Player[arraySize];
