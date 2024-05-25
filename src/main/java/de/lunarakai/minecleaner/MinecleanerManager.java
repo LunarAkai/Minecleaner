@@ -221,10 +221,11 @@ public class MinecleanerManager {
 
         if(plugin.getGroupManager().getGroup(player[0]) != null) {
             World world = player[0].getWorld();
+            MinecleanerGroupManager.MinecleanerGroup group = plugin.getGroupManager().getGroup(player[0]);
+            world.playSound(Bukkit.getPlayer(group.getOwner()).getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
+
 
             if(!isSuccessfullyCleared) {
-                world.playSound(player[0].getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
-
                 for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player[0]).getPlayers().iterator(); iterator.hasNext();) {
                         Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
                     assert iteratorPlayer != null;
@@ -242,17 +243,19 @@ public class MinecleanerManager {
             }
 
             int millis = (int) (System.currentTimeMillis() - arena.getCurrentGameStartTime());
-            world.playSound(player[0].getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.5f);
-            MinecleanerGroupManager.MinecleanerGroup group = plugin.getGroupManager().getGroup(player[0]);
 
+
+            world.playSound(Bukkit.getPlayer(group.getOwner()).getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.5f);
             for(UUID currentPlayer : group.getPlayers()) {
 
                 Player iteratorPlayer = Bukkit.getPlayer(currentPlayer);
-                if(iteratorPlayer != null)
+                if(iteratorPlayer != null) {
                     iteratorPlayer.sendMessage(Component.text(
-                            "Glückwunsch, ihr konntet das " + plugin.getDisplayedPluginName() + "-Feld in ", NamedTextColor.YELLOW)
+                                    "Glückwunsch, ihr konntet das " + plugin.getDisplayedPluginName() + "-Feld in ", NamedTextColor.YELLOW)
                             .append(Component.text(MinecleanerStringUtil.timeToString(millis, false), NamedTextColor.RED))
                             .append(Component.text(" erfolgreich lösen!", NamedTextColor.YELLOW)));
+                }
+
 
                 if(!plugin.isStatisticsEnabled())
                     continue;
