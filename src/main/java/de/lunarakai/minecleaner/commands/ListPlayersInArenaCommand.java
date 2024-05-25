@@ -5,7 +5,7 @@ import de.iani.cubesideutils.bukkit.commands.exceptions.*;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.lunarakai.minecleaner.MinecleanerArena;
 import de.lunarakai.minecleaner.MinecleanerPlugin;
-import net.kyori.adventure.text.Component;
+import de.lunarakai.minecleaner.utils.ChatUtils;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -49,9 +49,9 @@ public class ListPlayersInArenaCommand extends SubCommand {
             }
         }
         if(arena != null) {
-           player.sendMessage(Component.text("Players in Arena: " + Arrays.toString(arena.getCurrentPlayers()), NamedTextColor.GRAY));
+            ChatUtils.sendSimpleSpecialMessage(player, "Players in Arena: " + Arrays.toString(arena.getCurrentPlayers()), NamedTextColor.GRAY);
         } else {
-            player.sendMessage(Component.text("Hier befindet sich keine Arena.", NamedTextColor.GRAY));
+            ChatUtils.sendSimpleSpecialMessage(player, "Hier befindet sich keine Arena.", NamedTextColor.GRAY);
         }
         return true;
     }

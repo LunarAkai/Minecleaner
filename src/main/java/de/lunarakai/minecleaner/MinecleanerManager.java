@@ -1,6 +1,7 @@
 package de.lunarakai.minecleaner;
 
 import de.iani.cubesidestats.api.SettingKey;
+import de.lunarakai.minecleaner.utils.ChatUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -209,10 +210,10 @@ public class MinecleanerManager {
             for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(players[0]).getPlayers().iterator(); iterator.hasNext();) {
                 Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
                 assert iteratorPlayer != null;
-                iteratorPlayer.sendMessage(Component.text("Du hast eine neue Runde " + plugin.getDisplayedPluginName() + " gestartet.", NamedTextColor.YELLOW));
+                ChatUtils.sendSimpleInfoMessage(iteratorPlayer, "Du hast eine neue Runde " + plugin.getDisplayedPluginName() + " gestartet.");
             }
         } else {
-            players[0].sendMessage(Component.text("Du hast eine neue Runde " + plugin.getDisplayedPluginName() + " gestartet.", NamedTextColor.YELLOW));
+            ChatUtils.sendSimpleInfoMessage(players[0], "Du hast eine neue Runde " + plugin.getDisplayedPluginName() + " gestartet.");
         }
     }
 
@@ -227,7 +228,7 @@ public class MinecleanerManager {
                 for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player[0]).getPlayers().iterator(); iterator.hasNext();) {
                         Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
                     assert iteratorPlayer != null;
-                    iteratorPlayer.sendMessage(Component.text("Game Over! Ihr konntest das " + plugin.getDisplayedPluginName() + "-Feld nicht erfolgreich lösen!", NamedTextColor.YELLOW));
+                    ChatUtils.sendSimpleInfoMessage(iteratorPlayer, "Game Over! Ihr konntest das " + plugin.getDisplayedPluginName() + "-Feld nicht erfolgreich lösen!");
                     if(plugin.isStatisticsEnabled()) {
 
                         PlayerStatistics ps = plugin.getCubesideStatistics().getStatistics(iteratorPlayer.getUniqueId());
@@ -278,7 +279,7 @@ public class MinecleanerManager {
 
         if(!isSuccessfullyCleared) {
             world.playSound(player[0].getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
-            player[0].sendMessage(ChatColor.YELLOW + "Game Over! Du konntest das " + plugin.getDisplayedPluginName() + "-Feld nicht erfolgreich lösen!");
+            ChatUtils.sendSimpleInfoMessage(player[0], "Game Over! Du konntest das " + plugin.getDisplayedPluginName() + "-Feld nicht erfolgreich lösen!");
             arena.showMines();
             
             if(sg != null && plugin.isStatisticsEnabled()) {

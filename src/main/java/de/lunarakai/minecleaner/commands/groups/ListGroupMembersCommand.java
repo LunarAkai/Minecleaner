@@ -45,11 +45,11 @@ public class ListGroupMembersCommand extends SubCommand {
         Player player = (Player) commandSender;
 
         if(plugin.getGroupManager().getGroup(player) == null) {
-            ChatUtils.sendSingleLineWarningMessage(player, "Du bist in keiner Gruppe.");
+            ChatUtils.sendSimpleInfoMessage(player, "Du bist in keiner Gruppe.");
             return true;
         }
 
-        ChatUtils.sendSingleLineSpecialMessage(player, "-- Mitglieder deiner " + plugin.getDisplayedPluginName() + "gruppe --", NamedTextColor.AQUA);
+        ChatUtils.sendSimpleSpecialMessage(player, "-- Mitglieder deiner " + plugin.getDisplayedPluginName() + "gruppe --", NamedTextColor.AQUA);
         for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player).getPlayers().iterator(); iterator.hasNext();) {
             Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
             String ownerString = "";

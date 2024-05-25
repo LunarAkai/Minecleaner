@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 public class ChatUtils {
     static Pattern langKeyPattern = Pattern.compile("^\\w+\\.\\w+\\.\\w+$");
 
-    public static void sendSingleLineSuccessMessage(Player player, String message) {
+    public static void sendSimpleSuccessMessage(Player player, String message) {
         if(message.matches(langKeyPattern.pattern())) {
             player.sendMessage(Component.translatable(message, NamedTextColor.GREEN));
         } else {
@@ -16,7 +16,7 @@ public class ChatUtils {
         }
     }
 
-    public static void sendSingleLineInfoMessage(Player player, String message) {
+    public static void sendSimpleInfoMessage(Player player, String message) {
         if(message.matches(langKeyPattern.pattern())) {
             player.sendMessage(Component.translatable(message, NamedTextColor.GOLD));
         } else {
@@ -24,7 +24,7 @@ public class ChatUtils {
         }
     }
 
-    public static void sendSingleLineWarningMessage(Player player, String message) {
+    public static void sendSimpleWarningMessage(Player player, String message) {
         if(message.matches(langKeyPattern.pattern())) {
             player.sendMessage(Component.translatable(message, NamedTextColor.DARK_RED));
         } else {
@@ -32,7 +32,7 @@ public class ChatUtils {
         }
     }
 
-    public static void sendSingleLineSpecialMessage(Player player, String message, NamedTextColor color) {
+    public static void sendSimpleSpecialMessage(Player player, String message, NamedTextColor color) {
         if(message.matches(langKeyPattern.pattern())) {
             player.sendMessage(Component.translatable(message, color));
         } else {

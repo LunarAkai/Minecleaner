@@ -51,35 +51,40 @@ public class InviteCommand extends SubCommand {
         Player player = (Player) sender;
 
         if(plugin.getArenaList().getPlayerArena(player) != null) {
-            ChatUtils.sendSingleLineWarningMessage(player, "Du kannst keine Einladung verschicken während du in einer Runde bist.");
+            ChatUtils.sendSimpleWarningMessage(player, "Du kannst keine Einladung verschicken während du in einer Runde bist.");
             return true;
         }
 
         if(args.remaining() < 1 || args.remaining() >= 2) {
-            ChatUtils.sendSingleLineWarningMessage(player, commandString + getUsage());
+            ChatUtils.sendSimpleWarningMessage(player, commandString + getUsage());
             return true;
         }
         String playerName = args.getNext().trim();
         Player invitedPlayer = plugin.getServer().getPlayer(playerName);
 
+        if(invitedPlayer == null) {
+            ChatUtils.sendSimpleWarningMessage(player, "Du kannst keine Person einladen, die entweder offline oder auf einen anderen Server ist.");
+            return true;
+        }
+
         if(invitedPlayer == player) {
-            ChatUtils.sendSingleLineWarningMessage(player, "Du kannst dich nicht selber in eine Gruppe einladen.");
+            ChatUtils.sendSimpleWarningMessage(player, "Du kannst dich nicht selber in eine Gruppe einladen.");
             return true;
         }
 
         if(plugin.getArenaList().getPlayerArena(invitedPlayer) != null) {
-            ChatUtils.sendSingleLineWarningMessage(player, "Du kannst Spieler nicht einladen, die bereits in einer Runde sind.");
+            ChatUtils.sendSimpleWarningMessage(player, "Du kannst Spieler nicht einladen, die bereits in einer Runde sind.");
             return true;
         }
 
         MinecleanerGroupManager groupManager = plugin.getGroupManager();
         if(groupManager.getInvitedGroup(player) != null) {
-            ChatUtils.sendSingleLineInfoMessage(player, "Du wurdest bereits in eine Gruppe eingeladen. Bitte kümmere dich zuerst um die Einladung bevor du eine eigene Gruppe erstellst.");
+            ChatUtils.sendSimpleInfoMessage(player, "Du wurdest bereits in eine Gruppe eingeladen. Bitte kümmere dich zuerst um die Einladung bevor du eine eigene Gruppe erstellst.");
             return true;
         }
 
         if(groupManager.getGroup(player) != null && !Bukkit.getPlayer(groupManager.getGroup(player).getOwner()).equals(player)) {
-            ChatUtils.sendSingleLineInfoMessage(player, "Nur als Ersteller der Gruppe bist du berechtigt Leute einzuladen.");
+            ChatUtils.sendSimpleInfoMessage(player, "Nur als Ersteller der Gruppe bist du berechtigt Leute einzuladen.");
             return true;
         }
 

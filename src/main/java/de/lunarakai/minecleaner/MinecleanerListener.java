@@ -1,11 +1,10 @@
 package de.lunarakai.minecleaner;
 
+import de.lunarakai.minecleaner.utils.ChatUtils;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.UUID;
 import java.util.logging.Level;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -26,7 +25,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
-import net.md_5.bungee.api.ChatColor;
 
 public class MinecleanerListener implements Listener {
     private final MinecleanerPlugin plugin;
@@ -121,7 +119,7 @@ public class MinecleanerListener implements Listener {
                             }
                             plugin.getManager().joinArena(players, arena);
                         } else {
-                            e.getPlayer().sendMessage(ChatColor.YELLOW + "Hier spielt schon jemand anderes");
+                            ChatUtils.sendSimpleInfoMessage(e.getPlayer(), "Hier spielt schon jemand anderes");
                         }
                     }
                 }
@@ -196,7 +194,7 @@ public class MinecleanerListener implements Listener {
         if(arena != null) {
             if(plugin.getGroupManager().getGroup(player) == null) {
                 if((arena.isTooFarAway(player))) {
-                    player.sendMessage(ChatColor.YELLOW + "Du hast dich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.");
+                    ChatUtils.sendSimpleInfoMessage(player, "Du hast dich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.");
                     Player[] players = new Player[] {
                             player
                     };
@@ -210,11 +208,11 @@ public class MinecleanerListener implements Listener {
                         for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player).getPlayers().iterator(); iterator.hasNext();) {
                             Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
                             if(iteratorPlayer == ownerPlayer) {
-                                iteratorPlayer.sendMessage(Component.text("Du hast dich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.", NamedTextColor.YELLOW));
+                                ChatUtils.sendSimpleInfoMessage(iteratorPlayer, "Du hast dich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.");
                                 continue;
                             }
                             assert iteratorPlayer != null;
-                            iteratorPlayer.sendMessage(Component.text("Der Ersteller der Gruppe hat sich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.", NamedTextColor.YELLOW));
+                            ChatUtils.sendSimpleInfoMessage(iteratorPlayer, "Der Ersteller der Gruppe hat sich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.");
                         }
                         Player[] players = new Player[] {
                                 ownerPlayer
@@ -273,7 +271,7 @@ public class MinecleanerListener implements Listener {
                 continue;
             }
             players[i] = iteratorPlayer;
-            iteratorPlayer.sendMessage(Component.text(player.getName() + " hat den Server verlassen und wurde aus der Gruppe entfernt.", NamedTextColor.YELLOW));
+            ChatUtils.sendSimpleInfoMessage(iteratorPlayer, player.getName() + " hat den Server verlassen und wurde aus der Gruppe entfernt.");
         }
         group.removePlayerFromGroup(player);
     }
@@ -288,7 +286,7 @@ public class MinecleanerListener implements Listener {
                 continue;
             }
             players[i] = iteratorPlayer;
-            iteratorPlayer.sendMessage(Component.text("Die " + plugin.getDisplayedPluginName() + "gruppe in der du dich befindest wurde aufgelöst. Die Person, welche die Gruppe erstellt hat, hat den Server verlassen", NamedTextColor.YELLOW));
+            ChatUtils.sendSimpleInfoMessage(iteratorPlayer, "Die " + plugin.getDisplayedPluginName() + "gruppe in der du dich befindest wurde aufgelöst. Die Person, welche die Gruppe erstellt hat, hat den Server verlassen");
         }
         groupManager.deleteGroup(group);
         return players;

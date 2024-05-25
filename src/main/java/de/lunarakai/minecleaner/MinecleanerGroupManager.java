@@ -1,11 +1,10 @@
 package de.lunarakai.minecleaner;
 
+import de.lunarakai.minecleaner.utils.ChatUtils;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -56,14 +55,13 @@ public class MinecleanerGroupManager {
                         continue;
                     }
                     Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
-                    iteratorPlayer.sendMessage(Component.text("Die Gruppe wurde aufgelöst, da die Person, welche die Gruppe erstellt hat, aus der Gruppe entfernt wurde.", NamedTextColor.YELLOW));
-
+                    ChatUtils.sendSimpleInfoMessage(iteratorPlayer, "Die Gruppe wurde aufgelöst, da die Person, welche die Gruppe erstellt hat, aus der Gruppe entfernt wurde.");
                 }
                 deleteGroup(getGroup(Bukkit.getPlayer(owner)));
             }
             players.remove(playerUUID);
             if(players.size() < 2) {
-                Bukkit.getPlayer(owner).sendMessage(Component.text("Die Gruppe wurde aufgelöst, da du nur noch alleine in der Gruppe bist", NamedTextColor.YELLOW));
+                ChatUtils.sendSimpleInfoMessage(Bukkit.getPlayer(owner), "Die Gruppe wurde aufgelöst, da du nur noch alleine in der Gruppe bist");
                 deleteGroup(getGroup(Bukkit.getPlayer(owner)));
             }
         }
