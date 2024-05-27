@@ -101,7 +101,7 @@ public class StatsCommand extends SubCommand {
                                 .append(Component.text(String.valueOf(totalWonMonth), NamedTextColor.GREEN))
                                 .append(Component.text(" "))
                                 .append(createLangComponent("data.player.outof", NamedTextColor.GREEN))
-                                .append(Component.text(" " + totalSize + " (" + MinecleanerStringUtil.percentageString(totalWonMonth, totalSizeMonth) + ")", NamedTextColor.GREEN)));
+                                .append(Component.text(" " + totalSizeMonth + " (" + MinecleanerStringUtil.percentageString(totalWonMonth, totalSizeMonth) + ")", NamedTextColor.GREEN)));
 
                         Integer time = data.getBestTime(e.getKey());
                         Integer timeThisMonth = data.getBestTimeThisMonth(e.getKey());
