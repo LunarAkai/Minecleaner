@@ -222,10 +222,9 @@ public class MinecleanerManager {
         if(plugin.getGroupManager().getGroup(player[0]) != null) {
             World world = player[0].getWorld();
             MinecleanerGroupManager.MinecleanerGroup group = plugin.getGroupManager().getGroup(player[0]);
-            world.playSound(Bukkit.getPlayer(group.getOwner()).getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
-
 
             if(!isSuccessfullyCleared) {
+                world.playSound(Bukkit.getPlayer(group.getOwner()).getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
                 for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player[0]).getPlayers().iterator(); iterator.hasNext();) {
                         Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
                     assert iteratorPlayer != null;
