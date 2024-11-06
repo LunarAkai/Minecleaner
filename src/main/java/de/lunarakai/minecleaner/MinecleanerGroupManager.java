@@ -55,13 +55,13 @@ public class MinecleanerGroupManager {
                         continue;
                     }
                     Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
-                    ChatUtils.sendSimpleInfoMessage(iteratorPlayer, "Die Gruppe wurde aufgelöst, da die Person, welche die Gruppe erstellt hat, aus der Gruppe entfernt wurde.");
+                    ChatUtils.sendSimpleInfoMessage(iteratorPlayer, "group.creator.removed");
                 }
                 deleteGroup(getGroup(Bukkit.getPlayer(owner)));
             }
             players.remove(playerUUID);
             if(players.size() < 2) {
-                ChatUtils.sendSimpleInfoMessage(Bukkit.getPlayer(owner), "Die Gruppe wurde aufgelöst, da du nur noch alleine in der Gruppe bist");
+                ChatUtils.sendSimpleInfoMessage(Bukkit.getPlayer(owner), "group.dismantled.alone");
                 deleteGroup(getGroup(Bukkit.getPlayer(owner)));
             }
         }

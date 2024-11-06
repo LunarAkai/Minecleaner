@@ -2,7 +2,8 @@ package de.lunarakai.minecleaner;
 
 import de.iani.cubesideutils.bukkit.inventory.AbstractWindow;
 import de.lunarakai.minecleaner.utils.ItemUtil;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -35,28 +36,28 @@ public class MinecleanerSettingsInventory extends AbstractWindow {
             switch (i) {
                 case SETTINGS_ALLOW_MANUEL_RESET -> {
                     if (plugin.getManager().getSettingsValue("allowmanualreset", player) == 0) {
-                        item = ItemUtil.createGuiItem(Material.SHEARS, ChatColor.RED + "Manuelles Resetten deaktiviert");
+                        item = ItemUtil.createGuiItem(Material.SHEARS, Component.translatable("settings.manualreset.deny", NamedTextColor.RED));
                     } else {
-                        item = ItemUtil.createGuiItem(Material.SHEARS, ChatColor.GREEN + "Manuelles Resetten aktiviert");
+                        item = ItemUtil.createGuiItem(Material.SHEARS, Component.translatable("settings.manualreset.allow", NamedTextColor.GREEN));
                     }
                 }
                 case SETTINGS_ADDITIONAL_DISPLAY -> {
                     if (plugin.getManager().getSettingsValue("additionaldisplay", player) == 0) {
-                        item = ItemUtil.createGuiItem(Material.NAME_TAG, ChatColor.RED + "Zusätzliche Anzeige in der Action Bar deaktiviert\"");
+                        item = ItemUtil.createGuiItem(Material.NAME_TAG, Component.translatable("settings.additionaltimer.deny", NamedTextColor.RED));
                     } else {
-                        item = ItemUtil.createGuiItem(Material.NAME_TAG, ChatColor.GREEN + "Zusätzliche Anzeige in der Action Bar aktiviert\"");
+                        item = ItemUtil.createGuiItem(Material.NAME_TAG, Component.translatable("settings.additionaltimer.allow", NamedTextColor.GREEN));
                     }
                 }
                 case SETTINGS_TIMER -> {
                     if (plugin.getManager().getSettingsValue("timer", player) == 0) {
-                        item = ItemUtil.createGuiItem(Material.CLOCK, ChatColor.RED + "Timer wird nicht angezeigt");
+                        item = ItemUtil.createGuiItem(Material.CLOCK, Component.translatable("settings.timer.deny", NamedTextColor.RED));
                     } else {
-                        item = ItemUtil.createGuiItem(Material.CLOCK, ChatColor.GREEN + "Timer wird angezeigt");
+                        item = ItemUtil.createGuiItem(Material.CLOCK, Component.translatable("settings.timer.allow", NamedTextColor.GREEN));
                     }
                 }
                 case SETTINGS_RESETTIME -> {
                     int current = plugin.getManager().getSettingsValue("resettime", player);
-                    item = ItemUtil.createGuiItem(Material.CANDLE, ChatColor.GOLD + "Resetzeit: " + ChatColor.RED + current + "s");
+                    item = ItemUtil.createGuiItem(Material.CANDLE, Component.translatable("settings.resettime.text", NamedTextColor.GOLD).append(Component.text(": ")).append(Component.text(current, NamedTextColor.RED)).append(Component.text(" s", NamedTextColor.RED)));
                 }
                 default -> item = ItemUtil.EMPTY_ICON;
             }

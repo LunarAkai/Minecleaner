@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.UUID;
 import java.util.logging.Level;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -199,7 +200,7 @@ public class MinecleanerListener implements Listener {
         if(arena != null) {
             if(plugin.getGroupManager().getGroup(player) == null) {
                 if((arena.isTooFarAway(player))) {
-                    ChatUtils.sendSimpleInfoMessage(player, "Du hast dich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.");
+                    ChatUtils.sendSimpleInfoMessage(player, "arena.common.toofaraway");
                     Player[] players = new Player[] {
                             player
                     };
@@ -213,11 +214,11 @@ public class MinecleanerListener implements Listener {
                         for(Iterator<UUID> iterator = plugin.getGroupManager().getGroup(player).getPlayers().iterator(); iterator.hasNext();) {
                             Player iteratorPlayer = Bukkit.getPlayer(iterator.next());
                             if(iteratorPlayer == ownerPlayer) {
-                                ChatUtils.sendSimpleInfoMessage(iteratorPlayer, "Du hast dich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.");
+                                ChatUtils.sendSimpleInfoMessage(iteratorPlayer, "arena.common.toofaraway");
                                 continue;
                             }
                             assert iteratorPlayer != null;
-                            ChatUtils.sendSimpleInfoMessage(iteratorPlayer, "Der Ersteller der Gruppe hat sich zu weit von der Arena entfernt. Das Spiel wurde abgebrochen.");
+                            ChatUtils.sendSimpleInfoMessage(iteratorPlayer, "arena.common.groupleadertoofaraway");
                         }
                         Player[] players = new Player[] {
                                 ownerPlayer

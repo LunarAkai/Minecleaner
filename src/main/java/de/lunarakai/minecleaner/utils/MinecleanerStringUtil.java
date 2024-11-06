@@ -1,6 +1,7 @@
 package de.lunarakai.minecleaner.utils;
 
 import java.net.URL;
+import net.kyori.adventure.text.Component;
 
 public class MinecleanerStringUtil {
     private MinecleanerStringUtil() {
@@ -14,7 +15,7 @@ public class MinecleanerStringUtil {
         min = min % 60;
         StringBuilder timeString = new StringBuilder();
         if (hours > 0) {
-            String hoursString = " Stunden";
+            String hoursString = " " + Component.translatable("minecleaner.common.hours");
             if(shorten) {
                 hoursString = " h";
             }
@@ -24,7 +25,7 @@ public class MinecleanerStringUtil {
             if (!timeString.isEmpty()) {
                 timeString.append(", ");
             }
-            String minString = " Minuten";
+            String minString = " " + Component.translatable("minecleaner.common.minutes");
             if(shorten) {
                 minString = " min";
             }
@@ -32,9 +33,9 @@ public class MinecleanerStringUtil {
         }
         if (sec > 0 || !timeString.isEmpty()) {
             if (!timeString.isEmpty()) {
-                timeString.append(" und ");
+                timeString.append(Component.text(" ")).append(Component.translatable("minecleaner.common.and").append(Component.text(" ")));
             }
-            String secondsString = " Sekunden";
+            String secondsString = " " + Component.translatable("minecleaner.common.seconds");
             if(shorten) {
                 secondsString = " s";
             }

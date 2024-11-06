@@ -36,8 +36,8 @@ import de.iani.cubesideutils.bukkit.items.ItemStacks;
 import de.iani.playerUUIDCache.CachedPlayer;
 import de.lunarakai.minecleaner.game.BoardSize;
 import de.lunarakai.minecleaner.utils.MinecleanerStringUtil;
-import net.md_5.bungee.api.ChatColor;
 
+// Todo: translatable components verwenden
 public class MinecleanerManager {
     private final MinecleanerPlugin plugin;
     private final Inventory confirmPlayingInventory;
@@ -69,10 +69,8 @@ public class MinecleanerManager {
         this.sizes.put(3, "experte");
 
         this.confirmPlayingInventory = plugin.getServer().createInventory(null, InventoryType.HOPPER, plugin.getDisplayedPluginName() + " starten?");
-        this.confirmPlayingInventory.setItem(1,
-            ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.GREEN_CONCRETE), ChatColor.GREEN + "Bestätigen")));
-        this.confirmPlayingInventory.setItem(3,
-            ItemStacks.lore(ItemStacks.rename(new ItemStack(Material.RED_CONCRETE), ChatColor.RED + "Abbrechen")));
+        this.confirmPlayingInventory.setItem(1, ItemStacks.rename(new ItemStack(Material.GREEN_CONCRETE), NamedTextColor.GREEN + "Bestätigen"));
+        this.confirmPlayingInventory.setItem(3, ItemStacks.rename(new ItemStack(Material.GREEN_CONCRETE), NamedTextColor.RED + "Abbrechen"));
 
         // Settings
 
@@ -190,7 +188,7 @@ public class MinecleanerManager {
             arena.removePlayers();
             if(message) {
                 for(int i = 0; i < players.length; i++) {
-                    players1[i].sendMessage(ChatColor.YELLOW + "Das " + plugin.getDisplayedPluginName() + "spiel wurde abgebrochen.");
+                    players1[i].sendMessage(NamedTextColor.YELLOW + "Das " + plugin.getDisplayedPluginName() + "spiel wurde abgebrochen.");
                 }
             }
         }
@@ -310,9 +308,9 @@ public class MinecleanerManager {
             if(sg != null) {
                 ps.minScore(sg, millis, isUpdated -> {
                     if(isUpdated != null && isUpdated) {
-                        player[0].sendMessage(ChatColor.GOLD + "Herzlichen Glückwunsch! Du hast eine neue Bestzeit erreicht! " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) );
+                        player[0].sendMessage(NamedTextColor.GOLD + "Herzlichen Glückwunsch! Du hast eine neue Bestzeit erreicht! " + NamedTextColor.RED + MinecleanerStringUtil.timeToString(millis, false) );
                     } else {
-                        player[0].sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) + ChatColor.YELLOW + " erfolgreich lösen!");
+                        player[0].sendMessage(NamedTextColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + NamedTextColor.RED + MinecleanerStringUtil.timeToString(millis, false) + NamedTextColor.YELLOW + " erfolgreich lösen!");
                     }
                 });
             }
@@ -320,7 +318,7 @@ public class MinecleanerManager {
             int wIndex = arena.getWidthIndex();
             increaseScore(wIndex, ps, 1);
         } else {
-            player[0].sendMessage(ChatColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + ChatColor.RED + MinecleanerStringUtil.timeToString(millis, false) + ChatColor.YELLOW + " erfolgreich lösen!");
+            player[0].sendMessage(NamedTextColor.YELLOW + "Glückwunsch, du konntest das " + plugin.getDisplayedPluginName() + "-Feld in " + NamedTextColor.RED + MinecleanerStringUtil.timeToString(millis, false) + NamedTextColor.YELLOW + " erfolgreich lösen!");
         }
 
         scheduleArenaReset(player[0], arena);
