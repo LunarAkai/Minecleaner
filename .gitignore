@@ -114,3 +114,9 @@ buildNumber.properties
 
 # Common working directory
 run/
+
+# eclipse
+/.classpath
+/.project
+/.settings
+/target
