@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
 import java.util.logging.Level;
+import de.lunarakai.minecleaner.utils.MinecleanerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -100,6 +101,13 @@ public class ArenaList {
         save();
     }
 
+    /**
+     * checks for any other arena that might be at the same location as the new MinecleanerArena
+     *
+     * @param newArena  the new Arena that is set to be created
+     * @return          true if another MinecleanerArena (or at least one Block of another arena) is at the same location as newArena otherwise false
+     * @see             MinecleanerArena
+     */
     public boolean collidesWithArena(MinecleanerArena newArena) {
         for(Location location : newArena.getBlocks()) {
             if(arenaBlocks.get(location) != null) {
@@ -125,7 +133,7 @@ public class ArenaList {
         if(playersInArena.get(player.getUniqueId()) == null) {
             return null;
         }
-        int arraySize = plugin.getGroupManager().getGroup(player) != null ? plugin.getGroupManager().getGroup(player).getPlayers().size() : 1;
+        int arraySize = MinecleanerUtils.isPlayerInGroup(plugin, player) ? plugin.getGroupManager().getGroupSize(player) : 1;
         Player[] players = new Player[arraySize];
 
         if(plugin.getGroupManager().getGroup(player) != null) {
@@ -191,18 +199,27 @@ public class ArenaList {
         if(arena.hasPlayers()) {
             plugin.getManager().leaveArena(arena.getCurrentPlayers(), true, true);
         }
-        
+
+        removeArenaBlockDisplayIDs(arena);
+        removeArenaBlocks(arena);
+
+        arena.removeBlockDisplays();
+
+        arenas.remove(arena.getName());
+        save();
+    }
+
+    private void removeArenaBlocks(MinecleanerArena arena) {
+        for(Location block : arena.getBlocks()) {
+            arenaBlocks.remove(block);
+        }
+    }
+
+    private void removeArenaBlockDisplayIDs(MinecleanerArena arena) {
         for(UUID id : arena.getBlockDisplays()) {
             if(id != null) {
                 arenaBlockDisplays.remove(id);
             }
         }
-        for(Location block : arena.getBlocks()) { 
-            arenaBlocks.remove(block);
-        }
-        arena.removeBlockDisplays();
-
-        arenas.remove(arena.getName());
-        save();
     }
 } 

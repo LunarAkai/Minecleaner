@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.UUID;
 import java.util.logging.Level;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -153,7 +152,7 @@ public class MinecleanerListener implements Listener {
                         if(hasConfirmed) {
                             Player[] players;
                             if(plugin.getGroupManager().getGroup(player) != null) {
-                                players = new Player[plugin.getGroupManager().getGroup(player).getPlayers().size()];
+                                players = new Player[plugin.getGroupManager().getGroupSize(player)];
                                 players[0] = player;
                             } else {
                                 players = new Player[1];
@@ -176,7 +175,7 @@ public class MinecleanerListener implements Listener {
             MinecleanerArena arena = plugin.getArenaList().getPlayerArena(player);
             if(arena != null) {
                 if(arena.getArenaStatus() == ArenaStatus.CONFIRM_PLAYING && e.getInventory().equals(plugin.getManager().getConfirmPlayingInventory())) {
-                    int arraySize = plugin.getGroupManager().getGroup(player) != null ? plugin.getGroupManager().getGroup(player).getPlayers().size() : 1;
+                    int arraySize = plugin.getGroupManager().getGroup(player) != null ? plugin.getGroupManager().getGroupSize(player) : 1;
                     Player[] players = new Player[arraySize];
 
                     if(plugin.getGroupManager().getGroup(player) != null) {

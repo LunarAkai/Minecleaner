@@ -56,17 +56,9 @@ public final class MinecleanerPlugin extends JavaPlugin {
     }
 
     public void onLateEnable() {
-        if(getServer().getPluginManager().getPlugin("PlayerUUIDCache") != null) {
-            playerUUIDCache = (PlayerUUIDCache) getServer().getPluginManager().getPlugin("PlayerUUIDCache");
-        } else {
-            this.getLogger().log(Level.WARNING, "PlayerUUIDCache not found.");
-        }
+        checkForPlayerUUIDChache();
 
-        if(getServer().getPluginManager().getPlugin("CubesideStatistics") != null) {
-            cubesideStatistics = getServer().getServicesManager().load(CubesideStatisticsAPI.class);
-        } else {
-            this.getLogger().log(Level.WARNING, "Cubeside Statistics not found. No Statistics will be available");
-        }
+        checkForCubesideStatistics();
 
         arenaList = new ArenaList(this);
         arenaList.load();
@@ -90,10 +82,30 @@ public final class MinecleanerPlugin extends JavaPlugin {
         minecleanerCommand.addCommandMapping(new DismantleGroupCommand(this), "dismantlegroup");
         minecleanerCommand.addCommandMapping(new ListGroupMembersCommand(this), "groupmembers");
 
+        enableCubesideStatisticsCommands(minecleanerCommand);
+    }
+
+    private void enableCubesideStatisticsCommands(CommandRouter minecleanerCommand) {
         if(isStatisticsEnabled()) {
             minecleanerCommand.addCommandMapping(new SettingsCommand(this), "settings");
             minecleanerCommand.addCommandMapping(new StatsCommand(this), "stats");
             minecleanerCommand.addCommandMapping(new DeletePlayerScoreCommand(this), "deleteplayerscores");
+        }
+    }
+
+    private void checkForCubesideStatistics() {
+        if(getServer().getPluginManager().getPlugin("CubesideStatistics") != null) {
+            cubesideStatistics = getServer().getServicesManager().load(CubesideStatisticsAPI.class);
+        } else {
+            this.getLogger().log(Level.WARNING, "Cubeside Statistics not found. No Statistics will be available");
+        }
+    }
+
+    private void checkForPlayerUUIDChache() {
+        if(getServer().getPluginManager().getPlugin("PlayerUUIDCache") != null) {
+            playerUUIDCache = (PlayerUUIDCache) getServer().getPluginManager().getPlugin("PlayerUUIDCache");
+        } else {
+            this.getLogger().log(Level.WARNING, "PlayerUUIDCache not found.");
         }
     }
 

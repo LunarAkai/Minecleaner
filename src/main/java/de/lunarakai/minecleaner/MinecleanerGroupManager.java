@@ -116,6 +116,12 @@ public class MinecleanerGroupManager {
         return null;
     }
 
+    /**
+     *  loops through all MinecleanerGroups to check if the player is invited to any group
+     *
+     * @param player    Minecraft Player
+     * @return          the MinecleanerGroup the Player is invited to or null
+     */
     public MinecleanerGroup getInvitedGroup(Player player){
         UUID playerUUID = player.getUniqueId();
         for (MinecleanerGroup group : groups) {
@@ -130,7 +136,20 @@ public class MinecleanerGroupManager {
         groups.remove(minecleanerGroup);
     }
 
+    /**
+     * removes all MinecleanerGroups
+     */
     public void deleteAllGroups() {
         groups.clear();
+    }
+
+    /**
+     * Returns the size of the MinecleanerGroup the player is in
+     *
+     * @param player    the Minecraft Player
+     * @return          the size of the group the player is in
+     */
+    public int getGroupSize(Player player) {
+        return getGroup(player).getPlayers().size();
     }
 }
