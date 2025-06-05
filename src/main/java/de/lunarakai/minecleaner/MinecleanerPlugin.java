@@ -14,6 +14,7 @@ import de.lunarakai.minecleaner.commands.groups.AcceptCommand;
 import de.lunarakai.minecleaner.commands.groups.DenyCommand;
 import de.lunarakai.minecleaner.commands.groups.DismantleGroupCommand;
 import de.lunarakai.minecleaner.commands.groups.InviteCommand;
+import de.lunarakai.minecleaner.commands.groups.LeaveGroupCommand;
 import de.lunarakai.minecleaner.commands.groups.ListGroupMembersCommand;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.GlobalTranslator;
@@ -89,6 +90,7 @@ public final class MinecleanerPlugin extends JavaPlugin {
         minecleanerCommand.addCommandMapping(new DenyCommand(this), "deny");
         minecleanerCommand.addCommandMapping(new DismantleGroupCommand(this), "dismantlegroup");
         minecleanerCommand.addCommandMapping(new ListGroupMembersCommand(this), "groupmembers");
+        minecleanerCommand.addCommandMapping(new LeaveGroupCommand(this), "leave");
 
         if(isStatisticsEnabled()) {
             minecleanerCommand.addCommandMapping(new SettingsCommand(this), "settings");
