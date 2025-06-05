@@ -47,6 +47,7 @@ public class LeaveGroupCommand extends SubCommand {
         }
 
         plugin.getGroupManager().getGroup(player).removePlayerFromGroup(player);
+        ChatUtils.sendSimpleWarningMessage(player, "group.leave.left");
         return true;
     }
 
