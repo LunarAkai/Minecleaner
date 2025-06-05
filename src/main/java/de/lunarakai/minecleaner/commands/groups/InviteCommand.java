@@ -19,12 +19,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class InviteCommand extends SubCommand {
-    /*
-        TODO:
-            - Invite other Players to play in Duo Mode
-            - Add Functionality to support multiple Players in the same game
-            - use settings of player that invited the other player
-     */
 
     private final MinecleanerPlugin plugin;
 
