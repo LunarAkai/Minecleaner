@@ -69,8 +69,8 @@ public class MinecleanerManager {
         this.sizes.put(3, "experte");
 
         this.confirmPlayingInventory = plugin.getServer().createInventory(null, InventoryType.HOPPER, plugin.getDisplayedPluginName() + " starten?");
-        this.confirmPlayingInventory.setItem(1, ItemStacks.rename(new ItemStack(Material.GREEN_CONCRETE), NamedTextColor.GREEN + "Bestätigen"));
-        this.confirmPlayingInventory.setItem(3, ItemStacks.rename(new ItemStack(Material.GREEN_CONCRETE), NamedTextColor.RED + "Abbrechen"));
+        this.confirmPlayingInventory.setItem(1, ItemStacks.rename(new ItemStack(Material.GREEN_CONCRETE), Component.text("Bestätigen", NamedTextColor.GREEN)));
+        this.confirmPlayingInventory.setItem(3, ItemStacks.rename(new ItemStack(Material.RED_CONCRETE), Component.text("Abbrechen", NamedTextColor.RED)));
 
         // Settings
 
